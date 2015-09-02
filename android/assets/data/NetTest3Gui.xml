@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stage>
+	<actor id="0" type="textButton" name="send" text="send">
+		<x>0</x>
+		<y>0</y>
+		<skin name="default"></skin>
+	</actor>
+
+	<actor id="1" type="textArea" name="port" text="9091">
+		<x>20</x>
+		<y>100</y>
+		<skin name="default"></skin>
+	</actor>
+
+
+	<actor id="1" type="textArea" name="sequenceId" text="0">
+		<x>0</x>
+		<y>300</y>
+		<skin name="default"></skin>
+	</actor>
+	<actor id="1" type="textArea" name="type" text="1">
+		<x>100</x>
+		<y>300</y>
+		<skin name="default"></skin>
+	</actor>
+	<actor id="1" type="textArea" name="length" text="4">
+		<x>200</x>
+		<y>300</y>
+		<skin name="default"></skin>
+	</actor>
+	<actor id="1" type="textArea" name="data" text="80">
+		<x>300</x>
+		<y>300</y>
+		<skin name="default"></skin>
+	</actor>
+	<actor id="1" type="textArea" name="localport" text="9092">
+		<x>400</x>
+		<y>200</y>
+		<skin name="default"></skin>
+	</actor>
+	<actor id="0" type="textButton" name="start" text="start">
+		<x>400</x>
+		<y>100</y>
+		<skin name="default"></skin>
+	</actor>
+</stage>

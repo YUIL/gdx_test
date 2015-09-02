@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stage>
+    <actor id="0" type="textButton" name="send" text="send">
+        <x>0</x>
+        <y>0</y>
+        <skin name="default"></skin>
+    </actor></stage>

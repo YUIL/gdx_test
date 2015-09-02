@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stage>
+    <actor id="1" type="textArea" name="localport" text="9091">
+        <x>20</x>
+        <y>100</y>
+        <skin name="default"></skin>
+    </actor>
+    
+    <actor id="1" type="textArea" name="remoteport" text="9092">
+        <x>20</x>
+        <y>200</y>
+        <skin name="default"></skin>
+    </actor>
+     <actor id="1" type="textArea" name="remoteip" text="123.57.14.122">
+        <x>120</x>
+        <y>200</y>
+        <skin name="default"></skin>
+    </actor>
+    
+    <actor id="1" type="textArea" name="temp" text="aaa">
+        <x>20</x>
+        <y>300</y>
+        <skin name="default"></skin>
+    </actor>
+    <actor id="6" type="textButton" name="start" text="start">
+        <x>100</x>
+        <y>400</y>
+        <skin name="default"></skin>
+    </actor>
+    <actor id="6" type="textButton" name="send" text="send">
+        <x>200</x>
+        <y>0</y>
+        <skin name="default"></skin>
+    </actor>
+</stage>

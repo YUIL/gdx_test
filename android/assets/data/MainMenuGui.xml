@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stage>
+	<actor id="0" type="textButton" name="BulletTest" text="BulletTest">
+		<x>200</x>
+		<y>300</y>
+		<skin name="default"></skin>
+	</actor>
+	<actor id="1" type="button" name="ShapeTest">
+		<x>200</x>
+		<y>200</y>
+		<up>
+			<path>data/background.png</path>
+			<x>1</x>
+			<y>1</y>
+			<w>100</w>
+			<h>50</h>
+		</up>
+		<down>
+			<path>data/background.png</path>
+			<x>50</x>
+			<y>50</y>
+			<w>100</w>
+			<h>50</h>
+		</down>
+	</actor>
+	<actor id="2" type="button" name="ModelLoad">
+		<x>200</x>
+		<y>100</y>
+		<up>
+			<path>data/background.png</path>
+			<x>1</x>
+			<y>1</y>
+			<w>100</w>
+			<h>50</h>
+		</up>
+		<down>
+			<path>data/background.png</path>
+			<x>50</x>
+			<y>50</y>
+			<w>100</w>
+			<h>50</h>
+		</down>
+	</actor>
+	<actor id="3" type="textButton" name="RayPickingTest" text="RayPickingTest">>
+		<x>400</x>
+		<y>300</y>
+		<skin name="default"></skin>
+	</actor>
+	<actor id="4" type="button" name="ShaderTest2">
+		<x>400</x>
+		<y>200</y>
+		<up>
+			<path>data/background.png</path>
+			<x>1</x>
+			<y>1</y>
+			<w>100</w>
+			<h>50</h>
+		</up>
+		<down>
+			<path>data/background.png</path>
+			<x>50</x>
+			<y>50</y>
+			<w>100</w>
+			<h>50</h>
+		</down>
+	</actor>
+	<actor id="5" type="button" name="FrustumCullingTest">
+		<x>400</x>
+		<y>100</y>
+		<up>
+			<path>data/background.png</path>
+			<x>1</x>
+			<y>1</y>
+			<w>100</w>
+			<h>50</h>
+		</up>
+		<down>
+			<path>data/background.png</path>
+			<x>50</x>
+			<y>50</y>
+			<w>100</w>
+			<h>50</h>
+		</down>
+	</actor>
+
+	<actor id="6" type="textButton" name="UiTest" text="UiTest">
+		<x>200</x>
+		<y>50</y>
+		<skin name="default"></skin>
+	</actor>
+	<actor id="6" type="list" name="TestScreenList">
+
+	</actor>
+	<actor id="7" type="textButton" name="TestButton" text="TestButton">
+		<x>0</x>
+		<y>0</y>
+		<skin name="default"></skin>
+	</actor>
+
+	<actor id="6" type="textButton" name="NetTest" text="NetTest">
+		<x>400</x>
+		<y>50</y>
+		<skin name="default"></skin>
+	</actor>
+	
+	<actor id="6" type="textButton" name="NetTest2" text="NetTest2">
+		<x>500</x>
+		<y>50</y>
+		<skin name="default"></skin>
+	</actor>
+	<actor id="6" type="textButton" name="NetTest3" text="NetTest3">
+		<x>600</x>
+		<y>50</y>
+		<skin name="default"></skin>
+	</actor>
+
+</stage>

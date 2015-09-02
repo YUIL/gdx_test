@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stage>
+    <actor id="0" type="textButton" name="Button1" text="Button1">
+		<x>0</x>
+		<y>0</y>
+		<skin name="default"></skin>
+	</actor>
+    <actor id="0" type="textButton" name="Login" text="Login">
+		<x>400</x>
+		<y>0</y>
+		<skin name="default"></skin>
+	</actor>
+	<actor id="1" type="textArea" name="userName" text="">
+		<x>20</x>
+		<y>100</y>
+		<skin name="default"></skin>
+	</actor>
+	<actor id="1" type="textArea" name="password" text="">
+		<x>200</x>
+		<y>100</y>
+		<skin name="default"></skin>
+	</actor>
+
+</stage>
+					
