@@ -9,3 +9,15 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 eclipse.project {
     name = appName + "-core"
 }
+task clearJar(type: Delete) {
+    delete 'build/outputs/yuil-net.jar'
+}
+
+task makeJar(type: Copy) {
+    from('build/classes/main/com/mygdx/game/net/udp/')
+    into('build/outputs/')
+    include('classes.jar') 
+    rename ('classes.jar', 'yuil-net.jar')
+}
+
+makeJar.dependsOn(clearJar, build)

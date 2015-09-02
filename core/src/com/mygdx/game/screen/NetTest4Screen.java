@@ -66,11 +66,8 @@ public class NetTest4Screen extends TestScreen {
                         if (server != null) {
                             if (session != null) {
                                 while (!session.getRecvMessageQueue().isEmpty()) {
-                                	System.out.println("get a json message");
                                     recvString = new String(session.getRecvMessageQueue().poll().getData());
-                                    System.out.println(recvString);
-                                    jsonValue = jsonReader.parse(recvString);
-                                    
+                                    jsonValue = jsonReader.parse(recvString);                                    
                                     if(jsonValue.get("move")!=null){
                                         if(jsonValue.get("move").asInt()==0){
                                             remotePlayer.setMove(false);
