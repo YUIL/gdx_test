@@ -19,7 +19,7 @@ public class StageManager {
 	public static Skin defaultSkin = new Skin(
 			Gdx.files.internal("data/uiskin.json"));
 	public static TextButton textButton = (TextButton) guiFactor
-			.getActorByNameFromXML("data/SuperStageGui.xml", "MainMenu",
+			.getActorByNameFromXML("gui/SuperStageGui.xml", "MainMenu",
 					defaultSkin);
 
 	public static ActorInputListenner testInputListenner;

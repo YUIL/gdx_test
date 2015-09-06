@@ -11,10 +11,7 @@ public class GameManager {
 	
 	public static void setInputProcessor(Stage stage) {
 		StageManager.superStage.setViewport(stage.getViewport());
-		InputMultiplexer multiplexer = new InputMultiplexer();
-		multiplexer.addProcessor(StageManager.superStage);
-		multiplexer.addProcessor(stage);
-		Gdx.input.setInputProcessor(multiplexer);
+		setInputProcessor((InputProcessor)stage);
 	}
 	public static void setInputProcessor(InputProcessor inputProcessor) {
 		InputMultiplexer multiplexer = new InputMultiplexer();

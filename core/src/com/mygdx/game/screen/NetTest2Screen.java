@@ -65,7 +65,7 @@ public class NetTest2Screen extends TestScreen {
 		stage.getRoot().findActor("Button1").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y,
 				int pointer, int button) {
-				//String userName="阿什顿";
+				//String userName="闃夸粈椤�";
 				String userName=((TextArea)(stage.getRoot().findActor("userName"))).getText();
 				String password=((TextArea)(stage.getRoot().findActor("password"))).getText();
 				boolean temp=(server.clientMap.get("server").send(("{'login':{'userName':'"+userName+"','password':'"+password+"'}}").getBytes()));
@@ -89,12 +89,8 @@ public class NetTest2Screen extends TestScreen {
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(),
-				Gdx.graphics.getHeight());
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		
+		super.render(delta);
 		stage.draw();
-		InputProcessor.handleInput(game, delta);
 	}
 
 	@Override

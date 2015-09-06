@@ -60,24 +60,23 @@ public class MainMenuScreen extends TestScreen {
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(),
-				Gdx.graphics.getHeight());
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
+		super.render(delta);
 		stage.act(delta);
 		stage.draw();
 
 		batch.begin();
 		font.draw(batch, "111", 100, 100);
 		batch.end();
-		InputProcessor.handleInput(game, delta);
+		
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
 		System.out.println("resize");
+		super.resize(width, height);
 		stage.getViewport().update(width, height, true);
+		
 	}
 
 	@Override

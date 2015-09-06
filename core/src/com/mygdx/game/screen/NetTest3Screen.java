@@ -57,10 +57,8 @@ public class NetTest3Screen extends TestScreen {
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
+		super.render(delta);
         Session session;
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight());
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		if(server!=null&&!server.sessionMap.isEmpty()) {
 			for (Entry<Long, Session> entry : server.sessionMap.entrySet()) {
 				session = entry.getValue();
@@ -73,7 +71,6 @@ public class NetTest3Screen extends TestScreen {
 		batch.begin();
 		bf.draw(batch, str, 250, 250);
 		batch.end();
-		InputProcessor.handleInput(game, delta);
 	}
 
 	@Override

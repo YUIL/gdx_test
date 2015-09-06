@@ -1,9 +1,14 @@
 package com.mygdx.game.screen;
 
+import java.net.InetSocketAddress;
+import java.util.Map;
+import java.util.Random;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -12,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.inputprocessor.InputProcessor;
 import com.mygdx.game.net.Player;
 import com.mygdx.game.net.udp.Session;
@@ -19,10 +26,6 @@ import com.mygdx.game.net.udp.UdpServer;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.ActorInputListenner;
 import com.mygdx.game.util.GameManager;
-
-import java.net.InetSocketAddress;
-import java.util.Map;
-import java.util.Random;
 
 
 /**
@@ -48,6 +51,8 @@ public class NetTest4Screen extends TestScreen {
     boolean justPressZ=false;
     Thread screenLogicThread;
     ScreenLogic screenLogic;
+    OrthographicCamera cam;
+    private Viewport viewport;
     public NetTest4Screen(Game game) {
         super(game);
 
@@ -111,15 +116,18 @@ public class NetTest4Screen extends TestScreen {
         };
         screenLogicThread=new Thread(screenLogic);
         screenLogicThread.start();
-
+        cam=new OrthographicCamera();
+       // viewport=new FitViewport(800, 480, cam);
+        viewport=new ScreenViewport(cam);
+        stage.setViewport(viewport);
+        batch.setProjectionMatrix(cam.projection);
+        cam.translate(400, 240);
     }
 
     @Override
     public void render(float delta) {
-
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight());
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+    	
+    	super.render(delta);
         stage.act(delta);
         stage.draw();
         if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
@@ -136,12 +144,11 @@ public class NetTest4Screen extends TestScreen {
 
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.G)) {
-        	System.out.println("send");
            sendMessage(("{" + "getUser:{name:yuil}}"));
 
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
-        	System.out.println("send");
+        	System.out.println("send login");
            sendMessage(("{" + "login:{name:yuil}}"));
 
         }
@@ -160,6 +167,18 @@ public class NetTest4Screen extends TestScreen {
         	justPressZ=!justPressZ;
         }
         
+        if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+            cam.zoom -= (0.2*delta);
+            //If the Q Key is pressed, subtract 0.02 from the Camera's Zoom
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.L)) {
+            cam.zoom += (0.2*delta);
+            //If the Q Key is pressed, subtract 0.02 from the Camera's Zoom
+        }
+
+
+        
+        
         if(selfPlayer.isMove()){
         	selfPlayer.getRectangle().setX(selfPlayer.getRectangle().getX()+speed*delta);
         	
@@ -172,20 +191,23 @@ public class NetTest4Screen extends TestScreen {
         batch.draw(texture, selfPlayer.getRectangle().getX(), selfPlayer.getRectangle().getY());
         batch.draw(texture, remotePlayer.getRectangle().getX(), remotePlayer.getRectangle().getY());
         batch.end();
-        InputProcessor.handleInput(game, delta);
+       
         //netMessageProcess();
     }
     public void sendMessage(String str){
-        if(session==null) {
-            session = new Session(new Random().nextLong());
-            session.setContactorAddress(new InetSocketAddress(((TextArea) (stage.getRoot()
-                    .findActor("remoteip"))).getText(), Integer
-                    .parseInt(((TextArea) (stage.getRoot()
-                            .findActor("remoteport"))).getText())));
-            server.sessionMap.put(session.getId(), session);
-        }
-        server.send(str.getBytes(), session);
-
+    	if(server==null){
+    		System.err.println("updServer==null");
+    	}else{
+	        if(session==null) {
+	            session = new Session(new Random().nextLong());
+	            session.setContactorAddress(new InetSocketAddress(((TextArea) (stage.getRoot()
+	                    .findActor("remoteip"))).getText(), Integer
+	                    .parseInt(((TextArea) (stage.getRoot()
+	                            .findActor("remoteport"))).getText())));
+	            server.sessionMap.put(session.getId(), session);
+	        }
+	        server.send(str.getBytes(), session);
+    	}
     }
     public void netMessageProcess() {
     	try {
@@ -243,6 +265,10 @@ public class NetTest4Screen extends TestScreen {
         skin.dispose();
         server.stop();
         screenLogic.stop();
+    }
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height);
     }
 
     public void inputProcess() {

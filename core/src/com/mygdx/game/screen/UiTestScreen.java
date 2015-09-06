@@ -208,18 +208,12 @@ public class UiTestScreen extends TestScreen{
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(),
-				Gdx.graphics.getHeight());
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		super.render(delta);
 		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		stage.draw();
 		batch.begin();
-
 		//batch.draw(textureAtlas.findRegion("default"),100,100);
 		batch.end();
-		
-	
-		InputProcessor.handleInput(game, delta);
 	}
 
 	@Override
