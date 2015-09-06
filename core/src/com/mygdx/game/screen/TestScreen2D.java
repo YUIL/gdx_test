@@ -16,7 +16,7 @@ import com.mygdx.game.stage.StageManager;
 
 public class TestScreen2D extends TestScreen {
 	SpriteBatch batch;
-	OrthographicCamera cam;
+	//OrthographicCamera cam;
 	Viewport viewport;
 	Skin skin;
 	Stage stage;
@@ -27,13 +27,15 @@ public class TestScreen2D extends TestScreen {
 		skin = StageManager.defaultSkin;
 		stage = new Stage();
 
-		cam = new OrthographicCamera();
+		//cam = new OrthographicCamera();
 		// viewport=new FillViewport(800, 480, cam);
-		viewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), cam);
+		viewport = new StretchViewport(800, 480, stage.getCamera());
 		stage.setViewport(viewport);
 		StageManager.superStage.setViewport(viewport);
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
-		cam.translate(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+		
+		//cam.translate(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 		
 
 	}
@@ -54,9 +56,7 @@ public class TestScreen2D extends TestScreen {
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
 		super.resize(width, height);
-		batch.setProjectionMatrix(cam.projection);
-		batch.setTransformMatrix(cam.view);
-		stage.getViewport().update(width, height);
+		stage.getViewport().update(width, height, true);
 	}
 
 }

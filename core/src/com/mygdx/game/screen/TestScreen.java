@@ -40,8 +40,6 @@ public abstract class  TestScreen implements Screen {
 	}
 
 	Game game;
-    OrthographicCamera cam;
-    Viewport viewport;
 	public TestScreen (Game game){
 		this.game=game;
 	}
@@ -63,8 +61,6 @@ public abstract class  TestScreen implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
-		System.out.println("width:"+width);
-		System.out.println("height:"+height);
 		Actor mainMenu=(StageManager.superStage.getRoot().findActor("MainMenu"));
 	//	mainMenu.setX(Gdx.graphics.getWidth()-100);
 	//	mainMenu.setY(Gdx.graphics.getHeight()-30);

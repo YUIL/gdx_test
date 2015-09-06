@@ -1,18 +1,12 @@
 package com.mygdx.game.screen;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.gui.GuiFactory;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
@@ -36,6 +30,7 @@ public class MainMenuScreen extends TestScreen2D {
 		actor.addListener(StageManager.testInputListenner);
 		window.add(actor);
 		stage.addActor(window);
+		stage.addActor(new TextButton("0906", skin));
 		//</tempCode>
 		GameManager.setInputProcessor(stage);
 		
@@ -66,9 +61,9 @@ public class MainMenuScreen extends TestScreen2D {
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
-		System.out.println("resize");
+		//System.out.println("resize");
 		super.resize(width, height);
-		stage.getViewport().update(width, height, true);
+		
 		
 	}
 
@@ -262,7 +257,20 @@ public class MainMenuScreen extends TestScreen2D {
 											 float y, int pointer, int button) {
 						return true;
 					}
-				});
+		});
+		stage.getRoot().findActor("ViewportTest1")
+		.addListener(new InputListener() {
+			public void touchUp(InputEvent event, float x, float y,
+								int pointer, int button) {
+				game.setScreen(new ViewportTest1Screen(game));
+				return;
+			}
+
+			public boolean touchDown(InputEvent event, float x,
+									 float y, int pointer, int button) {
+				return true;
+			}
+		});
 	}
 
 }

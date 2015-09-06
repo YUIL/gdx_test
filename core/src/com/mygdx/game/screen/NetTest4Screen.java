@@ -155,11 +155,11 @@ public class NetTest4Screen extends TestScreen2D {
         }
         
         if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-            cam.zoom -= (0.2*delta);
+           // cam.zoom -= (0.2*delta);
             //If the Q Key is pressed, subtract 0.02 from the Camera's Zoom
         }
         if (Gdx.input.isKeyPressed(Input.Keys.L)) {
-            cam.zoom += (0.2*delta);
+           // cam.zoom += (0.2*delta);
             //If the Q Key is pressed, subtract 0.02 from the Camera's Zoom
         }
       
