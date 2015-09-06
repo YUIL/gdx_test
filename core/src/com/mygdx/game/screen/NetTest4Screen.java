@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.inputprocessor.InputProcessor;
 import com.mygdx.game.net.Player;
@@ -27,11 +28,13 @@ import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.ActorInputListenner;
 import com.mygdx.game.util.GameManager;
 
+import javafx.scene.control.TableView.ResizeFeatures;
+
 
 /**
  * Created by i008 on 2015/8/27.
  */
-public class NetTest4Screen extends TestScreen {
+public class NetTest4Screen extends TestScreen2D {
 
     String recvString = null;
     volatile UdpServer server;
@@ -40,9 +43,6 @@ public class NetTest4Screen extends TestScreen {
     int temp1 = 0;
     JsonValue jsonValue;
     JsonReader jsonReader = new JsonReader();
-    Stage stage = null;
-    Skin skin = null;
-    SpriteBatch batch;
     String guiXmlPath = "gui/NetTest4Gui.xml";
     volatile Player selfPlayer;
     volatile Player remotePlayer;
@@ -51,14 +51,8 @@ public class NetTest4Screen extends TestScreen {
     boolean justPressZ=false;
     Thread screenLogicThread;
     ScreenLogic screenLogic;
-    OrthographicCamera cam;
-    private Viewport viewport;
     public NetTest4Screen(Game game) {
         super(game);
-
-        batch = new SpriteBatch();
-        skin = StageManager.defaultSkin;
-        stage = new Stage();
         StageManager.guiFactor.setStageFromXml(stage, guiXmlPath);
         inputProcess();
         GameManager.setInputProcessor(stage);
@@ -116,20 +110,13 @@ public class NetTest4Screen extends TestScreen {
         };
         screenLogicThread=new Thread(screenLogic);
         screenLogicThread.start();
-        cam=new OrthographicCamera();
-       // viewport=new FitViewport(800, 480, cam);
-        viewport=new ScreenViewport(cam);
-        stage.setViewport(viewport);
-        batch.setProjectionMatrix(cam.projection);
-        cam.translate(400, 240);
     }
 
     @Override
     public void render(float delta) {
     	
     	super.render(delta);
-        stage.act(delta);
-        stage.draw();
+        
         if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
             sendMessage("{time:"+System.currentTimeMillis()+"}");
         }
@@ -175,9 +162,7 @@ public class NetTest4Screen extends TestScreen {
             cam.zoom += (0.2*delta);
             //If the Q Key is pressed, subtract 0.02 from the Camera's Zoom
         }
-
-
-        
+      
         
         if(selfPlayer.isMove()){
         	selfPlayer.getRectangle().setX(selfPlayer.getRectangle().getX()+speed*delta);
@@ -249,6 +234,7 @@ public class NetTest4Screen extends TestScreen {
         
     }
 
+
     @Override
     public void hide() {
         // TODO Auto-generated method stub
@@ -268,7 +254,8 @@ public class NetTest4Screen extends TestScreen {
     }
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height);
+    	super.resize(width, height);
+       
     }
 
     public void inputProcess() {

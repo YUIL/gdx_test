@@ -2,7 +2,7 @@ package com.mygdx.game.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -12,30 +12,22 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.gui.GuiFactory;
-import com.mygdx.game.inputprocessor.InputProcessor;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
 
-public class MainMenuScreen extends TestScreen {
+public class MainMenuScreen extends TestScreen2D {
 	
-	SpriteBatch batch;
+	
 	BitmapFont font;
-	Skin skin;
-	Stage stage;
 	GuiFactory guiFactory;
-	String skinPath="data/uiskin.json";
 	String guiXmlPath="gui/MainMenuGui.xml";
-
 	public MainMenuScreen(Game game) {
 
 		super(game);
-		batch = new SpriteBatch();
 		font = new BitmapFont();
-		stage = new Stage(new ScreenViewport());
 		guiFactory = new GuiFactory();
-
-		skin = new Skin(Gdx.files.internal(skinPath));
 		guiFactory.setStageFromXml(stage, guiXmlPath, skin);
 		inputProcess();
 		//<tempCode>
@@ -54,7 +46,8 @@ public class MainMenuScreen extends TestScreen {
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-
+		System.out.println("show");
+		super.show();
 	}
 
 	@Override

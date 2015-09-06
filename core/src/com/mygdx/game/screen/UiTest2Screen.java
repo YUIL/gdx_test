@@ -67,4 +67,10 @@ public class UiTest2Screen extends TestScreen
       //  System.out.println(System.currentTimeMillis() - lastRender);
       //  lastRender=System.currentTimeMillis();
     }
+	@Override
+	public void resize(int width, int height) {
+		// TODO Auto-generated method stub
+		super.resize(width, height);
+	}
+
 }

@@ -96,6 +96,7 @@ public class NetTest2Screen extends TestScreen {
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
+		super.resize(width, height);
 
 	}
 
