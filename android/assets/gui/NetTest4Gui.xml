@@ -32,4 +32,9 @@
         <y>0</y>
         <skin name="default"></skin>
     </actor>
+    <actor id="1" type="label" name="console" text="console">
+        <x>400</x>
+        <y>20</y>
+        <skin name="default"></skin>
+    </actor>
 </stage>

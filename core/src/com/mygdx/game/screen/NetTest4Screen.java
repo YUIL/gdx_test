@@ -7,20 +7,12 @@ import java.util.Random;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.inputprocessor.InputProcessor;
 import com.mygdx.game.net.Player;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpServer;
@@ -28,14 +20,13 @@ import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.ActorInputListenner;
 import com.mygdx.game.util.GameManager;
 
-import javafx.scene.control.TableView.ResizeFeatures;
-
 
 /**
  * Created by i008 on 2015/8/27.
  */
 public class NetTest4Screen extends TestScreen2D {
 
+	volatile Label console;
     String recvString = null;
     volatile UdpServer server;
     Texture texture = new Texture(Gdx.files.internal("images/button_0.png"));
@@ -58,6 +49,8 @@ public class NetTest4Screen extends TestScreen2D {
         GameManager.setInputProcessor(stage);
         selfPlayer = new Player(((TextArea) stage.getRoot().findActor("localport")).getText());
         remotePlayer = new Player(((TextArea) stage.getRoot().findActor("remoteport")).getText());
+        console=((Label)(stage.getRoot().findActor("console")));
+        console.setSize(200, 200);
         screenLogic=new ScreenLogic(1){
             public void run() {
                 while(!isStoped){
@@ -81,6 +74,8 @@ public class NetTest4Screen extends TestScreen2D {
                                         System.out.println("finaldelay:"+(System.currentTimeMillis()-jsonValue.get("time").asLong()));
 
                                     }else if(jsonValue.get("user")!=null){
+                                    	//System.out.println(jsonValue.toString().length());
+                                    	console.setText(jsonValue.toString());
                                         System.out.println(jsonValue.toString());
 
                                     }
@@ -110,6 +105,7 @@ public class NetTest4Screen extends TestScreen2D {
         };
         screenLogicThread=new Thread(screenLogic);
         screenLogicThread.start();
+      
     }
 
     @Override
