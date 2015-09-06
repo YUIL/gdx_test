@@ -72,7 +72,8 @@ public class UdpServer {
 					session = entry.getValue();
 					if(send(responseMessage, session)){
 						try {
-							Thread.currentThread().sleep(10);
+							Thread.currentThread();
+							Thread.sleep(10);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -156,7 +157,7 @@ public class UdpServer {
                                     if (System.currentTimeMillis()
                                             - session.lastSendTime > session
                                             .getTimeOut() * session.timeOutMultiple) {
-                                        session.timeOutMultiple++;
+                                        session.timeOutMultiple+=1;
                                         // System.out.println("send");
                                         sendUdpMessage(
                                                 session,

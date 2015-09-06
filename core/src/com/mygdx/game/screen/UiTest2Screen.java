@@ -52,7 +52,7 @@ public class UiTest2Screen extends TestScreen
 
         JsonValue jsonValue;
         JsonReader jsonReader=new JsonReader();
-        jsonValue =jsonReader.parse(s);
+        jsonValue =jsonReader.parse("Asd");
       
        System.out.println(jsonValue.get("login").get("name").asString()); 
 

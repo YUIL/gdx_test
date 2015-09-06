@@ -41,7 +41,9 @@ public class NetTest4Screen extends TestScreen2D {
 	boolean justPressZ = false;
 	Thread screenLogicThread;
 	ScreenLogic screenLogic;
-
+	long lastAutoSendTime=0;
+	int autoSendIterval=5000;
+	
 	public NetTest4Screen(Game game) {
 		super(game);
 		StageManager.guiFactor.setStageFromXml(stage, guiXmlPath);
@@ -57,6 +59,10 @@ public class NetTest4Screen extends TestScreen2D {
 					try {
 						if (server != null) {
 							if (session != null) {
+								if(System.currentTimeMillis()-lastAutoSendTime>autoSendIterval){
+									lastAutoSendTime=System.currentTimeMillis();
+									sendMessage("");
+								}
 								while (!session.getRecvMessageQueue().isEmpty()) {
 									recvString = new String(session.getRecvMessageQueue().poll().getData());
 									jsonValue = jsonReader.parse(recvString);
