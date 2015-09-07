@@ -8,11 +8,15 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.mygdx.game.entity.GameObject;
+import com.mygdx.game.entity.GameWorld;
 import com.mygdx.game.net.Player;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpServer;
@@ -42,8 +46,11 @@ public class NetTest4Screen extends TestScreen2D {
 	Thread screenLogicThread;
 	ScreenLogic screenLogic;
 	long lastAutoSendTime=0;
+	long lastSendTime=0;
 	int autoSendIterval=5000;
-	
+	boolean aButtonPress=false;
+	boolean dButtonPress=false;
+	GameWorld gameWorld=new GameWorld();
 	public NetTest4Screen(Game game) {
 		super(game);
 		StageManager.guiFactor.setStageFromXml(stage, guiXmlPath);
@@ -65,27 +72,11 @@ public class NetTest4Screen extends TestScreen2D {
 								}
 								while (!session.getRecvMessageQueue().isEmpty()) {
 									recvString = new String(session.getRecvMessageQueue().poll().getData());
-									jsonValue = jsonReader.parse(recvString);
-									if (jsonValue.get("move") != null) {
-										if (jsonValue.get("move").asInt() == 0) {
-											remotePlayer.setMove(false);
-										} else {
-											// System.out.println(System.currentTimeMillis());
-											remotePlayer.setMove(true);
-										}
-									} else if (jsonValue.get("x") != null) {
-										remotePlayer.getRectangle().setX(jsonValue.get("x").asFloat());
-										remotePlayer.getRectangle().setY(jsonValue.get("y").asFloat());
-									} else if (jsonValue.get("time") != null) {
-										System.out.println("finaldelay:"
-												+ (System.currentTimeMillis() - jsonValue.get("time").asLong()));
-
-									} else if (jsonValue.get("user") != null) {
-										// System.out.println(jsonValue.toString().length());
-										console.setText(jsonValue.toString());
-										System.out.println(jsonValue.toString());
-
+									if (recvString!=null){
+										disposeMessage();
 									}
+									
+									
 
 								}
 							} else {
@@ -99,7 +90,7 @@ public class NetTest4Screen extends TestScreen2D {
 					} catch (Exception e) {
 						// TODO: handle exception
 						// System.err.println("session:"+session.getRecvMessageQueue());
-
+						e.printStackTrace();
 					}
 
 					try {
@@ -115,11 +106,115 @@ public class NetTest4Screen extends TestScreen2D {
 
 	}
 
+	public void disposeMessage(){
+		jsonValue=jsonReader.parse(recvString);
+		if (jsonValue.get("addGameObject")!=null){
+			GameObject gameObject=new GameObject(jsonValue.get("addGameObject").get("name").asString());
+			gameObject.setPosition(new Vector3(jsonValue.get("addGameObject").get("x").asFloat(), jsonValue.get("addGameObject").get("y").asFloat(), 0));
+			gameWorld.addGameObject(gameObject);
+		} else if (jsonValue.get("changeGameObject") != null) {
+			//System.out.println(System.currentTimeMillis()-lastSendTime);
+			GameObject gameObject=gameWorld.findGameObject(jsonValue.get("changeGameObject").getString("name"));
+			if(gameObject!=null){
+				if (jsonValue.get("changeGameObject").get("position")!=null) {
+					gameObject.setPosition(new Vector3(jsonValue.get("changeGameObject").get("position").getFloat("x"), jsonValue.get("changeGameObject").get("position").getFloat("y"), 0));
+				}
+			}
+		}else if (jsonValue.get("getGameObject") != null) {
+			GameObject gameObject=new GameObject(jsonValue.get("getGameObject").getString("name"));
+			gameObject.setPosition(new Vector3(jsonValue.get("getGameObject").get("position").getFloat("x"), jsonValue.get("getGameObject").get("position").getFloat("y"), 0));;
+			gameWorld.addGameObject(gameObject);
+		} else if (jsonValue.get("removeGameObject") != null) {
+			GameObject gameObject=gameWorld.findGameObject(jsonValue.get("removeGameObject").getString("name"));
+			if(gameObject!=null){
+				gameWorld.getGameObjectArray().removeValue(gameObject, true);
+			}
+
+		}else if (jsonValue.get("move") != null) {
+			if (jsonValue.get("move").asInt() == 0) {
+				remotePlayer.setMove(false);
+			} else {
+				// System.out.println(System.currentTimeMillis());
+				remotePlayer.setMove(true);
+			}
+		} else if (jsonValue.get("x") != null) {
+			remotePlayer.getRectangle().setX(jsonValue.get("x").asFloat());
+			remotePlayer.getRectangle().setY(jsonValue.get("y").asFloat());
+		} else if (jsonValue.get("time") != null) {
+			System.out.println("finaldelay:"
+					+ (System.currentTimeMillis() - jsonValue.get("time").asLong()));
+
+		} else if (jsonValue.get("user") != null) {
+			// System.out.println(jsonValue.toString().length());
+			console.setText(jsonValue.toString());
+			System.out.println(jsonValue.toString());
+
+		}
+	}
+	public void disposeSendMessage(String message){
+		JsonValue jsonValue;
+		JsonReader jsonReader = new JsonReader();
+		jsonValue=jsonReader.parse(message);
+		if (jsonValue.get("addGameObject")!=null){
+			GameObject gameObject=new GameObject(jsonValue.get("addGameObject").get("name").asString());
+			gameObject.setPosition(new Vector3(jsonValue.get("addGameObject").get("x").asFloat(), jsonValue.get("addGameObject").get("y").asFloat(), 0));
+			gameWorld.addGameObject(gameObject);
+		}
+	}
+	
+	private void aPressAction(){
+		if(gameWorld.findGameObject("yuil")!=null)
+			//lastSendTime=System.currentTimeMillis();
+			sendMessage("{changeGameObject:{name:yuil,position:{x:"+(gameWorld.findGameObject("yuil").getPosition().x-10)+",y:"+gameWorld.findGameObject("yuil").getPosition().y+"}}}");
+	
+	}
+	private void dPressAction(){
+		if(gameWorld.findGameObject("yuil")!=null)
+			//lastSendTime=System.currentTimeMillis();
+			sendMessage("{changeGameObject:{name:yuil,position:{x:"+(gameWorld.findGameObject("yuil").getPosition().x+10)+",y:"+gameWorld.findGameObject("yuil").getPosition().y+"}}}");
+	
+	}
+	private void zPressAction(){
+		sendMessage("{addGameObject:{name:yuil,x:100,y:100}}");
+
+	}
+	private void xPressAction(){
+		if(gameWorld.findGameObject("yuil")!=null)
+			sendMessage("{removeGameObject:{name:yuil}}");
+	
+	}
+	private void gPressAction(){
+		sendMessage("{getGameObject:{name:yuil}}");
+	}
+	
 	@Override
 	public void render(float delta) {
 
 		super.render(delta);
-
+		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+			aPressAction();
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+			dPressAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Input.Keys.Z)) {
+			zPressAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+			xPressAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Input.Keys.G)) {
+			gPressAction();
+		}
+		
+		
+		if(aButtonPress){
+			aPressAction();
+		}
+		if (dButtonPress){
+			dPressAction();
+		}
+/*
 		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
 			sendMessage("{time:" + System.currentTimeMillis() + "}");
 		}
@@ -166,37 +261,47 @@ public class NetTest4Screen extends TestScreen2D {
 		if (Gdx.input.isKeyPressed(Input.Keys.L)) {
 			// cam.zoom += (0.2*delta);
 			// If the Q Key is pressed, subtract 0.02 from the Camera's Zoom
-		}
+		}*/
 
-		if (selfPlayer.isMove()) {
+/*		if (selfPlayer.isMove()) {
 			selfPlayer.getRectangle().setX(selfPlayer.getRectangle().getX() + speed * delta);
 
 		}
 		if (remotePlayer.isMove()) {
 			remotePlayer.getRectangle().setX(remotePlayer.getRectangle().getX() + speed * delta);
-		}
+		}*/
 
-		batch.begin();
+		batch.begin();/*
 		batch.draw(texture, selfPlayer.getRectangle().getX(), selfPlayer.getRectangle().getY());
 		batch.draw(texture, remotePlayer.getRectangle().getX(), remotePlayer.getRectangle().getY());
+*/		
+		for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
+			batch.draw(texture, gameWorld.getGameObjectArray().get(i).getPosition().x, gameWorld.getGameObjectArray().get(i).getPosition().y);
+		}
 		batch.end();
 
 		// netMessageProcess();
 	}
 
 	public void sendMessage(String str) {
-		if (server == null) {
-			System.err.println("updServer==null");
-		} else {
-			if (session == null) {
-				session = new Session(new Random().nextLong());
-				session.setContactorAddress(
-						new InetSocketAddress(((TextArea) (stage.getRoot().findActor("remoteIp"))).getText(),
-								Integer.parseInt(((TextArea) (stage.getRoot().findActor("remotePort"))).getText())));
-				server.sessionMap.put(session.getId(), session);
+		if(str==null){
+			System.err.println("message==null");
+		}else{
+			//disposeSendMessage(str);
+			if (server == null) {
+				System.err.println("updServer==null");
+			} else {
+				if (session == null) {
+					session = new Session(new Random().nextLong());
+					session.setContactorAddress(
+							new InetSocketAddress(((TextArea) (stage.getRoot().findActor("remoteIp"))).getText(),
+									Integer.parseInt(((TextArea) (stage.getRoot().findActor("remotePort"))).getText())));
+					server.sessionMap.put(session.getId(), session);
+				}
+				server.send(str.getBytes(), session);
 			}
-			server.send(str.getBytes(), session);
 		}
+		
 	}
 
 	public void netMessageProcess() {
@@ -266,16 +371,17 @@ public class NetTest4Screen extends TestScreen2D {
 	public void inputProcess() {
 		stage.getRoot().findActor("start").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				int port = Integer.parseInt(((TextArea) (stage.getRoot().findActor("localPort"))).getText());
-				System.out.println("server start at port:" + port);
-				server = new UdpServer(port);
-				server.start();
-
+				if(server==null){
+					int port = Integer.parseInt(((TextArea) (stage.getRoot().findActor("localPort"))).getText());
+					System.out.println("server start at port:" + port);
+					server = new UdpServer(port);
+					server.start();
+				}	
 			}
 		});
 		stage.getRoot().findActor("send").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-
+				sendMessage(((TextArea)stage.getRoot().findActor("message")).getText());
 			}
 		});
 		stage.getRoot().findActor("login").addListener(new ActorInputListenner() {
@@ -286,6 +392,39 @@ public class NetTest4Screen extends TestScreen2D {
 		stage.getRoot().findActor("getUser").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				sendMessage(("{" + "getUser:{name:"+((TextArea)stage.getRoot().findActor("userName")).getText()+"}}"));
+			}
+		});
+		stage.getRoot().findActor("A").addListener(new ActorInputListenner() {
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				aButtonPress=false;
+			}
+			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+				aButtonPress=true;
+				return true;
+			}
+		});
+		stage.getRoot().findActor("D").addListener(new ActorInputListenner() {
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				dButtonPress=false;
+			}
+			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+				dButtonPress=true;
+				return true;
+			}
+		});
+		stage.getRoot().findActor("Z").addListener(new ActorInputListenner() {
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				zPressAction();
+			}
+		});
+		stage.getRoot().findActor("X").addListener(new ActorInputListenner() {
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				xPressAction();
+			}
+		});
+		stage.getRoot().findActor("G").addListener(new ActorInputListenner() {
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				gPressAction();
 			}
 		});
 	}

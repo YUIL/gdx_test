@@ -33,8 +33,51 @@ public class UserServer {
 
 	}
 
+	public void disposeMessage(){
+		jsonValue = jsonReader.parse(recvString);
+		if(jsonValue!=null){
+			if (jsonValue.get("login") != null) {
+				
+				String name = jsonValue.get("login")
+						.get("name").asString();
+				if (userMap.get(name) == null) {
+					userMap.put(name, session);
+					System.out.println(name + "login:"
+							+ session.toString());
+
+				}else{
+					System.out.println(name+" already logged in!");
+				}
+				
+			} else if (jsonValue.get("getUser") != null) {
+				String name = jsonValue.get("getUser")
+						.get("name").asString();
+				Session session1 = userMap.get(name);
+				if (session1 != null) {
+					responseString = "{user:{"
+							+ "ip:'"
+							+ session1.getContactorAddress()
+									.getAddress().toString()
+							+ "',port:"
+							+ session1.getContactorAddress()
+									.getPort() + "}}";
+					udpServer.send(responseString.getBytes(),
+							session);
+					System.out.println("response:"+responseString);
+				} else {
+					System.out.println(name + " no login!");
+				}
+
+			} else if (jsonValue.get("getUsers") != null) {
+
+			} else if (jsonValue.get("stopServer") != null) {
+				stoped = true;
+			}
+		}
+	}
+	
 	public void Start() {
-		System.out.println("userServer start!");
+		System.out.println("UserServer start!");
 		udpServer.start();
 		while (!stoped) {
 			try {
@@ -56,46 +99,10 @@ public class UserServer {
 						while (!session.getRecvMessageQueue().isEmpty()) {
 							recvString = new String(session
 									.getRecvMessageQueue().poll().getData());
-							jsonValue = jsonReader.parse(recvString);
-							if(jsonValue!=null){
-								if (jsonValue.get("login") != null) {
-									
-									String name = jsonValue.get("login")
-											.get("name").asString();
-									if (userMap.get(name) == null) {
-										userMap.put(name, session);
-										System.out.println(name + "login:"
-												+ session.toString());
-	
-									}else{
-										System.out.println(name+" already logged in!");
-									}
-									
-								} else if (jsonValue.get("getUser") != null) {
-									String name = jsonValue.get("getUser")
-											.get("name").asString();
-									Session session1 = userMap.get(name);
-									if (session1 != null) {
-										responseString = "{user:{"
-												+ "ip:'"
-												+ session1.getContactorAddress()
-														.getAddress().toString()
-												+ "',port:"
-												+ session1.getContactorAddress()
-														.getPort() + "}}";
-										udpServer.send(responseString.getBytes(),
-												session);
-										System.out.println("response:"+responseString);
-									} else {
-										System.out.println(name + " no login!");
-									}
-	
-								} else if (jsonValue.get("getUsers") != null) {
-	
-								} else if (jsonValue.get("userServerStop") != null) {
-									stoped = true;
-								}
-							}
+							if(recvString!=null){
+								disposeMessage();
+							}	
+							
 						}
 
 					}
@@ -106,6 +113,13 @@ public class UserServer {
 
 				// e.printStackTrace();
 				// System.out.println("不知道什么问题，先不管。。");
+			}
+			try {
+				Thread.currentThread();
+				Thread.sleep(0,10000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		udpServer.stop();

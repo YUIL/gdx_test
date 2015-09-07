@@ -26,20 +26,26 @@ public class UdpMessage {
 	public void initUdpMessageByDatagramPacket(UdpMessage message,
 			DatagramPacket recvPacket) {
 		byte[] data = recvPacket.getData();
+		initUdpMessageByDatagramPacket(message, data);
+	}
+	
+	public void initUdpMessageByDatagramPacket(UdpMessage message,
+			byte[] data) {
+		
 		int offset = 0;
 		message.setSessionId(JavaDataConverter.bytesToLong(JavaDataConverter
 				.subByte(data, 8, offset)));
 		offset+=8;
 		message.setSequenceId(JavaDataConverter.bytesToInt(JavaDataConverter
-				.subByte(recvPacket.getData(), 4, offset)));
+				.subByte(data, 4, offset)));
 		offset+=4;
 		message.setType(JavaDataConverter.bytesToInt(JavaDataConverter.subByte(
-				recvPacket.getData(), 4, offset)));
+				data, 4, offset)));
 		offset+=4;
 		message.setLength(JavaDataConverter.bytesToInt(JavaDataConverter
-				.subByte(recvPacket.getData(), 4, offset)));
+				.subByte(data, 4, offset)));
 		offset+=4;
-		message.setData(JavaDataConverter.subByte(recvPacket.getData(),message.length,offset));
+		message.setData(JavaDataConverter.subByte(data,message.length,offset));
 	}
 
 	public void initUdpMessageByDatagramPacket(DatagramPacket recvPacket) {

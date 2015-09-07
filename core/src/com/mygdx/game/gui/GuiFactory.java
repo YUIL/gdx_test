@@ -46,7 +46,8 @@ public class GuiFactory {
         setStageFromXml(stage, guiXmlPath, StageManager.defaultSkin);
     }
 
-    private Array<Actor> getActorsFromElement(Element element, Skin skin) {
+    @SuppressWarnings("unused")
+	private Array<Actor> getActorsFromElement(Element element, Skin skin) {
         Array<Actor> actors = new Array<Actor>();
         Array<?> nodes = element.getChildrenByName("actor");
         for (Iterator<?> it = nodes.iterator(); it.hasNext(); ) {
@@ -67,7 +68,7 @@ public class GuiFactory {
             if (type.equals("label")) {
                 actor=getLabelFromElm(actorElm, skin);
             }
-
+            actors.add(actor);
         }
         return actors;
 

@@ -281,7 +281,8 @@ public class UdpServer {
                             //session.setLastSendMessage(responseMessage);
                             sendServicer.sendUdpMessage(session, responseMessage);
                             // System.out.println("session size:"+sessionMap.size());
-                        } else {
+                        } else if(message.getSequenceId() ==session.getLastresponseMessage()
+                                .getSequenceId()){              
                            // System.out.println("lastrecv:" + session.getLastresponseMessage());
                             responseMessage.setSequenceId(session.lastRecvMessage.getSequenceId());
                             responseMessage.setType(3);
