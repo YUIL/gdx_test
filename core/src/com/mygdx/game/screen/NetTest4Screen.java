@@ -111,24 +111,24 @@ public class NetTest4Screen extends TestScreen2D {
 		//System.out.println(recvString.getBytes().length);
 		jsonValue=jsonReader.parse(recvString);
 		
-		if (jsonValue.get("addGameObject")!=null){
-			GameObject gameObject=new GameObject(jsonValue.get("addGameObject").get("name").asString());
-			gameObject.setPosition(new Vector3(jsonValue.get("addGameObject").get("x").asFloat(), jsonValue.get("addGameObject").get("y").asFloat(), 0));
+		if (jsonValue.get("ago")!=null){
+			GameObject gameObject=new GameObject(jsonValue.get("ago").get("name").asString());
+			gameObject.setPosition(new Vector3(jsonValue.get("ago").get("p").get("x").asFloat(), jsonValue.get("ago").get("p").get("y").asFloat(), 0));
 			gameWorld.addGameObject(gameObject);
-		} else if (jsonValue.get("changeGameObject") != null) {
+		} else if (jsonValue.get("cgo") != null) {
 			//System.out.println(System.currentTimeMillis()-lastSendTime);
-			GameObject gameObject=gameWorld.findGameObject(jsonValue.get("changeGameObject").getString("name"));
+			GameObject gameObject=gameWorld.findGameObject(jsonValue.get("cgo").getString("name"));
 			if(gameObject!=null){
-				if (jsonValue.get("changeGameObject").get("position")!=null) {
-					gameObject.setPosition(new Vector3(jsonValue.get("changeGameObject").get("position").getFloat("x"), jsonValue.get("changeGameObject").get("position").getFloat("y"), 0));
+				if (jsonValue.get("cgo").get("p")!=null) {
+					gameObject.setPosition(new Vector3(jsonValue.get("cgo").get("p").getFloat("x"), jsonValue.get("cgo").get("p").getFloat("y"), 0));
 				}
 			}
-		}else if (jsonValue.get("getGameObject") != null) {
-			GameObject gameObject=new GameObject(jsonValue.get("getGameObject").getString("name"));
-			gameObject.setPosition(new Vector3(jsonValue.get("getGameObject").get("position").getFloat("x"), jsonValue.get("getGameObject").get("position").getFloat("y"), 0));;
+		}else if (jsonValue.get("ggo") != null) {
+			GameObject gameObject=new GameObject(jsonValue.get("ggo").getString("name"));
+			gameObject.setPosition(new Vector3(jsonValue.get("ggo").get("p").getFloat("x"), jsonValue.get("ggo").get("p").getFloat("y"), 0));;
 			gameWorld.addGameObject(gameObject);
-		} else if (jsonValue.get("removeGameObject") != null) {
-			GameObject gameObject=gameWorld.findGameObject(jsonValue.get("removeGameObject").getString("name"));
+		} else if (jsonValue.get("rgo") != null) {
+			GameObject gameObject=gameWorld.findGameObject(jsonValue.get("rgo").getString("name"));
 			if(gameObject!=null){
 				gameWorld.getGameObjectArray().removeValue(gameObject, true);
 			}
@@ -160,9 +160,9 @@ public class NetTest4Screen extends TestScreen2D {
 		JsonValue jsonValue;
 		JsonReader jsonReader = new JsonReader();
 		jsonValue=jsonReader.parse(message);
-		if (jsonValue.get("addGameObject")!=null){
-			GameObject gameObject=new GameObject(jsonValue.get("addGameObject").get("name").asString());
-			gameObject.setPosition(new Vector3(jsonValue.get("addGameObject").get("x").asFloat(), jsonValue.get("addGameObject").get("y").asFloat(), 0));
+		if (jsonValue.get("ago")!=null){
+			GameObject gameObject=new GameObject(jsonValue.get("ago").get("name").asString());
+			gameObject.setPosition(new Vector3(jsonValue.get("ago").get("x").asFloat(), jsonValue.get("ago").get("y").asFloat(), 0));
 			gameWorld.addGameObject(gameObject);
 		}
 	}
@@ -170,26 +170,26 @@ public class NetTest4Screen extends TestScreen2D {
 	private void aPressAction(){
 		if(gameWorld.findGameObject("yuil")!=null)
 			//lastSendTime=System.currentTimeMillis();
-			sendMessage("{changeGameObject:{name:yuil,position:{x:"+(gameWorld.findGameObject("yuil").getPosition().x-10)+",y:"+gameWorld.findGameObject("yuil").getPosition().y+"}}}");
+			sendMessage("{cgo:{name:yuil,p:{x:"+(gameWorld.findGameObject("yuil").getPosition().x-10)+",y:"+gameWorld.findGameObject("yuil").getPosition().y+"}}}");
 	
 	}
 	private void dPressAction(){
 		if(gameWorld.findGameObject("yuil")!=null)
 			//lastSendTime=System.currentTimeMillis();
-			sendMessage("{changeGameObject:{name:yuil,position:{x:"+(gameWorld.findGameObject("yuil").getPosition().x+10)+",y:"+gameWorld.findGameObject("yuil").getPosition().y+"}}}");
+			sendMessage("{cgo:{name:yuil,p:{x:"+(gameWorld.findGameObject("yuil").getPosition().x+10)+",y:"+gameWorld.findGameObject("yuil").getPosition().y+"}}}");
 	
 	}
 	private void zPressAction(){
-		sendMessage("{addGameObject:{name:yuil,x:100,y:100}}");
+		sendMessage("{ago:{name:yuil,p:{x:100,y:100}}}");
 
 	}
 	private void xPressAction(){
 		if(gameWorld.findGameObject("yuil")!=null)
-			sendMessage("{removeGameObject:{name:yuil}}");
+			sendMessage("{rgo:{name:yuil}}");
 	
 	}
 	private void gPressAction(){
-		sendMessage("{getGameObject:{name:yuil}}");
+		sendMessage("{ggo:{name:yuil}}");
 	}
 	
 	@Override

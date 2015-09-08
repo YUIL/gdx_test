@@ -43,7 +43,6 @@ public class UdpMessage {
 		offset+=1;
 		message.setLength(JavaDataConverter.bytesToInt(JavaDataConverter
 				.subByte(data, 4, offset)));
-		System.out.println("message:"+message.toString());
 		offset+=4;
 		message.setData(JavaDataConverter.subByte(data,message.length,offset));
 	}

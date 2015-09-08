@@ -98,7 +98,7 @@ public class UdpServer {
         message.setSessionId(session.getId());
         message.setType((byte)1);
         message.setLength(data.length);
-        System.out.println("send data.lenght:"+data.length);
+        //System.out.println("send data.lenght:"+data.length);
         message.setData(data);
         return send(message, session);
     }
@@ -197,7 +197,7 @@ public class UdpServer {
 
         public synchronized void sendUdpMessage(DatagramSocket sendSocket,
                                                 SocketAddress address, UdpMessage message) {
-        	System.out.println("send, message:"+message.toString());
+        	//System.out.println("send, message:"+message.toString());
             try {
                 byte[] temp = message.toBytes();
                 DatagramPacket sendPacket = new DatagramPacket(temp,
@@ -257,7 +257,7 @@ public class UdpServer {
                      JsonValue jsonValue;
                      JsonReader jsonReader = new JsonReader();
                      jsonValue = jsonReader.parse(recvString);*/
-                    System.out.println("recive:" + message.toString());
+                   // System.out.println("recive:" + message.toString());
 
                      session = sessionMap.get(message.getSessionId());
                      if (session == null) {
