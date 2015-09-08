@@ -1,6 +1,7 @@
 package com.mygdx.game.server;
 
 
+import java.net.BindException;
 import java.util.ConcurrentModificationException;
 import java.util.Map;
 
@@ -29,7 +30,12 @@ public class UserServer {
 	volatile boolean stoped = false;
 
 	public UserServer(int port) {
-		udpServer = new UdpServer(port);
+		try {
+			udpServer = new UdpServer(port);
+		} catch (BindException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 	

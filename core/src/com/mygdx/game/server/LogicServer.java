@@ -1,5 +1,6 @@
 package com.mygdx.game.server;
 
+import java.net.BindException;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
@@ -34,7 +35,12 @@ public class LogicServer {
 		
 	}
 	public LogicServer(int port){
-		udpServer=new UdpServer(port);
+		try {
+			udpServer=new UdpServer(port);
+		} catch (BindException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -93,10 +99,14 @@ public class LogicServer {
 		}
 	}
 	
+	long lastWhileTime=0;
+	boolean needSleep=true;
 	public void start(){
 		System.out.println("LogicServer start!");
 		udpServer.start();
 		while (!stoped) {
+			//System.out.println("while time:"+(System.nanoTime()-lastWhileTime));
+			//lastWhileTime=System.nanoTime();
 			try {
 				if (!udpServer.sessionMap.isEmpty()) {
 					for (Map.Entry<Long, Session> entry : udpServer.sessionMap
@@ -107,6 +117,7 @@ public class LogicServer {
 									.getRecvMessageQueue().poll().getData());
 							if(recvString!=null){
 								disposeMessage();
+								needSleep=false;
 							}		
 						}
 					}
@@ -116,13 +127,16 @@ public class LogicServer {
 				// e.printStackTrace();
 				// System.out.println("不知道什么问题，先不管。。");
 			}
-			try {
-				Thread.currentThread();
-				Thread.sleep(0,10000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(needSleep){
+				try {
+					Thread.currentThread();
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+			needSleep=true;
 		}
 		udpServer.stop();
 		userServer.stoped=true;

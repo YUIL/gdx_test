@@ -1,5 +1,6 @@
 package com.mygdx.game.test;
 
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.util.Random;
 
@@ -10,7 +11,7 @@ import com.mygdx.game.util.JavaDataConverter;
 
 public class UdpTest {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws BindException {
 		// TODO Auto-generated method stub
 		UdpServer server=new UdpServer(9091);
 		server.start();

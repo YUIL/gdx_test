@@ -17,7 +17,7 @@ public class Test {
 
 		time=System.currentTimeMillis()-time;
 		System.out.println(time);*/
-		System.out.println(Byte.SIZE);
+		System.out.println("{cgo:{name:yuil,p:{x:950.0,y:100.0},i:{x:0,y:0}}}".length());
 		//System.out.println("{asdasdasdasd}".getBytes().length);
 	}
 

@@ -1,5 +1,6 @@
 package com.mygdx.game.screen;
 
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Random;
@@ -198,7 +199,7 @@ public class NetTest4Screen extends TestScreen2D {
 	}
 	
 	private void aJustPressAction(){
-		sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"},i:{x:-5,y:0}}}");
+		sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"},i:{x:-200,y:0}}}");
 
 	}
 	private void aJustUpAction(){
@@ -207,7 +208,7 @@ public class NetTest4Screen extends TestScreen2D {
 	}
 	
 	private void dJustPressAction(){
-		sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"},i:{x:5,y:0}}}");
+		sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"},i:{x:200,y:0}}}");
 
 	}
 	private void dJustUpAction(){
@@ -328,7 +329,7 @@ public class NetTest4Screen extends TestScreen2D {
 		batch.begin();
 		for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
 			GameObject gameObject=gameWorld.getGameObjectArray().get(i);
-			gameObject.setPosition(new Vector3(gameObject.getPosition().x+gameObject.getInertiaForce().x, gameObject.getPosition().y+gameObject.getInertiaForce().y, 0));
+			gameObject.setPosition(new Vector3(gameObject.getPosition().x+gameObject.getInertiaForce().x*delta, gameObject.getPosition().y+gameObject.getInertiaForce().y*delta, 0));
 			batch.draw(texture, gameWorld.getGameObjectArray().get(i).getPosition().x, gameWorld.getGameObjectArray().get(i).getPosition().y);
 		}
 		batch.end();
@@ -420,6 +421,24 @@ public class NetTest4Screen extends TestScreen2D {
 		super.resize(width, height);
 
 	}
+	
+	private boolean initUdpServer(int port){
+		if(port<10000){
+			try {
+				System.out.println("try port:"+port);
+				server = new UdpServer(port);
+				return true;
+			} catch (BindException e) {
+				System.out.println(port+" exception!");
+				// TODO: handle exception
+				port++;
+				initUdpServer(port);
+			}
+		}else{
+			System.err.println("port must <10000!");
+		}
+		return false;
+	}
 
 	public void inputProcess() {
 		stage.getRoot().findActor("start").addListener(new ActorInputListenner() {
@@ -427,7 +446,8 @@ public class NetTest4Screen extends TestScreen2D {
 				if(server==null){
 					int port = Integer.parseInt(((TextArea) (stage.getRoot().findActor("localPort"))).getText());
 					System.out.println("server start at port:" + port);
-					server = new UdpServer(port);
+					initUdpServer(port);
+					
 					server.start();
 				}	
 			}

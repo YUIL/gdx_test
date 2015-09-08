@@ -1,5 +1,6 @@
 package com.mygdx.game.screen;
 
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.util.Random;
 import java.util.Map.Entry;
@@ -153,7 +154,12 @@ public class NetTest3Screen extends TestScreen {
 								.parseInt(((TextArea) (stage.getRoot()
 										.findActor("localport"))).getText());
                         System.out.println("port:"+port);
-						server = new UdpServer(port);
+						try {
+							server = new UdpServer(port);
+						} catch (BindException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						server.start();
 					}
 				});

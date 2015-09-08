@@ -1,5 +1,6 @@
 package com.mygdx.game.test;
 
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.util.Random;
 
@@ -11,7 +12,13 @@ public class Test2 {
 	static long lastSendTime=0;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		UdpServer server=new UdpServer(9092);
+		UdpServer server=null;
+		try {
+			server = new UdpServer(9092);
+		} catch (BindException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Session session=new Session(new Random().nextLong());
 		session.setContactorAddress(new InetSocketAddress("127.0.0.1", 9091));
 		server.sessionMap.put(session.getId(), session);

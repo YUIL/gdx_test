@@ -4,6 +4,7 @@ package com.mygdx.game.net.udp;
 import com.mygdx.game.util.JavaDataConverter;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -29,10 +30,14 @@ public class UdpServer {
     long sleepM = 1;
     int sleepN = 0;
 
-    public UdpServer(int port) {
+    public UdpServer(int port) throws BindException {
         try {
             serverSocket = new DatagramSocket(port);
-        } catch (SocketException e) {
+            
+        }catch(BindException e){
+        	throw e;
+        } 
+        catch (SocketException e) {
 
             e.printStackTrace();
         }
@@ -131,7 +136,7 @@ public class UdpServer {
                     break;
                 }
                 // System.out.println(currenSendMessageNum);
-                if (sessionMap.size() == 0 || currenSendMessageNum == 0) {//没消息就歇会儿
+                if (currenSendMessageNum == 0) {//没消息就歇会儿
                     try {
                         Thread.sleep(sleepM, sleepN);
                     } catch (InterruptedException e) {
