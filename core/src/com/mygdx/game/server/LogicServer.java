@@ -5,6 +5,8 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 
+import sun.misc.GC.LatencyRequest;
+
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
@@ -22,7 +24,37 @@ public class LogicServer {
 	JsonValue jsonValue;
 	JsonReader jsonReader = new JsonReader();
 	boolean stoped = false;
-	GameWorld gameWorld=new GameWorld();
+	volatile GameWorld gameWorld=new GameWorld();
+	
+	public class GameWorldThread implements Runnable{
+
+		public GameWorldThread() {
+			// TODO Auto-generated constructor stub
+		}
+		float interval=10;
+		long lastUpdateTime=0;
+		long upDateTime=0;
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			lastUpdateTime=System.currentTimeMillis();
+			while(true){
+				upDateTime=System.currentTimeMillis();
+				if(upDateTime-lastUpdateTime>=interval){
+					lastUpdateTime=upDateTime;
+					gameWorld.update(interval/1000);
+				}
+				try {
+					Thread.currentThread().sleep(1);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		}
+		
+	}
 	public static void main(String[] args){
 		/*GameObject obj1=new GameObject();
 		obj1.getTransform().setTranslation(new Vector3(1, 2, 3));
@@ -31,6 +63,9 @@ public class LogicServer {
 		LogicServer logicServer=new LogicServer(9093);
 		//logicServer.userServer=new UserServer(9092);
 		//logicServer.userServer.start();
+		
+		
+		
 		logicServer.start();
 		
 	}
@@ -61,7 +96,7 @@ public class LogicServer {
 	}
 	
 	public void disposeMessage(){
-		System.out.println(recvString);
+		//System.out.println(recvString);
 		jsonValue = jsonReader.parse(recvString);
 		if(jsonValue!=null){
 			if (jsonValue.get("ago") != null) {
@@ -76,6 +111,9 @@ public class LogicServer {
 				if(gameObject!=null){
 					if (jsonValue.get("cgo").get("p")!=null) {
 						gameObject.setPosition(new Vector3(jsonValue.get("cgo").get("p").getFloat("x"), jsonValue.get("cgo").get("p").getFloat("y"), 0));
+						gameObject.setInertiaForce(new Vector3(jsonValue.get("cgo").get("i").getFloat("x"), jsonValue.get("cgo").get("i").getFloat("y"), 0));
+						boardCast(recvString);
+					}else if (jsonValue.get("cgo").get("i")!=null) {
 						gameObject.setInertiaForce(new Vector3(jsonValue.get("cgo").get("i").getFloat("x"), jsonValue.get("cgo").get("i").getFloat("y"), 0));
 						boardCast(recvString);
 					}
@@ -100,13 +138,21 @@ public class LogicServer {
 	}
 	
 	long lastWhileTime=0;
+	float delta=0;
 	boolean needSleep=true;
 	public void start(){
 		System.out.println("LogicServer start!");
+		Runnable gameWorldThread=new GameWorldThread();
+		Thread thread=new Thread(gameWorldThread);
+		thread.start();
 		udpServer.start();
+		lastWhileTime=System.nanoTime();
 		while (!stoped) {
 			//System.out.println("while time:"+(System.nanoTime()-lastWhileTime));
 			//lastWhileTime=System.nanoTime();
+			
+			//delta=((System.nanoTime()-lastWhileTime)/10000f);
+			//gameWorld.update(delta);
 			try {
 				if (!udpServer.sessionMap.isEmpty()) {
 					for (Map.Entry<Long, Session> entry : udpServer.sessionMap
@@ -137,8 +183,10 @@ public class LogicServer {
 				}
 			}
 			needSleep=true;
+			//lastWhileTime=System.nanoTime();
 		}
 		udpServer.stop();
 		userServer.stoped=true;
+		thread.stop();
 	}
 }

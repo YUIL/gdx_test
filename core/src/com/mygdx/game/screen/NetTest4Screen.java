@@ -126,6 +126,9 @@ public class NetTest4Screen extends TestScreen2D {
 				if (jsonValue.get("cgo").get("p")!=null) {
 					gameObject.setPosition(new Vector3(jsonValue.get("cgo").get("p").getFloat("x"), jsonValue.get("cgo").get("p").getFloat("y"), 0));
 					gameObject.setInertiaForce(new Vector3(jsonValue.get("cgo").get("i").getFloat("x"), jsonValue.get("cgo").get("i").getFloat("y"), 0));
+				}else if (jsonValue.get("cgo").get("i")!=null) {
+					gameObject.setInertiaForce(new Vector3(jsonValue.get("cgo").get("i").getFloat("x"), jsonValue.get("cgo").get("i").getFloat("y"), 0));
+					sendMessage("{ggo:{name:"+jsonValue.get("cgo").getString("name")+"}}");
 				}
 			}else{
 				sendMessage("{ggo:{name:"+jsonValue.get("cgo").getString("name")+"}}");
@@ -199,26 +202,25 @@ public class NetTest4Screen extends TestScreen2D {
 	}
 	
 	private void aJustPressAction(){
-		sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"},i:{x:-200,y:0}}}");
+		sendMessage("{cgo:{name:"+gameObjectName+",i:{x:-200,y:0}}}");
 
 	}
 	private void aJustUpAction(){
-		sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"},i:{x:0,y:0}}}");
+		sendMessage("{cgo:{name:"+gameObjectName+",i:{x:0,y:0}}}");
 
 	}
 	
 	private void dJustPressAction(){
-		sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"},i:{x:200,y:0}}}");
+		sendMessage("{cgo:{name:"+gameObjectName+",i:{x:200,y:0}}}");
 
 	}
 	private void dJustUpAction(){
-		sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"},i:{x:0,y:0}}}");
+		sendMessage("{cgo:{name:"+gameObjectName+",i:{x:0,y:0}}}");
 
 	}
 	
 	@Override
 	public void render(float delta) {
-
 		super.render(delta);
 		/*if (Gdx.input.isKeyPressed(Input.Keys.A)) {
 			aPressAction();
@@ -337,7 +339,7 @@ public class NetTest4Screen extends TestScreen2D {
 		// netMessageProcess();
 	}
 
-	public void sendMessage(String str) {
+	public boolean sendMessage(String str) {
 		if(str==null){
 			System.err.println("message==null");
 		}else{
@@ -352,9 +354,10 @@ public class NetTest4Screen extends TestScreen2D {
 									Integer.parseInt(((TextArea) (stage.getRoot().findActor("remotePort"))).getText())));
 					server.sessionMap.put(session.getId(), session);
 				}
-				server.send(str.getBytes(), session);
+				return server.send(str.getBytes(), session);
 			}
 		}
+		return false;
 		
 	}
 /*

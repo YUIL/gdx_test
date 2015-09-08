@@ -8,6 +8,7 @@ public class GameObject {
 	Matrix4 transform=new Matrix4();
 	Vector3 position=new Vector3();
 	Vector3 inertiaForce=new Vector3();
+
 	public Vector3 getInertiaForce() {
 		return inertiaForce;
 	}
@@ -45,4 +46,11 @@ public class GameObject {
 	public String toJson(){
 		return "{name:"+name+",p:{"+"x:"+getPosition().x+",y:"+getPosition().y+",z:"+getPosition().z+"}"+",i:{"+"x:"+getInertiaForce().x+",y:"+getInertiaForce().y+",z:"+getInertiaForce().z+"}}";
 	}
+	@Override
+	public String toString() {
+		return "GameObject [name=" + name + ", transform=" + transform
+				+ ", position=" + position + ", inertiaForce=" + inertiaForce
+				+ "]";
+	}
+	
 }
