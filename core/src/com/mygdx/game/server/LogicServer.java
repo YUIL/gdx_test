@@ -1,11 +1,10 @@
 package com.mygdx.game.server;
 
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.game.entity.GameObject;
@@ -15,6 +14,7 @@ import com.mygdx.game.net.udp.UdpServer;
 
 public class LogicServer {
 	volatile UdpServer udpServer;
+	volatile UserServer userServer;
 	volatile Session session;
 	String recvString;
 	String responseString;
@@ -28,11 +28,30 @@ public class LogicServer {
 		System.out.println(obj1.getTransform().getTranslation(obj1.getPosition()));
 		System.out.println(obj1.getPosition());*/
 		LogicServer logicServer=new LogicServer(9093);
+		//logicServer.userServer=new UserServer(9092);
+		//logicServer.userServer.start();
 		logicServer.start();
+		
 	}
 	public LogicServer(int port){
 		udpServer=new UdpServer(port);
 		
+	}
+	
+	public void boardCast(String str){
+		/*for (int i = 0; i < userServer.userArray.size; i++) {
+			Session session=new Session();
+			session.setContactorAddress(userServer.userArray.get(i).session.getContactorAddress());
+			udpServer.send(str.getBytes(),session );
+			
+		}*/
+		Session session;
+		if (!udpServer.sessionMap.isEmpty()) {
+			for (Map.Entry<Long, Session> entry : udpServer.sessionMap.entrySet()) {
+				session = entry.getValue();
+				udpServer.send(str.getBytes(),session );
+			}
+		}
 	}
 	
 	public void disposeMessage(){
@@ -43,7 +62,8 @@ public class LogicServer {
 					GameObject gameObject=new GameObject(jsonValue.get("ago").get("name").asString());
 					gameObject.setPosition(new Vector3(jsonValue.get("ago").get("p").get("x").asFloat(), jsonValue.get("ago").get("p").get("y").asFloat(), 0));
 					gameWorld.addGameObject(gameObject);
-					udpServer.send(recvString.getBytes(), session);
+					//udpServer.send(recvString.getBytes(), session);
+					boardCast(recvString);
 				
 			} else if (jsonValue.get("cgo") != null) {
 				GameObject gameObject=gameWorld.findGameObject(jsonValue.get("cgo").getString("name"));
@@ -51,19 +71,20 @@ public class LogicServer {
 					if (jsonValue.get("cgo").get("p")!=null) {
 						gameObject.setPosition(new Vector3(jsonValue.get("cgo").get("p").getFloat("x"), jsonValue.get("cgo").get("p").getFloat("y"), 0));
 						gameObject.setInertiaForce(new Vector3(jsonValue.get("cgo").get("i").getFloat("x"), jsonValue.get("cgo").get("i").getFloat("y"), 0));
-						udpServer.send(recvString.getBytes(), session);
+						boardCast(recvString);
 					}
 				}
 			} else if (jsonValue.get("ggo") != null) {
 				GameObject gameObject=gameWorld.findGameObject(jsonValue.get("ggo").getString("name"));
 				if(gameObject!=null){
-					udpServer.send(("{ggo:"+gameObject.toJson()+"}").getBytes(), session);
+					boardCast("{ggo:"+gameObject.toJson()+"}");
 				}
 			} else if (jsonValue.get("rgo") != null) {
 				GameObject gameObject=gameWorld.findGameObject(jsonValue.get("rgo").getString("name"));
 				if(gameObject!=null){
 					gameWorld.getGameObjectArray().removeValue(gameObject, true);
-					udpServer.send(recvString.getBytes(), session);					
+					boardCast(recvString);
+								
 				}
 
 			} else if (jsonValue.get("stopServer") != null) {
@@ -104,5 +125,6 @@ public class LogicServer {
 			}
 		}
 		udpServer.stop();
+		userServer.stoped=true;
 	}
 }

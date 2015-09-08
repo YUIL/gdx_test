@@ -1,9 +1,9 @@
 package com.mygdx.game.net.udp;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Random;
 
 
 public class Session {
@@ -27,13 +27,19 @@ public class Session {
 	UdpMessage lastRecvMessage;
 	volatile Queue<UdpMessage> recvMessageQueue;
 
+	public Session(){
+		init(new Random().nextLong());
+	}
+	
 	public Session(long id){
+		init(id);
+	}
+	private void init(long id){
 		System.out.println("new session,id:"+id);
 		this.id=id;
 		this.setLastSendMessage(new UdpMessage(id, -1));
 		this.setLastresponseMessage(new UdpMessage(id, -1));
 		recvMessageQueue=new LinkedList<UdpMessage>();
-	
 	}
 	public long getId() {
 		return id;

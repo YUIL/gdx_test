@@ -2,10 +2,10 @@ package com.mygdx.game.server;
 
 
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
+
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.game.net.udp.Session;
@@ -13,24 +13,33 @@ import com.mygdx.game.net.udp.UdpServer;
 
 public class UserServer {
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		UserServer userSerser = new UserServer(9092);
-		userSerser.Start();
-	}
+		userSerser.start();
+	}*/
 
-	Map<String, Session> userMap = new HashMap<String, Session>();
+	volatile Array<User> userArray = new Array<User>();
 	volatile UdpServer udpServer;
 	volatile Session session;
 	String recvString;
 	String responseString;
 	JsonValue jsonValue;
 	JsonReader jsonReader = new JsonReader();
-	boolean stoped = false;
+	volatile boolean stoped = false;
 
 	public UserServer(int port) {
 		udpServer = new UdpServer(port);
 
+	}
+	
+	public User getUser(String name){
+		for (int i = 0; i < userArray.size; i++) {
+			if(userArray.get(i).name.equals(name)){
+				return userArray.get(i);
+			}
+		}
+		return null;
 	}
 
 	public void disposeMessage(){
@@ -40,8 +49,8 @@ public class UserServer {
 				
 				String name = jsonValue.get("login")
 						.get("name").asString();
-				if (userMap.get(name) == null) {
-					userMap.put(name, session);
+				if (getUser(name) == null) {
+					userArray.add(new User(name, session));
 					System.out.println(name + "login:"
 							+ session.toString());
 
@@ -52,7 +61,7 @@ public class UserServer {
 			} else if (jsonValue.get("getUser") != null) {
 				String name = jsonValue.get("getUser")
 						.get("name").asString();
-				Session session1 = userMap.get(name);
+				Session session1 = getUser(name).getSession();
 				if (session1 != null) {
 					responseString = "{user:{"
 							+ "ip:'"
@@ -76,18 +85,20 @@ public class UserServer {
 		}
 	}
 	
-	public void Start() {
+	public void start() {
 		System.out.println("UserServer start!");
 		udpServer.start();
 		while (!stoped) {
 			try {
-				if (!userMap.isEmpty()) {
-					for (Entry<String, Session> entry : userMap.entrySet()) {
-						session = entry.getValue();
+				if (!(userArray.size==0)) {
+					
+					for (int i = 0; i < userArray.size; i++) {
+						session=userArray.get(i).getSession();
 						if (udpServer.sessionMap.get(session.getId()) == null) {
-							userMap.remove(entry.getKey());
+							userArray.removeIndex(i);
 						}
 					}
+					
 				}
 
 				if (!udpServer.sessionMap.isEmpty()) {

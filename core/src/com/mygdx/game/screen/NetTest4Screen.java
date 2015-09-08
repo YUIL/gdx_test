@@ -68,11 +68,12 @@ public class NetTest4Screen extends TestScreen2D {
 				while (!isStoped) {
 					try {
 						if (server != null) {
+							if(System.currentTimeMillis()-lastAutoSendTime>autoSendIterval){
+								lastAutoSendTime=System.currentTimeMillis();
+								sendMessage("");
+							}
 							if (session != null) {
-								if(System.currentTimeMillis()-lastAutoSendTime>autoSendIterval){
-									lastAutoSendTime=System.currentTimeMillis();
-									//sendMessage("");
-								}
+								
 								while (!session.getRecvMessageQueue().isEmpty()) {
 									recvString = new String(session.getRecvMessageQueue().poll().getData());
 									if (recvString!=null){
@@ -436,12 +437,15 @@ public class NetTest4Screen extends TestScreen2D {
 		});
 		stage.getRoot().findActor("login").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				gameObjectName=((TextArea)stage.getRoot().findActor("userName")).getText();
 
 				sendMessage(("{" + "login:{name:"+gameObjectName+"}}"));
 			}
 		});
 		stage.getRoot().findActor("getUser").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				gameObjectName=((TextArea)stage.getRoot().findActor("userName")).getText();
+
 				sendMessage(("{" + "getUser:{name:"+gameObjectName+"}}"));
 			}
 		});
@@ -483,6 +487,12 @@ public class NetTest4Screen extends TestScreen2D {
 				gameObjectName=((TextArea)stage.getRoot().findActor("userName")).getText();
 
 				gPressAction();
+			}
+		});
+		stage.getRoot().findActor("delSession").addListener(new ActorInputListenner() {
+			
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				session=null;
 			}
 		});
 	}
