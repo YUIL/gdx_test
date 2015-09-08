@@ -13,11 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
-import com.mygdx.game.inputprocessor.InputProcessor;
+import com.mygdx.game.input.ActorInputListenner;
+import com.mygdx.game.input.InputProcessor;
 import com.mygdx.game.net.Client;
 import com.mygdx.game.net.Server;
 import com.mygdx.game.stage.StageManager;
-import com.mygdx.game.util.ActorInputListenner;
 import com.mygdx.game.util.GameManager;
 
 

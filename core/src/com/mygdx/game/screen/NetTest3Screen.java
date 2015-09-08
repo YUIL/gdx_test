@@ -13,12 +13,12 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
-import com.mygdx.game.inputprocessor.InputProcessor;
+import com.mygdx.game.input.ActorInputListenner;
+import com.mygdx.game.input.InputProcessor;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpMessage;
 import com.mygdx.game.net.udp.UdpServer;
 import com.mygdx.game.stage.StageManager;
-import com.mygdx.game.util.ActorInputListenner;
 import com.mygdx.game.util.GameManager;
 import com.mygdx.game.util.JavaDataConverter;
 

@@ -30,7 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.game.inputprocessor.InputProcessor;
+import com.mygdx.game.input.InputProcessor;
 import com.mygdx.game.stage.StageManager;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.scenes.scene2d.*;

@@ -83,7 +83,7 @@ public class ShaderTest2Screen extends TestScreen {
 	        modelBatch.render(instance, shader);
 	    modelBatch.end();
 	    
-	    com.mygdx.game.inputprocessor.InputProcessor.handleInput(game,delta);
+	    com.mygdx.game.input.InputProcessor.handleInput(game,delta);
 	}
 
 	@Override

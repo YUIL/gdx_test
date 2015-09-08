@@ -17,7 +17,7 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultTextureBinder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
-import com.mygdx.game.inputprocessor.InputProcessor;
+import com.mygdx.game.input.InputProcessor;
 import com.mygdx.game.shader.TestShader;
 import com.mygdx.game.util.GameManager;
 

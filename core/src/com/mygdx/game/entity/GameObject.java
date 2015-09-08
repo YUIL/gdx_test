@@ -5,14 +5,22 @@ import com.badlogic.gdx.math.Vector3;
 
 public class GameObject {
 	String name=null;
+	Matrix4 transform=new Matrix4();
+	Vector3 position=new Vector3();
+	Vector3 inertiaForce=new Vector3();
+	public Vector3 getInertiaForce() {
+		return inertiaForce;
+	}
+	public void setInertiaForce(Vector3 inertiaForce) {
+		this.inertiaForce = inertiaForce;
+	}
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
-	Matrix4 transform=new Matrix4();
-	Vector3 position=new Vector3();
+	
 	public GameObject(){
 		
 	}

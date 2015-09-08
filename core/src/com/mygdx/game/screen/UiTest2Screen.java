@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.mygdx.game.inputprocessor.InputProcessor;
+import com.mygdx.game.input.InputProcessor;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
 

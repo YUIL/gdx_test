@@ -36,6 +36,7 @@ public class LogicServer {
 	}
 	
 	public void disposeMessage(){
+		System.out.println(recvString);
 		jsonValue = jsonReader.parse(recvString);
 		if(jsonValue!=null){
 			if (jsonValue.get("ago") != null) {
@@ -49,6 +50,7 @@ public class LogicServer {
 				if(gameObject!=null){
 					if (jsonValue.get("cgo").get("p")!=null) {
 						gameObject.setPosition(new Vector3(jsonValue.get("cgo").get("p").getFloat("x"), jsonValue.get("cgo").get("p").getFloat("y"), 0));
+						gameObject.setInertiaForce(new Vector3(jsonValue.get("cgo").get("i").getFloat("x"), jsonValue.get("cgo").get("i").getFloat("y"), 0));
 						udpServer.send(recvString.getBytes(), session);
 					}
 				}

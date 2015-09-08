@@ -24,7 +24,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.inputprocessor.InputProcessor;
+import com.mygdx.game.input.InputProcessor;
 import com.mygdx.game.util.GameManager;
 
 public class RayPickingTestScreen extends InputAdapter implements Screen {

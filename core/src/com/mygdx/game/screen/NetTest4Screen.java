@@ -12,16 +12,16 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.game.entity.GameObject;
 import com.mygdx.game.entity.GameWorld;
+import com.mygdx.game.input.ActorInputListenner;
+import com.mygdx.game.input.KeyboardStatus;
 import com.mygdx.game.net.Player;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpServer;
 import com.mygdx.game.stage.StageManager;
-import com.mygdx.game.util.ActorInputListenner;
 import com.mygdx.game.util.GameManager;
 
 /**
@@ -51,7 +51,9 @@ public class NetTest4Screen extends TestScreen2D {
 	int autoSendIterval=5000;
 	boolean aButtonPress=false;
 	boolean dButtonPress=false;
-	GameWorld gameWorld=new GameWorld();
+	volatile GameWorld gameWorld=new GameWorld();
+	KeyboardStatus keyboardStatus=new KeyboardStatus();
+	String gameObjectName=null;
 	public NetTest4Screen(Game game) {
 		super(game);
 		StageManager.guiFactor.setStageFromXml(stage, guiXmlPath);
@@ -121,6 +123,7 @@ public class NetTest4Screen extends TestScreen2D {
 			if(gameObject!=null){
 				if (jsonValue.get("cgo").get("p")!=null) {
 					gameObject.setPosition(new Vector3(jsonValue.get("cgo").get("p").getFloat("x"), jsonValue.get("cgo").get("p").getFloat("y"), 0));
+					gameObject.setInertiaForce(new Vector3(jsonValue.get("cgo").get("i").getFloat("x"), jsonValue.get("cgo").get("i").getFloat("y"), 0));
 				}
 			}
 		}else if (jsonValue.get("ggo") != null) {
@@ -168,40 +171,61 @@ public class NetTest4Screen extends TestScreen2D {
 	}
 	
 	private void aPressAction(){
-		if(gameWorld.findGameObject("yuil")!=null)
+		//if(gameWorld.findGameObject(gameObjectName)!=null)
 			//lastSendTime=System.currentTimeMillis();
-			sendMessage("{cgo:{name:yuil,p:{x:"+(gameWorld.findGameObject("yuil").getPosition().x-10)+",y:"+gameWorld.findGameObject("yuil").getPosition().y+"}}}");
-	
+			//sendMessage("{cgo:{name:yuil,p:{x:"+(gameWorld.findGameObject("yuil").getPosition().x-10)+",y:"+gameWorld.findGameObject("yuil").getPosition().y+"}}}");
+			/*for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
+				GameObject gameObject=gameWorld.getGameObjectArray().get(i);
+				gameObject.setPosition(new Vector3(gameObject.getPosition().x+gameObject.getInertiaForce().x, gameObject.getPosition().y+gameObject.getInertiaForce().y, 0));
+			}*/
 	}
 	private void dPressAction(){
-		if(gameWorld.findGameObject("yuil")!=null)
+		if(gameWorld.findGameObject(gameObjectName)!=null)
 			//lastSendTime=System.currentTimeMillis();
-			sendMessage("{cgo:{name:yuil,p:{x:"+(gameWorld.findGameObject("yuil").getPosition().x+10)+",y:"+gameWorld.findGameObject("yuil").getPosition().y+"}}}");
+			sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x+10)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"}}}");
 	
 	}
 	private void zPressAction(){
-		sendMessage("{ago:{name:yuil,p:{x:100,y:100}}}");
+		sendMessage("{ago:{name:"+gameObjectName+",p:{x:100,y:100}}}");
 
 	}
 	private void xPressAction(){
-		if(gameWorld.findGameObject("yuil")!=null)
-			sendMessage("{rgo:{name:yuil}}");
+		if(gameWorld.findGameObject(gameObjectName)!=null)
+			sendMessage("{rgo:{name:"+gameObjectName+"}}");
 	
 	}
 	private void gPressAction(){
-		sendMessage("{ggo:{name:yuil}}");
+		sendMessage("{ggo:{name:"+gameObjectName+"}}");
+	}
+	
+	private void aJustPressAction(){
+		sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"},i:{x:-5,y:0}}}");
+
+	}
+	private void aJustUpAction(){
+		sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"},i:{x:0,y:0}}}");
+
+	}
+	
+	private void dJustPressAction(){
+		sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"},i:{x:5,y:0}}}");
+
+	}
+	private void dJustUpAction(){
+		sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"},i:{x:0,y:0}}}");
+
 	}
 	
 	@Override
 	public void render(float delta) {
 
 		super.render(delta);
-		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+		/*if (Gdx.input.isKeyPressed(Input.Keys.A)) {
 			aPressAction();
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
 			dPressAction();
-		}
+		}*/
 		if (Gdx.input.isKeyJustPressed(Input.Keys.Z)) {
 			zPressAction();
 		}
@@ -213,12 +237,34 @@ public class NetTest4Screen extends TestScreen2D {
 		}
 		
 		
-		if(aButtonPress){
+		/*if(aButtonPress){
 			aPressAction();
 		}
 		if (dButtonPress){
 			dPressAction();
+		}*/
+		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+			//aPressAction();
+			if (!keyboardStatus.isaJustPress()) {
+				 aJustPressAction();
+				
+			}
+			keyboardStatus.setaJustPress(true);
+		} else if (keyboardStatus.isaJustPress()) {
+			aJustUpAction();
+			keyboardStatus.setaJustPress(!keyboardStatus.isaJustPress());
 		}
+		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+			if (!keyboardStatus.isdJustPress()) {
+				 dJustPressAction();
+				
+			}
+			keyboardStatus.setdJustPress(true);
+		} else if (keyboardStatus.isdJustPress()) {
+			dJustUpAction();
+			keyboardStatus.setdJustPress(!keyboardStatus.isdJustPress());
+		}
+		
 /*
 		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
 			sendMessage("{time:" + System.currentTimeMillis() + "}");
@@ -276,11 +322,14 @@ public class NetTest4Screen extends TestScreen2D {
 			remotePlayer.getRectangle().setX(remotePlayer.getRectangle().getX() + speed * delta);
 		}*/
 
-		batch.begin();/*
+		/*
 		batch.draw(texture, selfPlayer.getRectangle().getX(), selfPlayer.getRectangle().getY());
 		batch.draw(texture, remotePlayer.getRectangle().getX(), remotePlayer.getRectangle().getY());
 */		
+		batch.begin();
 		for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
+			GameObject gameObject=gameWorld.getGameObjectArray().get(i);
+			gameObject.setPosition(new Vector3(gameObject.getPosition().x+gameObject.getInertiaForce().x, gameObject.getPosition().y+gameObject.getInertiaForce().y, 0));
 			batch.draw(texture, gameWorld.getGameObjectArray().get(i).getPosition().x, gameWorld.getGameObjectArray().get(i).getPosition().y);
 		}
 		batch.end();
@@ -391,12 +440,13 @@ public class NetTest4Screen extends TestScreen2D {
 		});
 		stage.getRoot().findActor("login").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				sendMessage(("{" + "login:{name:"+((TextArea)stage.getRoot().findActor("userName")).getText()+"}}"));
+
+				sendMessage(("{" + "login:{name:"+gameObjectName+"}}"));
 			}
 		});
 		stage.getRoot().findActor("getUser").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				sendMessage(("{" + "getUser:{name:"+((TextArea)stage.getRoot().findActor("userName")).getText()+"}}"));
+				sendMessage(("{" + "getUser:{name:"+gameObjectName+"}}"));
 			}
 		});
 		stage.getRoot().findActor("A").addListener(new ActorInputListenner() {
@@ -418,17 +468,24 @@ public class NetTest4Screen extends TestScreen2D {
 			}
 		});
 		stage.getRoot().findActor("Z").addListener(new ActorInputListenner() {
+
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				gameObjectName=((TextArea)stage.getRoot().findActor("userName")).getText();
+
 				zPressAction();
 			}
 		});
 		stage.getRoot().findActor("X").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				
 				xPressAction();
 			}
 		});
 		stage.getRoot().findActor("G").addListener(new ActorInputListenner() {
+			
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				gameObjectName=((TextArea)stage.getRoot().findActor("userName")).getText();
+
 				gPressAction();
 			}
 		});

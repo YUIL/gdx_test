@@ -257,7 +257,7 @@ public class UdpServer {
                      JsonValue jsonValue;
                      JsonReader jsonReader = new JsonReader();
                      jsonValue = jsonReader.parse(recvString);*/
-                   // System.out.println("recive:" + message.toString());
+                    //System.out.println("recive:" + message.toString());
 
                      session = sessionMap.get(message.getSessionId());
                      if (session == null) {

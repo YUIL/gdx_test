@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.inputprocessor.InputProcessor;
+import com.mygdx.game.input.InputProcessor;
 import com.mygdx.game.util.GameManager;
 
 public class ModelLoadScreen extends TestScreen {

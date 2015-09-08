@@ -8,8 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.gui.GuiFactory;
+import com.mygdx.game.input.ActorInputListenner;
 import com.mygdx.game.screen.MainMenuScreen;
-import com.mygdx.game.util.ActorInputListenner;
 
 public class StageManager {
 

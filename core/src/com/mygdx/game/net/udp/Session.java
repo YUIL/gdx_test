@@ -8,7 +8,7 @@ import java.util.Queue;
 
 public class Session {
 	long id;
-	int timeOut=30;
+	int timeOut=1;
 
 	public short getTimeOutMultiple() {
 		return timeOutMultiple;
