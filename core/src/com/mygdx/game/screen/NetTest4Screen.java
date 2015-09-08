@@ -451,19 +451,19 @@ public class NetTest4Screen extends TestScreen2D {
 		});
 		stage.getRoot().findActor("A").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				aButtonPress=false;
+				aJustUpAction();
 			}
 			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-				aButtonPress=true;
+				aJustPressAction();
 				return true;
 			}
 		});
 		stage.getRoot().findActor("D").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				dButtonPress=false;
+				dJustUpAction();
 			}
 			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-				dButtonPress=true;
+				dJustPressAction();
 				return true;
 			}
 		});
