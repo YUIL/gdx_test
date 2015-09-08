@@ -126,6 +126,8 @@ public class NetTest4Screen extends TestScreen2D {
 					gameObject.setPosition(new Vector3(jsonValue.get("cgo").get("p").getFloat("x"), jsonValue.get("cgo").get("p").getFloat("y"), 0));
 					gameObject.setInertiaForce(new Vector3(jsonValue.get("cgo").get("i").getFloat("x"), jsonValue.get("cgo").get("i").getFloat("y"), 0));
 				}
+			}else{
+				sendMessage("{ggo:{name:"+jsonValue.get("cgo").getString("name")+"}}");
 			}
 		}else if (jsonValue.get("ggo") != null) {
 			GameObject gameObject;
