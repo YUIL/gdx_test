@@ -20,7 +20,7 @@ public class UdpTest {
 		UdpMessage message=new UdpMessage();
 		message.setSessionId(session.getId());
 		message.setSequenceId(0);
-		message.setType(1);
+		message.setType((byte)1);
 		message.setLength(4);
 		message.setData(JavaDataConverter.intToBytes(1));
 		session.currentSendUdpMessage(message);

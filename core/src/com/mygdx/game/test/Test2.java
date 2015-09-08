@@ -7,7 +7,8 @@ import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpServer;
 
 public class Test2 {
-
+	static int delay=1000;
+	static long lastSendTime=0;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		UdpServer server=new UdpServer(9092);
@@ -17,8 +18,7 @@ public class Test2 {
 		server.start();
 		
 		
-		int delay=1000;
-		long lastSendTime=0;
+		
 		while(true){
 			if(System.currentTimeMillis()-lastSendTime>delay){
 				lastSendTime=System.currentTimeMillis();

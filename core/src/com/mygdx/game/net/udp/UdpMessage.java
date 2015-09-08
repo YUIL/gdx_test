@@ -8,7 +8,7 @@ import com.mygdx.game.util.JavaDataConverter;
 public class UdpMessage {
 	public long sessionId;
 	public int sequenceId;
-	public int type;// 0：退出，1：順序消息，2：确认,3：错误
+	public byte type;// 0：退出，1：順序消息，2：确认,3：错误
 	public int length;
 	public byte[] data;
 
@@ -31,7 +31,6 @@ public class UdpMessage {
 	
 	public void initUdpMessageByDatagramPacket(UdpMessage message,
 			byte[] data) {
-		
 		int offset = 0;
 		message.setSessionId(JavaDataConverter.bytesToLong(JavaDataConverter
 				.subByte(data, 8, offset)));
@@ -39,11 +38,12 @@ public class UdpMessage {
 		message.setSequenceId(JavaDataConverter.bytesToInt(JavaDataConverter
 				.subByte(data, 4, offset)));
 		offset+=4;
-		message.setType(JavaDataConverter.bytesToInt(JavaDataConverter.subByte(
-				data, 4, offset)));
-		offset+=4;
+		message.setType(JavaDataConverter.subByte(
+				data, 1, offset)[0]);
+		offset+=1;
 		message.setLength(JavaDataConverter.bytesToInt(JavaDataConverter
 				.subByte(data, 4, offset)));
+		System.out.println("message:"+message.toString());
 		offset+=4;
 		message.setData(JavaDataConverter.subByte(data,message.length,offset));
 	}
@@ -57,9 +57,9 @@ public class UdpMessage {
 		this.setSequenceId(JavaDataConverter.bytesToInt(JavaDataConverter
 				.subByte(recvPacket.getData(), 4, offset)));
 		offset+=4;
-		this.setType(JavaDataConverter.bytesToInt(JavaDataConverter.subByte(
-				recvPacket.getData(), 4, offset)));
-		offset+=4;
+		this.setType(JavaDataConverter.subByte(
+				recvPacket.getData(), 1, offset)[0]);
+		offset+=1;
 		this.setLength(JavaDataConverter.bytesToInt(JavaDataConverter
 				.subByte(recvPacket.getData(), 4, offset)));
 		offset+=4;
@@ -82,11 +82,11 @@ public class UdpMessage {
 		this.sequenceId = sequenceId;
 	}
 
-	public int getType() {
+	public byte getType() {
 		return type;
 	}
 
-	public void setType(int type) {
+	public void setType(byte type) {
 		this.type = type;
 	}
 
@@ -115,9 +115,9 @@ public class UdpMessage {
 		byte[] dest = new byte[20 + data.length];
 		System.arraycopy(JavaDataConverter.longToBytes(sessionId), 0, dest, 0,8);		
 		System.arraycopy(JavaDataConverter.intToBytes(sequenceId), 0, dest, 8,4);
-		System.arraycopy(JavaDataConverter.intToBytes(type), 0, dest, 12, 4);
-		System.arraycopy(JavaDataConverter.intToBytes(length), 0, dest, 16, 4);
-		System.arraycopy(data, 0, dest, 20, data.length);
+		System.arraycopy(JavaDataConverter.intToBytes(type), 0, dest, 12, 1);
+		System.arraycopy(JavaDataConverter.intToBytes(length), 0, dest, 13, 4);
+		System.arraycopy(data, 0, dest, 17, data.length);
 		return dest;
 	}
 	@Override

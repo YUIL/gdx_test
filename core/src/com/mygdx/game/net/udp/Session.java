@@ -28,6 +28,7 @@ public class Session {
 	volatile Queue<UdpMessage> recvMessageQueue;
 
 	public Session(long id){
+		System.out.println("new session,id:"+id);
 		this.id=id;
 		this.setLastSendMessage(new UdpMessage(id, -1));
 		this.setLastresponseMessage(new UdpMessage(id, -1));

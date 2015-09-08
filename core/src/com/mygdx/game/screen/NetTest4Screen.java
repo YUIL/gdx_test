@@ -47,6 +47,7 @@ public class NetTest4Screen extends TestScreen2D {
 	ScreenLogic screenLogic;
 	long lastAutoSendTime=0;
 	long lastSendTime=0;
+	long lastRecvTime=0;
 	int autoSendIterval=5000;
 	boolean aButtonPress=false;
 	boolean dButtonPress=false;
@@ -68,7 +69,7 @@ public class NetTest4Screen extends TestScreen2D {
 							if (session != null) {
 								if(System.currentTimeMillis()-lastAutoSendTime>autoSendIterval){
 									lastAutoSendTime=System.currentTimeMillis();
-									sendMessage("");
+									//sendMessage("");
 								}
 								while (!session.getRecvMessageQueue().isEmpty()) {
 									recvString = new String(session.getRecvMessageQueue().poll().getData());
@@ -107,7 +108,9 @@ public class NetTest4Screen extends TestScreen2D {
 	}
 
 	public void disposeMessage(){
+		//System.out.println(recvString.getBytes().length);
 		jsonValue=jsonReader.parse(recvString);
+		
 		if (jsonValue.get("addGameObject")!=null){
 			GameObject gameObject=new GameObject(jsonValue.get("addGameObject").get("name").asString());
 			gameObject.setPosition(new Vector3(jsonValue.get("addGameObject").get("x").asFloat(), jsonValue.get("addGameObject").get("y").asFloat(), 0));
@@ -150,6 +153,8 @@ public class NetTest4Screen extends TestScreen2D {
 			System.out.println(jsonValue.toString());
 
 		}
+		
+		
 	}
 	public void disposeSendMessage(String message){
 		JsonValue jsonValue;

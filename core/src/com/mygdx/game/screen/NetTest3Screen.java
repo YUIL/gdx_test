@@ -130,7 +130,7 @@ public class NetTest3Screen extends TestScreen {
 						message.setSequenceId(Integer
                                 .parseInt(((TextArea) (stage.getRoot()
                                         .findActor("sequenceId"))).getText()));
-						message.setType(Integer.parseInt(((TextArea) (stage
+						message.setType(Byte.parseByte(((TextArea) (stage
                                 .getRoot().findActor("type"))).getText()));
 						message.setLength(Integer.parseInt(((TextArea) (stage
                                 .getRoot().findActor("length"))).getText()));

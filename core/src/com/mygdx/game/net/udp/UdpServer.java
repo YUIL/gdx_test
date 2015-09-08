@@ -62,7 +62,7 @@ public class UdpServer {
     	System.out.println("stop server");
     	UdpMessage responseMessage = new UdpMessage();
     	Session session;
-    	responseMessage.setType(0);
+    	responseMessage.setType((byte)0);
     	responseMessage.setLength(4);
     	responseMessage.setData(JavaDataConverter.intToBytes(1));
     	if (!sessionMap.isEmpty()) {
@@ -96,8 +96,9 @@ public class UdpServer {
 
         UdpMessage message = new UdpMessage();
         message.setSessionId(session.getId());
-        message.setType(1);
+        message.setType((byte)1);
         message.setLength(data.length);
+        System.out.println("send data.lenght:"+data.length);
         message.setData(data);
         return send(message, session);
     }
@@ -196,7 +197,7 @@ public class UdpServer {
 
         public synchronized void sendUdpMessage(DatagramSocket sendSocket,
                                                 SocketAddress address, UdpMessage message) {
-       
+        	System.out.println("send, message:"+message.toString());
             try {
                 byte[] temp = message.toBytes();
                 DatagramPacket sendPacket = new DatagramPacket(temp,
@@ -240,91 +241,100 @@ public class UdpServer {
                 try {
                     // System.out.println("recv...");
                     serverSocket.receive(recvPacket);
+
                 } catch (IOException e) {
                     //System.out.println("recvTread终止！");
                     break;
                 }
-                UdpMessage message = new UdpMessage(recvPacket);
-               /*  String recvString=new String(message.getData());
-                JsonValue jsonValue;
-                JsonReader jsonReader = new JsonReader();
-                jsonValue = jsonReader.parse(recvString);*/
-              // System.out.println("recive:" + message.toString());
+                
+                if(JavaDataConverter.bytesToInt(JavaDataConverter
+        				.subByte(recvPacket.getData(), 4, 13))>65515){
+                	System.out.println("data too long");
+                	
+                }else{
+                	UdpMessage message = new UdpMessage(recvPacket);
+                    /*  String recvString=new String(message.getData());
+                     JsonValue jsonValue;
+                     JsonReader jsonReader = new JsonReader();
+                     jsonValue = jsonReader.parse(recvString);*/
+                    System.out.println("recive:" + message.toString());
 
-                session = sessionMap.get(message.getSessionId());
-                if (session == null) {
-                   // System.out.println("add session");
-                    session = new Session(message.getSessionId());
-                    session.setContactorAddress(new InetSocketAddress(
-                            recvPacket.getAddress(), recvPacket.getPort()));
-                    sessionMap.put(session.getId(), session);
-                   // System.out.println(session.toString());
+                     session = sessionMap.get(message.getSessionId());
+                     if (session == null) {
+                        // System.out.println("add session");
+                         session = new Session(message.getSessionId());
+                         session.setContactorAddress(new InetSocketAddress(
+                                 recvPacket.getAddress(), recvPacket.getPort()));
+                         sessionMap.put(session.getId(), session);
+                        // System.out.println(session.toString());
 
+                     }
+
+                     UdpMessage responseMessage = new UdpMessage();
+                     responseMessage.setSessionId(session.getId());
+                     switch (message.getType()) {
+                     	case 0:
+                     		removeSession(message.getSessionId());
+                         case 1:
+
+                             responseMessage.setLength(4);
+                             responseMessage.setData(JavaDataConverter.intToBytes(1));
+                             if (message.getSequenceId() == session.getLastresponseMessage()
+                                     .getSequenceId() + 1) {
+                                 session.getRecvMessageQueue().add(message);
+                                 session.setLastresponseMessage(message);
+                                 responseMessage.setSequenceId(message.getSequenceId());
+                                 responseMessage.setType((byte)2);
+
+                                 //session.setLastSendMessage(responseMessage);
+                                 sendServicer.sendUdpMessage(session, responseMessage);
+                                 // System.out.println("session size:"+sessionMap.size());
+                             } else if(message.getSequenceId() ==session.getLastresponseMessage()
+                                     .getSequenceId()){              
+                                // System.out.println("lastrecv:" + session.getLastresponseMessage());
+                                 responseMessage.setSequenceId(session.lastRecvMessage.getSequenceId());
+                                 responseMessage.setType((byte)3);
+                                 sendServicer.sendUdpMessage(session, responseMessage);
+
+                             }
+
+                             break;
+                         case 2:
+                             if (session != null && session.currentSendUdpMessage(null) != null) {
+                                 if (message.getSequenceId() == session
+                                         .currentSendUdpMessage(null).sequenceId) {
+                                     // System.out.println("发送成功");
+                                     session.setLastSendMessage(session
+                                             .currentSendUdpMessage(null));
+
+                                 }
+                             } else {
+                                // System.out.println("回的啥，跟我没关系！");
+                             }
+                             break;
+                         case 3:
+                             //System.out.println("消息SequenceId不对");
+                             if (session != null && session.currentSendUdpMessage(null) != null) {
+                                 if (message.getSequenceId() == session
+                                         .currentSendUdpMessage(null)
+                                         .getSequenceId()) {
+                                     // System.out.println("发送成功");
+                                     session.setLastSendMessage(session
+                                             .currentSendUdpMessage(null));
+
+                                 } else {
+                                     //System.out.println("真不对！");
+                                 }
+                             } else {
+                                 //System.out.println("回你妹，早发完了");
+
+                             }
+                             break;
+                     }
+
+                     //System.out.println("recv:"+session.getLastresponseMessage());
                 }
-
-                UdpMessage responseMessage = new UdpMessage();
-                responseMessage.setSessionId(session.getId());
-                switch (message.getType()) {
-                	case 0:
-                		removeSession(message.getSessionId());
-                    case 1:
-
-                        responseMessage.setLength(4);
-                        responseMessage.setData(JavaDataConverter.intToBytes(1));
-                        if (message.getSequenceId() == session.getLastresponseMessage()
-                                .getSequenceId() + 1) {
-                            session.getRecvMessageQueue().add(message);
-                            session.setLastresponseMessage(message);
-                            responseMessage.setSequenceId(message.getSequenceId());
-                            responseMessage.setType(2);
-
-                            //session.setLastSendMessage(responseMessage);
-                            sendServicer.sendUdpMessage(session, responseMessage);
-                            // System.out.println("session size:"+sessionMap.size());
-                        } else if(message.getSequenceId() ==session.getLastresponseMessage()
-                                .getSequenceId()){              
-                           // System.out.println("lastrecv:" + session.getLastresponseMessage());
-                            responseMessage.setSequenceId(session.lastRecvMessage.getSequenceId());
-                            responseMessage.setType(3);
-                            sendServicer.sendUdpMessage(session, responseMessage);
-
-                        }
-
-                        break;
-                    case 2:
-                        if (session != null && session.currentSendUdpMessage(null) != null) {
-                            if (message.getSequenceId() == session
-                                    .currentSendUdpMessage(null).sequenceId) {
-                                // System.out.println("发送成功");
-                                session.setLastSendMessage(session
-                                        .currentSendUdpMessage(null));
-
-                            }
-                        } else {
-                           // System.out.println("回的啥，跟我没关系！");
-                        }
-                        break;
-                    case 3:
-                        //System.out.println("消息SequenceId不对");
-                        if (session != null && session.currentSendUdpMessage(null) != null) {
-                            if (message.getSequenceId() == session
-                                    .currentSendUdpMessage(null)
-                                    .getSequenceId()) {
-                                // System.out.println("发送成功");
-                                session.setLastSendMessage(session
-                                        .currentSendUdpMessage(null));
-
-                            } else {
-                                //System.out.println("真不对！");
-                            }
-                        } else {
-                            //System.out.println("回你妹，早发完了");
-
-                        }
-                        break;
-                }
-
-                //System.out.println("recv:"+session.getLastresponseMessage());
+                
             }
         }
 

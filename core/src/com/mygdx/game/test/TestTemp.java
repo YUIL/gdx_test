@@ -18,7 +18,7 @@ public class TestTemp {
 		UdpMessage m=new UdpMessage();
 		m.setSequenceId(1);
 		m.setSessionId(1);
-		m.setType(1);
+		m.setType((byte)1);
 		UdpMessage message=new UdpMessage();
 		message.initUdpMessageByDatagramPacket(message, m.toBytes());
 		System.out.println(message.getData());
