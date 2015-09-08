@@ -43,6 +43,6 @@ public class GameObject {
 	}
 	
 	public String toJson(){
-		return "{name:"+name+",p:{"+"x:"+getPosition().x+",y:"+getPosition().y+",z:"+getPosition().z+"}}";
+		return "{name:"+name+",p:{"+"x:"+getPosition().x+",y:"+getPosition().y+",z:"+getPosition().z+"}"+",i:{"+"x:"+getInertiaForce().x+",y:"+getInertiaForce().y+",z:"+getInertiaForce().z+"}}";
 	}
 }

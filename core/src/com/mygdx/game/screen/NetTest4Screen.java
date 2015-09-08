@@ -127,9 +127,14 @@ public class NetTest4Screen extends TestScreen2D {
 				}
 			}
 		}else if (jsonValue.get("ggo") != null) {
-			GameObject gameObject=new GameObject(jsonValue.get("ggo").getString("name"));
+			GameObject gameObject;
+			gameObject=gameWorld.findGameObject(jsonValue.get("ggo").getString("name"));
+			if(gameObject==null){
+				gameObject=new GameObject(jsonValue.get("ggo").getString("name"));
+				gameWorld.addGameObject(gameObject);
+			}
 			gameObject.setPosition(new Vector3(jsonValue.get("ggo").get("p").getFloat("x"), jsonValue.get("ggo").get("p").getFloat("y"), 0));;
-			gameWorld.addGameObject(gameObject);
+			gameObject.setInertiaForce(new Vector3(jsonValue.get("ggo").get("i").getFloat("x"), jsonValue.get("ggo").get("i").getFloat("y"), 0));
 		} else if (jsonValue.get("rgo") != null) {
 			GameObject gameObject=gameWorld.findGameObject(jsonValue.get("rgo").getString("name"));
 			if(gameObject!=null){
@@ -170,20 +175,11 @@ public class NetTest4Screen extends TestScreen2D {
 		}
 	}
 	
-	private void aPressAction(){
-		//if(gameWorld.findGameObject(gameObjectName)!=null)
-			//lastSendTime=System.currentTimeMillis();
-			//sendMessage("{cgo:{name:yuil,p:{x:"+(gameWorld.findGameObject("yuil").getPosition().x-10)+",y:"+gameWorld.findGameObject("yuil").getPosition().y+"}}}");
-			/*for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
-				GameObject gameObject=gameWorld.getGameObjectArray().get(i);
-				gameObject.setPosition(new Vector3(gameObject.getPosition().x+gameObject.getInertiaForce().x, gameObject.getPosition().y+gameObject.getInertiaForce().y, 0));
-			}*/
+	private void aPressedAction(){
+		
 	}
-	private void dPressAction(){
-		if(gameWorld.findGameObject(gameObjectName)!=null)
-			//lastSendTime=System.currentTimeMillis();
-			sendMessage("{cgo:{name:"+gameObjectName+",p:{x:"+(gameWorld.findGameObject(gameObjectName).getPosition().x+10)+",y:"+gameWorld.findGameObject(gameObjectName).getPosition().y+"}}}");
-	
+	private void dPressedAction(){
+		
 	}
 	private void zPressAction(){
 		sendMessage("{ago:{name:"+gameObjectName+",p:{x:100,y:100}}}");
@@ -357,7 +353,7 @@ public class NetTest4Screen extends TestScreen2D {
 		}
 		
 	}
-
+/*
 	public void netMessageProcess() {
 		try {
 			if (server != null) {
@@ -397,7 +393,7 @@ public class NetTest4Screen extends TestScreen2D {
 		}
 
 	}
-
+*/
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
