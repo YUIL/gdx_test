@@ -26,9 +26,9 @@ public class LogicServer {
 	boolean stoped = false;
 	volatile GameWorld gameWorld = new GameWorld();
 
-	public class GameWorldThread implements Runnable {
+	public class GameWorldLogic implements Runnable {
 
-		public GameWorldThread() {
+		public GameWorldLogic() {
 			// TODO Auto-generated constructor stub
 		}
 
@@ -186,9 +186,9 @@ public class LogicServer {
 
 	public void start() {
 		System.out.println("LogicServer start!");
-		Runnable gameWorldThread = new GameWorldThread();
-		Thread thread = new Thread(gameWorldThread);
-		thread.start();
+		Runnable gameWorldLogic = new GameWorldLogic();
+		Thread gameWorldThread = new Thread(gameWorldLogic);
+		gameWorldThread.start();
 		udpServer.start();
 		lastWhileTime = System.nanoTime();
 		while (!stoped) {
@@ -229,6 +229,6 @@ public class LogicServer {
 			// lastWhileTime=System.nanoTime();
 		}
 		udpServer.stop();
-		thread.stop();
+		gameWorldThread.stop();
 	}
 }

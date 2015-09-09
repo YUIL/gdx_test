@@ -9,6 +9,7 @@ import java.util.Random;
 public class Session {
 	long id;
 	int timeOut=15;
+	int maxResendTimes=10;
 
 	public short getTimeOutMultiple() {
 		return timeOutMultiple;
