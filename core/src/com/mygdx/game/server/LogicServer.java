@@ -49,13 +49,13 @@ public class LogicServer {
 
 						// System.out.println("collision
 						// size:"+gameWorld.getBeCollidedGameObjectArray().size);
-						for (int i = 0; i < gameWorld.getBeCollidedGameObjectArray().size; i++) {
+						/*for (int i = 0; i < gameWorld.getBeCollidedGameObjectArray().size; i++) {
 							String name=gameWorld.getBeCollidedGameObjectArray().get(i).getName();
 							gameWorld.getGameObjectArray().removeValue(gameWorld.getBeCollidedGameObjectArray().get(i),
 									true);
 							
 							boardCast("{rgo:{name:"+name+"}}");
-						}
+						}*/
 						gameWorld.getBeCollidedGameObjectArray().clear();
 
 					}
@@ -126,15 +126,22 @@ public class LogicServer {
 		jsonValue = jsonReader.parse(recvString);
 		if (jsonValue != null) {
 			if (jsonValue.get("ago") != null) {
-				GameObject gameObject = new GameObject(jsonValue.get("ago").get("name").asString());
-				gameObject.setPosition(new Vector3(jsonValue.get("ago").get("p").get("x").asFloat(),
-						jsonValue.get("ago").get("p").get("y").asFloat(), 0));
-				gameObject.setRectangle(gameObject.getPosition().x, gameObject.getPosition().y,
-						jsonValue.get("ago").get("r").get("width").asFloat(),
-						jsonValue.get("ago").get("r").get("height").asFloat());
-				gameWorld.addGameObject(gameObject);
-				// udpServer.send(recvString.getBytes(), session);
-				boardCast(recvString);
+				String name =jsonValue.get("ago").get("name").asString();
+				GameObject gameObject=gameWorld.findGameObject(name);
+				if (gameObject==null) {
+					gameObject =new GameObject(name);
+					gameObject.setPosition(new Vector3(jsonValue.get("ago").get("p").get("x").asFloat(),
+							jsonValue.get("ago").get("p").get("y").asFloat(), 0));
+					gameObject.setRectangle(gameObject.getPosition().x, gameObject.getPosition().y,
+							jsonValue.get("ago").get("r").get("width").asFloat(),
+							jsonValue.get("ago").get("r").get("height").asFloat());
+					gameWorld.addGameObject(gameObject);
+					// udpServer.send(recvString.getBytes(), session);
+					boardCast(recvString);
+				}else{
+					udpServer.send(("{ggo:" + gameObject.toJson() + "}").getBytes(), session);
+				}
+				
 
 			} else if (jsonValue.get("cgo") != null) {
 				GameObject gameObject = gameWorld.findGameObject(jsonValue.get("cgo").getString("name"));
@@ -222,7 +229,6 @@ public class LogicServer {
 			// lastWhileTime=System.nanoTime();
 		}
 		udpServer.stop();
-		userServer.stoped = true;
 		thread.stop();
 	}
 }

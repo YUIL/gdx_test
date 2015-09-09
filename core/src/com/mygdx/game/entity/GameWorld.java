@@ -6,7 +6,8 @@ import com.badlogic.gdx.utils.Array;
 public class GameWorld {
 	Array<GameObject> gameObjectArray=new Array<GameObject>();
 	Array<GameObject> beCollidedGameObjectArray=new Array<GameObject>();
-	Vector3 temp=new Vector3();
+	Vector3 originPosition=new Vector3();
+	Vector3 targePosition=new Vector3();
 	public GameWorld(){
 		
 	}
@@ -45,11 +46,16 @@ public class GameWorld {
 		for (int i = 0; i < gameObjectArray.size; i++) {
 			GameObject gameObject=gameObjectArray.get(i);
 			if(!gameObject.getInertiaForce().isZero()){
-				temp.x=gameObject.getPosition().x+gameObject.getInertiaForce().x*delta;
-				temp.y=gameObject.getPosition().y+gameObject.getInertiaForce().y*delta;
-				temp.z=gameObject.getPosition().z+gameObject.getInertiaForce().z*delta;	
+				originPosition=gameObject.getPosition();
+				targePosition.x=gameObject.getPosition().x+gameObject.getInertiaForce().x*delta;
+				targePosition.y=gameObject.getPosition().y+gameObject.getInertiaForce().y*delta;
+				targePosition.z=gameObject.getPosition().z+gameObject.getInertiaForce().z*delta;	
+				gameObject.setPosition(targePosition);
 				collisionDetection(gameObject);
-				gameObject.setPosition(temp);
+				if (beCollidedGameObjectArray.size!=0) {
+					gameObject.setPosition(originPosition);
+				}
+				
 			}
 			
 		}

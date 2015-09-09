@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class Session {
 	long id;
-	int timeOut=1;
+	int timeOut=15;
 
 	public short getTimeOutMultiple() {
 		return timeOutMultiple;

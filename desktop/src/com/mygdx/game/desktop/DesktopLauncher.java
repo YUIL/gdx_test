@@ -8,8 +8,8 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.vSyncEnabled=false;
-		config.foregroundFPS=0;
-		config.backgroundFPS=0;
+		config.foregroundFPS=120;
+		config.backgroundFPS=120;
 		config.width=800;
 		config.height=480;
 		new LwjglApplication(new MyGdxGame(), config);

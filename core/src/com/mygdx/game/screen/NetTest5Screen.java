@@ -56,11 +56,14 @@ public class NetTest5Screen extends TestScreen2D {
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
+		//System.out.println(gameWorld.getGameObjectArray().size);
 		super.render(delta);
+		gameWorld.update(delta);
+		gameWorld.getBeCollidedGameObjectArray().clear();
 		batch.begin();
 		for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
 			GameObject gameObject=gameWorld.getGameObjectArray().get(i);
-			gameObject.setPosition(new Vector3(gameObject.getPosition().x+gameObject.getInertiaForce().x*delta, gameObject.getPosition().y+gameObject.getInertiaForce().y*delta, 0));
+			//gameObject.setPosition(new Vector3(gameObject.getPosition().x+gameObject.getInertiaForce().x*delta, gameObject.getPosition().y+gameObject.getInertiaForce().y*delta, 0));
 			batch.draw(texture, gameWorld.getGameObjectArray().get(i).getPosition().x, gameWorld.getGameObjectArray().get(i).getPosition().y);
 		}
 		batch.end();
@@ -105,11 +108,16 @@ public class NetTest5Screen extends TestScreen2D {
 	@Override
 	public void hide() {
 		super.hide();
+		
+		screenLogic.stop();
+		stopUdpServer();
 	}
 
 	@Override
 	public void dispose() {
 		super.dispose();
+		screenLogic.stop();
+		stopUdpServer();
 	}
 	
 	
@@ -129,6 +137,12 @@ public class NetTest5Screen extends TestScreen2D {
 			System.err.println("port must <10000!");
 		}
 		return false;
+	}
+	
+	public void stopUdpServer(){
+		if (udpServer != null) {
+			udpServer.stop();
+		}
 	}
 	
 	private void initScreenLogic(){
@@ -184,6 +198,9 @@ public class NetTest5Screen extends TestScreen2D {
 		if (jsonValue.get("ago")!=null){
 			GameObject gameObject=new GameObject(jsonValue.get("ago").get("name").asString());
 			gameObject.setPosition(new Vector3(jsonValue.get("ago").get("p").get("x").asFloat(), jsonValue.get("ago").get("p").get("y").asFloat(), 0));
+			gameObject.setRectangle(gameObject.getPosition().x, gameObject.getPosition().y,
+					jsonValue.get("ago").get("r").get("width").asFloat(),
+					jsonValue.get("ago").get("r").get("height").asFloat());
 			gameWorld.addGameObject(gameObject);
 		} else if (jsonValue.get("cgo") != null) {
 			//System.out.println(System.currentTimeMillis()-lastSendTime);

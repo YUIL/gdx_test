@@ -201,7 +201,7 @@ public class UdpServer {
 
         public synchronized void sendUdpMessage(DatagramSocket sendSocket,
                                                 SocketAddress address, UdpMessage message) {
-        	//System.out.println("send, message:"+message.toString());
+        	//System.out.println("Udp send, message:"+message.toString());
             try {
                 byte[] temp = message.toBytes();
                 DatagramPacket sendPacket = new DatagramPacket(temp,
@@ -261,7 +261,7 @@ public class UdpServer {
                      JsonValue jsonValue;
                      JsonReader jsonReader = new JsonReader();
                      jsonValue = jsonReader.parse(recvString);*/
-                    //System.out.println("recive:" + message.toString());
+                   // System.out.println("Udp recive:" + message.toString());
 
                      session = sessionMap.get(message.getSessionId());
                      if (session == null) {
