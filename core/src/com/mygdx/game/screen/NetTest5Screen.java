@@ -227,6 +227,9 @@ public class NetTest5Screen extends TestScreen2D {
 					gameWorld.addGameObject(gameObject);
 				}
 				gameObject.setPosition(new Vector3(jsonValue.get("ggo").get("p").getFloat("x"), jsonValue.get("ggo").get("p").getFloat("y"), 0));;
+				gameObject.setRectangle(gameObject.getPosition().x, gameObject.getPosition().y,
+						jsonValue.get("ggo").get("r").get("width").asFloat(),
+						jsonValue.get("ggo").get("r").get("height").asFloat());
 				gameObject.setInertiaForce(new Vector3(jsonValue.get("ggo").get("i").getFloat("x"), jsonValue.get("ggo").get("i").getFloat("y"), 0));
 			}
 			
@@ -284,6 +287,7 @@ public class NetTest5Screen extends TestScreen2D {
 		if (gameWorld.findGameObject(gameObjectName)!=null) {
 			sendMessage("{cgo:{name:"+gameObjectName+",i:{x:0,y:0}}}");
 		}
+		System.out.println("object count:"+gameWorld.getGameObjectArray().size);
 	}
 	
 	private void dJustPressAction(){

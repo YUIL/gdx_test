@@ -59,7 +59,7 @@ public class GameObject {
 		this.rectangle = rectangle;
 	}
 	public String toJson(){
-		return "{name:"+name+",p:{"+"x:"+getPosition().x+",y:"+getPosition().y+",z:"+getPosition().z+"}"+",i:{"+"x:"+getInertiaForce().x+",y:"+getInertiaForce().y+",z:"+getInertiaForce().z+"}}";
+		return "{name:"+name+",p:{"+"x:"+getPosition().x+",y:"+getPosition().y+",z:"+getPosition().z+"}"+",i:{"+"x:"+getInertiaForce().x+",y:"+getInertiaForce().y+",z:"+getInertiaForce().z+"},r:{"+"width:"+getRectangle().width+",height:"+getRectangle().height+"}}";
 	}
 	@Override
 	public String toString() {
