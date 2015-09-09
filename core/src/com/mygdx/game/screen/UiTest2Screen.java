@@ -47,14 +47,17 @@ public class UiTest2Screen extends TestScreen
         stage.addActor(table);
         GameManager.setInputProcessor(stage);
         System.out.println(textButton1.hasChildren());
-        String s="{type:1,x:1,y:1,login:{name:'a'}}";
+        
+        
+        
+        String s="{type:1,x:1,y:1,login:{name:}}";
 
 
         JsonValue jsonValue;
         JsonReader jsonReader=new JsonReader();
-        jsonValue =jsonReader.parse("Asd");
+        jsonValue =jsonReader.parse(s);
       
-       System.out.println(jsonValue.get("login").get("name").asString()); 
+       System.out.println(jsonValue.get("login").get("name").asString().equals("")); 
 
 
 
@@ -63,7 +66,7 @@ public class UiTest2Screen extends TestScreen
     @Override
     public void render(float delta) {
     	super.render(delta);
-    	// stage.draw();
+    	 stage.draw();
       //  System.out.println(System.currentTimeMillis() - lastRender);
       //  lastRender=System.currentTimeMillis();
     }

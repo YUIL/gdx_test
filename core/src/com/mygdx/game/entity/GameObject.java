@@ -1,6 +1,7 @@
 package com.mygdx.game.entity;
 
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 public class GameObject {
@@ -8,7 +9,7 @@ public class GameObject {
 	Matrix4 transform=new Matrix4();
 	Vector3 position=new Vector3();
 	Vector3 inertiaForce=new Vector3();
-
+	Rectangle rectangle=new Rectangle();
 	public Vector3 getInertiaForce() {
 		return inertiaForce;
 	}
@@ -40,9 +41,23 @@ public class GameObject {
 		return transform.getTranslation(position);
 	}
 	public void setPosition(Vector3 position) {
+		this.rectangle.x=position.x;
+		this.rectangle.y=position.y;
 		transform.setTranslation(position);
 	}
 	
+	public Rectangle getRectangle() {
+		return rectangle;
+	}
+	public void setRectangle(float x,float y,float width,float height) {
+		this.rectangle.x=x;
+		this.rectangle.y=y;
+		this.rectangle.width=width;
+		this.rectangle.height=height;
+	}
+	public void setRectangle(Rectangle rectangle) {
+		this.rectangle = rectangle;
+	}
 	public String toJson(){
 		return "{name:"+name+",p:{"+"x:"+getPosition().x+",y:"+getPosition().y+",z:"+getPosition().z+"}"+",i:{"+"x:"+getInertiaForce().x+",y:"+getInertiaForce().y+",z:"+getInertiaForce().z+"}}";
 	}
