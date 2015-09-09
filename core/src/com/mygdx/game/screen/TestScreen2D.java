@@ -33,7 +33,7 @@ public class TestScreen2D extends TestScreen {
 		stage.setViewport(viewport);
 		StageManager.superStage.setViewport(viewport);
 		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		
+		batch.setProjectionMatrix(stage.getCamera().projection);
 		
 		//cam.translate(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 		

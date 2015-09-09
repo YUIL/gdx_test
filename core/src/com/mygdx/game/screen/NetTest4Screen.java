@@ -189,7 +189,7 @@ public class NetTest4Screen extends TestScreen2D {
 		
 	}
 	private void zPressAction(){
-		sendMessage("{ago:{name:"+gameObjectName+",p:{x:100,y:100}}}");
+		sendMessage("{ago:{name:"+gameObjectName+",p:{x:100,y:0}}}");
 
 	}
 	private void xPressAction(){

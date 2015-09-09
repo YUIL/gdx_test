@@ -11,9 +11,11 @@ public class GameWorld {
 	}
 	
 	public GameObject findGameObject(String name){
-		for (int i = 0; i < gameObjectArray.size; i++) {
-			if(name.equals(gameObjectArray.get(i).getName())){
-				return gameObjectArray.get(i);
+		if(name!=null){
+			for (int i = 0; i < gameObjectArray.size; i++) {
+				if(name.equals(gameObjectArray.get(i).getName())){
+					return gameObjectArray.get(i);
+				}
 			}
 		}
 		return null;

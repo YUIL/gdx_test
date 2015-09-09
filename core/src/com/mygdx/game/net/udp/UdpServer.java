@@ -174,8 +174,7 @@ public class UdpServer {
                                             session.setCurrentSendMessage(null);
                                             currenSendMessageNum--;
                                         }
-                                        session.setLastSendTime(System
-                                                .currentTimeMillis());
+                                        
                                     }
                                 } else {
                                     session.timeOutMultiple = 0;

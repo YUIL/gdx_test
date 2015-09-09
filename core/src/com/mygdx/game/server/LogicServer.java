@@ -42,7 +42,9 @@ public class LogicServer {
 				upDateTime=System.currentTimeMillis();
 				if(upDateTime-lastUpdateTime>=interval){
 					lastUpdateTime=upDateTime;
-					gameWorld.update(interval/1000);
+					if(gameWorld.getGameObjectArray().size!=0){
+						gameWorld.update(interval/1000);
+					}	
 				}
 				try {
 					Thread.currentThread().sleep(1);
@@ -80,6 +82,9 @@ public class LogicServer {
 	}
 	
 	public void boardCast(String str){
+		
+		System.out.println("send:"+str);
+		
 		/*for (int i = 0; i < userServer.userArray.size; i++) {
 			Session session=new Session();
 			session.setContactorAddress(userServer.userArray.get(i).session.getContactorAddress());
@@ -96,7 +101,10 @@ public class LogicServer {
 	}
 	
 	public void disposeMessage(){
-		//System.out.println(recvString);
+		if(!recvString.equals("")){
+			System.out.println("recv:"+recvString);
+		}
+		
 		jsonValue = jsonReader.parse(recvString);
 		if(jsonValue!=null){
 			if (jsonValue.get("ago") != null) {
