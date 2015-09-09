@@ -22,6 +22,7 @@ import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpServer;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
+import com.sun.glass.ui.SystemClipboard;
 
 
 public class NetTest5Screen extends TestScreen2D {
@@ -58,13 +59,12 @@ public class NetTest5Screen extends TestScreen2D {
 		// TODO Auto-generated method stub
 		//System.out.println(gameWorld.getGameObjectArray().size);
 		super.render(delta);
-		gameWorld.update(delta);
-		gameWorld.getBeCollidedGameObjectArray().clear();
+		
 		batch.begin();
 		for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
-			GameObject gameObject=gameWorld.getGameObjectArray().get(i);
+			 GameObject gameObject=gameWorld.getGameObjectArray().get(i);
 			//gameObject.setPosition(new Vector3(gameObject.getPosition().x+gameObject.getInertiaForce().x*delta, gameObject.getPosition().y+gameObject.getInertiaForce().y*delta, 0));
-			batch.draw(texture, gameWorld.getGameObjectArray().get(i).getPosition().x, gameWorld.getGameObjectArray().get(i).getPosition().y);
+			batch.draw(texture, gameObject.getPosition().x, gameObject.getPosition().y);
 		}
 		batch.end();
 		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
@@ -148,7 +148,13 @@ public class NetTest5Screen extends TestScreen2D {
 	private void initScreenLogic(){
 		screenLogic = new ScreenLogic(1) {
 			public void run() {
+				lastRunTime=System.currentTimeMillis();
 				while (!isStoped) {
+					if (System.currentTimeMillis()-lastRunTime>10) {
+						lastRunTime+=10;
+						gameWorld.update(10/1000f);
+						gameWorld.getBeCollidedGameObjectArray().clear();
+					}
 					try {
 						if (udpServer != null) {
 							if(System.currentTimeMillis()-lastAutoSendTime>autoSendIterval){
@@ -287,7 +293,7 @@ public class NetTest5Screen extends TestScreen2D {
 		if (gameWorld.findGameObject(gameObjectName)!=null) {
 			sendMessage("{cgo:{name:"+gameObjectName+",i:{x:0,y:0}}}");
 		}
-		System.out.println("object count:"+gameWorld.getGameObjectArray().size);
+		//System.out.println("object count:"+gameWorld.getGameObjectArray().size);
 	}
 	
 	private void dJustPressAction(){
