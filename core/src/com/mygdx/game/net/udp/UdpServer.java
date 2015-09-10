@@ -72,7 +72,7 @@ public class UdpServer {
 
 		// sendThread.start();
 		reciveThread.start();
-		reportThread.start();
+		//reportThread.start();
 
 	}
 

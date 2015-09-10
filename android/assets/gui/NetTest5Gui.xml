@@ -27,7 +27,7 @@
         <y>400</y>
         <skin name="default"></skin>
     </actor>
-    <actor id="1" type="textArea" name="message" text="{stopServer:{name:obj1,x:0,y:0}}">
+    <actor id="1" type="textArea" name="message" text="{stopServer:1}">
         <x>250</x>
         <y>0</y>
         <skin name="default"></skin>

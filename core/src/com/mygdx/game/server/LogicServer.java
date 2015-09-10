@@ -32,7 +32,7 @@ public class LogicServer {
 			// TODO Auto-generated constructor stub
 		}
 
-		float interval = 10;
+		float interval = 1;
 		long lastUpdateTime = 0;
 		long upDateTime = 0;
 
@@ -49,13 +49,17 @@ public class LogicServer {
 
 						// System.out.println("collision
 						// size:"+gameWorld.getBeCollidedGameObjectArray().size);
-						/*for (int i = 0; i < gameWorld.getBeCollidedGameObjectArray().size; i++) {
-							String name=gameWorld.getBeCollidedGameObjectArray().get(i).getName();
-							gameWorld.getGameObjectArray().removeValue(gameWorld.getBeCollidedGameObjectArray().get(i),
-									true);
-							
-							boardCast("{rgo:{name:"+name+"}}");
-						}*/
+						/*
+						 * for (int i = 0; i <
+						 * gameWorld.getBeCollidedGameObjectArray().size; i++) {
+						 * String
+						 * name=gameWorld.getBeCollidedGameObjectArray().get(i).
+						 * getName();
+						 * gameWorld.getGameObjectArray().removeValue(gameWorld.
+						 * getBeCollidedGameObjectArray().get(i), true);
+						 * 
+						 * boardCast("{rgo:{name:"+name+"}}"); }
+						 */
 						gameWorld.getBeCollidedGameObjectArray().clear();
 
 					}
@@ -99,7 +103,7 @@ public class LogicServer {
 
 	public synchronized void boardCast(String str) {
 
-		System.out.println("send:" + str);
+		//System.out.println("send:" + str);
 
 		/*
 		 * for (int i = 0; i < userServer.userArray.size; i++) { Session
@@ -119,17 +123,17 @@ public class LogicServer {
 	}
 
 	public void disposeMessage() {
-		if (!recvString.equals("")) {
+		/*if (!recvString.equals("")) {
 			System.out.println("recv:" + recvString);
-		}
+		}*/
 
 		jsonValue = jsonReader.parse(recvString);
 		if (jsonValue != null) {
 			if (jsonValue.get("ago") != null) {
-				String name =jsonValue.get("ago").get("name").asString();
-				GameObject gameObject=gameWorld.findGameObject(name);
-				if (gameObject==null) {
-					gameObject =new GameObject(name);
+				String name = jsonValue.get("ago").get("name").asString();
+				GameObject gameObject = gameWorld.findGameObject(name);
+				if (gameObject == null) {
+					gameObject = new GameObject(name);
 					gameObject.setPosition(new Vector3(jsonValue.get("ago").get("p").get("x").asFloat(),
 							jsonValue.get("ago").get("p").get("y").asFloat(), 0));
 					gameObject.setRectangle(gameObject.getPosition().x, gameObject.getPosition().y,
@@ -138,33 +142,64 @@ public class LogicServer {
 					gameWorld.addGameObject(gameObject);
 					// udpServer.send(recvString.getBytes(), session);
 					boardCast(recvString);
-				}else{
+				} else {
 					udpServer.send(("{ggo:" + gameObject.toJson() + "}").getBytes(), session);
 				}
-				
 
 			} else if (jsonValue.get("cgo") != null) {
-				GameObject gameObject = gameWorld.findGameObject(jsonValue.get("cgo").getString("name"));
+				jsonValue = jsonValue.get("cgo");
+				GameObject gameObject = gameWorld.findGameObject(jsonValue.getString("name"));
 				if (gameObject != null) {
-					if (jsonValue.get("cgo").get("p") != null) {
-						gameObject.setPosition(new Vector3(jsonValue.get("cgo").get("p").getFloat("x"),
-								jsonValue.get("cgo").get("p").getFloat("y"), 0));
-						gameObject.setInertiaForce(new Vector3(jsonValue.get("cgo").get("i").getFloat("x"),
-								jsonValue.get("cgo").get("i").getFloat("y"), 0));
-						boardCast(recvString);
-					} else if (jsonValue.get("cgo").get("i") != null) {
-						gameObject.setInertiaForce(new Vector3(jsonValue.get("cgo").get("i").getFloat("x"),
-								jsonValue.get("cgo").get("i").getFloat("y"), 0));
-						boardCast(recvString);
+					if (jsonValue.get("set") != null) {
+						jsonValue = jsonValue.get("set");
+						if (jsonValue.get("p") != null) {
+							gameObject.setPosition(
+									new Vector3(jsonValue.get("p").getFloat("x"), jsonValue.get("p").getFloat("y"), 0));
+							gameObject.setInertiaForce(
+									new Vector3(jsonValue.get("i").getFloat("x"), jsonValue.get("i").getFloat("y"), 0));
+							boardCast(recvString);
+						} else if (jsonValue.get("i") != null) {
+							jsonValue = jsonValue.get("i");
+							if (jsonValue.get("x") != null) {
+								gameObject.getInertiaForce().x = jsonValue.getFloat("x");
+							}
+							if (jsonValue.get("y") != null) {
+								gameObject.getInertiaForce().y = jsonValue.getFloat("y");
+
+							}
+							boardCast(recvString);
+						}
+					} else if (jsonValue.get("add") != null) {
+						jsonValue = jsonValue.get("add");
+						if (jsonValue.get("p") != null) {
+							gameObject.setPosition(
+									new Vector3(gameObject.getPosition().x + jsonValue.get("p").getFloat("x"),
+											gameObject.getPosition().y + jsonValue.get("p").getFloat("y"), 0));
+							gameObject.setInertiaForce(
+									new Vector3(gameObject.getInertiaForce().x + jsonValue.get("i").getFloat("x"),
+											gameObject.getInertiaForce().y + jsonValue.get("i").getFloat("y"), 0));
+							boardCast(recvString);
+						} else if (jsonValue.get("i") != null) {
+							jsonValue = jsonValue.get("i");
+							if (jsonValue.get("x") != null) {
+								gameObject.getInertiaForce().x += jsonValue.getFloat("x");
+							}
+							if (jsonValue.get("y") != null) {
+								gameObject.getInertiaForce().y += jsonValue.getFloat("y");
+
+							}
+							boardCast(recvString);
+						}
 					}
+
 				}
 			} else if (jsonValue.get("ggo") != null) {
-				String name=jsonValue.get("ggo").getString("name");
+				String name = jsonValue.get("ggo").getString("name");
 				GameObject gameObject = gameWorld.findGameObject(name);
 				if (gameObject != null) {
 					boardCast("{ggo:" + gameObject.toJson() + "}");
-				}else{
-					boardCast("{rgo:{name:"+name+"}}");
+				} else {
+					boardCast("{rgo:{name:" + name + "}}");
 				}
 			} else if (jsonValue.get("rgo") != null) {
 				GameObject gameObject = gameWorld.findGameObject(jsonValue.get("rgo").getString("name"));

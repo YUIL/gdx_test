@@ -23,10 +23,11 @@ import com.mygdx.game.net.udp.UdpServer;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
 import com.sun.glass.ui.SystemClipboard;
+import com.sun.org.glassfish.gmbal.GmbalException;
 
 
 public class NetTest5Screen extends TestScreen2D {
-	Texture texture = new Texture(Gdx.files.internal("images/button_0.png"));
+	Texture texture = new Texture(Gdx.files.internal("images/role1.png"));
 	volatile UdpServer udpServer;
 	volatile Session session;
 	String recvString = null;
@@ -39,6 +40,7 @@ public class NetTest5Screen extends TestScreen2D {
 	int autoSendIterval=5000;
 	Thread screenLogicThread;
 	ScreenLogic screenLogic;
+	int speed=50;
 //	volatile GameWorld
 	public NetTest5Screen(Game game) {
 		super(game);
@@ -87,6 +89,22 @@ public class NetTest5Screen extends TestScreen2D {
 		} else if (keyboardStatus.isdJustPress()) {
 			dJustUpAction();
 			keyboardStatus.setdJustPress(!keyboardStatus.isdJustPress());
+		}
+		
+		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+			if (!keyboardStatus.iswJustPress()) {
+				 //dJustPressAction();
+				
+			}
+			keyboardStatus.setwJustPress(true);
+		} else if (keyboardStatus.iswJustPress()) {
+			wJustUpAction();
+			keyboardStatus.setwJustPress(!keyboardStatus.iswJustPress());
+		}
+		
+		
+		if(Gdx.input.isKeyJustPressed(Input.Keys.C)){
+			cPressAction();
 		}
 	}
 
@@ -150,9 +168,9 @@ public class NetTest5Screen extends TestScreen2D {
 			public void run() {
 				lastRunTime=System.currentTimeMillis();
 				while (!isStoped) {
-					if (System.currentTimeMillis()-lastRunTime>10) {
-						lastRunTime+=10;
-						gameWorld.update(10/1000f);
+					if (System.currentTimeMillis()-lastRunTime>1) {
+						lastRunTime+=1;
+						gameWorld.update(1/1000f);
 						gameWorld.getBeCollidedGameObjectArray().clear();
 					}
 					try {
@@ -209,20 +227,51 @@ public class NetTest5Screen extends TestScreen2D {
 					jsonValue.get("ago").get("r").get("height").asFloat());
 			gameWorld.addGameObject(gameObject);
 		} else if (jsonValue.get("cgo") != null) {
+			jsonValue=jsonValue.get("cgo");
+
 			//System.out.println(System.currentTimeMillis()-lastSendTime);
-			GameObject gameObject=gameWorld.findGameObject(jsonValue.get("cgo").getString("name"));
+			GameObject gameObject=gameWorld.findGameObject(jsonValue.getString("name"));
 			if(gameObject!=null){
-				if (jsonValue.get("cgo").get("p")!=null) {
-					gameObject.setPosition(new Vector3(jsonValue.get("cgo").get("p").getFloat("x"), jsonValue.get("cgo").get("p").getFloat("y"), 0));
-					gameObject.setInertiaForce(new Vector3(jsonValue.get("cgo").get("i").getFloat("x"), jsonValue.get("cgo").get("i").getFloat("y"), 0));
-				}else if (jsonValue.get("cgo").get("i")!=null) {
-					gameObject.setInertiaForce(new Vector3(jsonValue.get("cgo").get("i").getFloat("x"), jsonValue.get("cgo").get("i").getFloat("y"), 0));
-					sendMessage("{ggo:{name:"+jsonValue.get("cgo").getString("name")+"}}");
+				if(jsonValue.get("set")!=null){
+					jsonValue=jsonValue.get("set");
+					if (jsonValue.get("p") != null) {
+						gameObject.setPosition(new Vector3(jsonValue.get("p").getFloat("x"),
+								jsonValue.get("p").getFloat("y"), 0));
+						gameObject.setInertiaForce(new Vector3(jsonValue.get("i").getFloat("x"),
+								jsonValue.get("i").getFloat("y"), 0));
+					} else if (jsonValue.get("i") != null) {
+						jsonValue = jsonValue.get("i");
+						if (jsonValue.get("x") != null) {
+							gameObject.getInertiaForce().x = jsonValue.getFloat("x");
+						}
+						if (jsonValue.get("y") != null) {
+							gameObject.getInertiaForce().y = jsonValue.getFloat("y");
+
+						}
+					}
+				}else if(jsonValue.get("add")!=null){
+					jsonValue=jsonValue.get("add");
+					if (jsonValue.get("p") != null) {
+						gameObject.setPosition(new Vector3(gameObject.getPosition().x+jsonValue.get("p").getFloat("x"),
+								gameObject.getPosition().y+jsonValue.get("p").getFloat("y"), 0));
+						gameObject.setInertiaForce(new Vector3(gameObject.getInertiaForce().x+jsonValue.get("i").getFloat("x"),
+								gameObject.getInertiaForce().y+jsonValue.get("i").getFloat("y"), 0));
+					} else if (jsonValue.get("i") != null) {
+						jsonValue = jsonValue.get("i");
+						if (jsonValue.get("x") != null) {
+							gameObject.getInertiaForce().x += jsonValue.getFloat("x");
+						}
+						if (jsonValue.get("y") != null) {
+							gameObject.getInertiaForce().y += jsonValue.getFloat("y");
+
+						}
+					}
 				}
 			}else{
-				sendMessage("{ggo:{name:"+jsonValue.get("cgo").getString("name")+"}}");
+				sendMessage("{ggo:{name:"+jsonValue.getString("name")+"}}");
 			}
 		}else if (jsonValue.get("ggo") != null) {
+			System.out.println(recvString);
 			if(jsonValue.get("ggo").getString("name").equals("")){
 				
 			}else{
@@ -272,7 +321,7 @@ public class NetTest5Screen extends TestScreen2D {
 	
 	
 	private void zPressAction(){
-		sendMessage("{ago:{name:"+gameObjectName+",p:{x:100,y:0},r:{width:"+texture.getWidth()+",height:"+texture.getHeight()+"}}}");
+		sendMessage("{ago:{name:"+gameObjectName+",p:{x:100,y:300},r:{width:"+texture.getWidth()+",height:"+texture.getHeight()+"}}}");
 
 	}
 	private void xPressAction(){
@@ -280,30 +329,54 @@ public class NetTest5Screen extends TestScreen2D {
 			sendMessage("{rgo:{name:"+gameObjectName+"}}");
 	
 	}
+	private void cPressAction(){
+		if(gameWorld.findGameObject(gameObjectName)!=null)
+			sendMessage("{cgo:{name:"+gameObjectName+",set:{i:{x:0,y:0}}}}");
+	
+	}
 	private void gPressAction(){
 		sendMessage("{ggo:{name:"+gameObjectName+"}}");
 	}
 	
 	private void aJustPressAction(){
-		if (gameWorld.findGameObject(gameObjectName)!=null) {
-			sendMessage("{cgo:{name:"+gameObjectName+",i:{x:-200,y:0}}}");
+		GameObject gameObject=gameWorld.findGameObject(gameObjectName);
+		if (gameObject!=null) {
+			sendMessage("{cgo:{name:"+gameObjectName+",add:{i:{x:"+(-1*speed)+"}}}}");
 		}
 	}
 	private void aJustUpAction(){
-		if (gameWorld.findGameObject(gameObjectName)!=null) {
-			sendMessage("{cgo:{name:"+gameObjectName+",i:{x:0,y:0}}}");
+		GameObject gameObject=gameWorld.findGameObject(gameObjectName);
+		if (gameObject!=null) {
+			//if(gameObject.getInertiaForce().x!=0)
+				sendMessage("{cgo:{name:"+gameObjectName+",add:{i:{x:"+(speed)+"}}}}");
+			
 		}
 		//System.out.println("object count:"+gameWorld.getGameObjectArray().size);
 	}
 	
 	private void dJustPressAction(){
-		if (gameWorld.findGameObject(gameObjectName)!=null) {
-			sendMessage("{cgo:{name:"+gameObjectName+",i:{x:200,y:0}}}");
+		GameObject gameObject=gameWorld.findGameObject(gameObjectName);
+		if (gameObject!=null) {
+			sendMessage("{cgo:{name:"+gameObjectName+",add:{i:{x:"+(speed)+"}}}}");
 		}
 	}
 	private void dJustUpAction(){
-		if (gameWorld.findGameObject(gameObjectName)!=null) {
-			sendMessage("{cgo:{name:"+gameObjectName+",i:{x:0,y:0}}}");
+		GameObject gameObject=gameWorld.findGameObject(gameObjectName);
+		if (gameObject!=null) {
+			//if(gameObject.getInertiaForce().x!=0)
+				sendMessage("{cgo:{name:"+gameObjectName+",add:{i:{x:"+(-1*speed)+"}}}}");
+		}
+	}
+	private void wJustPressAction(){
+		GameObject gameObject=gameWorld.findGameObject(gameObjectName);
+		if (gameObject!=null) {
+			sendMessage("{cgo:{name:"+gameObjectName+",add:{i:{x:200,y:0}}}}");
+		}
+	}
+	private void wJustUpAction(){
+		GameObject gameObject=gameWorld.findGameObject(gameObjectName);
+		if (gameObject!=null) {
+			sendMessage("{cgo:{name:"+gameObjectName+",add:{i:{x:0,y:200}}}}");
 		}
 	}
 	

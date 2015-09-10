@@ -10,6 +10,13 @@ public class GameObject {
 	Vector3 position=new Vector3();
 	Vector3 inertiaForce=new Vector3();
 	Rectangle rectangle=new Rectangle();
+	int weight=3;
+	public int getWeight() {
+		return weight;
+	}
+	public void setWeight(int weight) {
+		this.weight = weight;
+	}
 	public Vector3 getInertiaForce() {
 		return inertiaForce;
 	}

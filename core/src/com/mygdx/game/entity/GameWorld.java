@@ -1,13 +1,18 @@
 package com.mygdx.game.entity;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+
 
 public class GameWorld {
 	Array<GameObject> gameObjectArray=new Array<GameObject>();
 	Array<GameObject> beCollidedGameObjectArray=new Array<GameObject>();
-	Vector3 originPosition=new Vector3();
 	Vector3 targePosition=new Vector3();
+	Rectangle collisionDetectionRectangle=new Rectangle();
+	Vector3 gravity=new Vector3(0,-100,0);
+	int horizontal=-200;
+	boolean noGravityCalcuate=false;
 	public GameWorld(){
 		
 	}
@@ -44,20 +49,30 @@ public class GameWorld {
 	
 	public void update(float delta){
 		for (int i = 0; i < gameObjectArray.size; i++) {
-			GameObject gameObject=gameObjectArray.get(i);
+			GameObject gameObject=gameObjectArray.get(i);			
 			if(!gameObject.getInertiaForce().isZero()){
-				originPosition=gameObject.getPosition();
-				targePosition.x=gameObject.getPosition().x+gameObject.getInertiaForce().x*delta;
-				targePosition.y=gameObject.getPosition().y+gameObject.getInertiaForce().y*delta;
-				targePosition.z=gameObject.getPosition().z+gameObject.getInertiaForce().z*delta;	
-				gameObject.setPosition(targePosition);
-				collisionDetection(gameObject);
-				if (beCollidedGameObjectArray.size!=0) {
-					gameObject.setPosition(originPosition);
+				
+				targePosition.x=gameObject.getPosition().x+gameObject.getInertiaForce().x*gameObject.weight*delta;
+				targePosition.y=gameObject.getPosition().y+gameObject.getInertiaForce().y*gameObject.weight*delta;
+				targePosition.z=gameObject.getPosition().z+gameObject.getInertiaForce().z*gameObject.weight*delta;	
+				//collisionDetection(gameObject);
+				collisionDetectionRectangle.setPosition(targePosition.x, targePosition.y);
+				collisionDetectionRectangle.setSize(gameObject.getRectangle().width, gameObject.getRectangle().height);
+				collisionDetection(gameObject, collisionDetectionRectangle);
+				if(beCollidedGameObjectArray.size==0&&targePosition.y>=horizontal){
+					gameObject.setPosition(targePosition);			
+				}else{
+					gameObject.inertiaForce.y=0;
+				}		
+			}
+			if(gameObject.getPosition().y+(gravity.y*delta)>horizontal){//计算重力
+				collisionDetectionRectangle.setPosition(gameObject.getPosition().x, gameObject.getPosition().y+(gravity.y*delta));
+				collisionDetectionRectangle.setSize(gameObject.getRectangle().width, gameObject.getRectangle().height);
+				if (!haveCollision(gameObject, collisionDetectionRectangle)) {
+					gameObject.inertiaForce.y+=(gravity.y*gameObject.getWeight()*delta);
 				}
 				
-			}
-			
+			}	
 		}
 	}
 	public Array<GameObject> getBeCollidedGameObjectArray() {
@@ -76,5 +91,28 @@ public class GameWorld {
 				}
 			}
 		}
+	}
+	public void collisionDetection(GameObject gameObject,Rectangle rectangle){
+		collisionDetection(gameObject, rectangle, gameObjectArray,beCollidedGameObjectArray);
+	}
+	public void collisionDetection(GameObject gameObject,Rectangle rectangle,Array<GameObject> gameObjectArray,Array<GameObject> beCollidedGameObjectArray){
+		for (int i = 0; i <gameObjectArray.size; i++) {
+			if (gameObject!=gameObjectArray.get(i)) {
+				if(rectangle.overlaps(gameObjectArray.get(i).getRectangle())){
+					beCollidedGameObjectArray.add(gameObjectArray.get(i));
+				}
+			}
+		}
+	}
+	
+	public boolean haveCollision(GameObject gameObject,Rectangle rectangle){
+		for (int i = 0; i <gameObjectArray.size; i++) {
+			if (gameObject!=gameObjectArray.get(i)) {
+				if(rectangle.overlaps(gameObjectArray.get(i).getRectangle())){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
