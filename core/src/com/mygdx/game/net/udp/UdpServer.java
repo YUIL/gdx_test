@@ -19,15 +19,20 @@ import com.mygdx.game.util.JavaDataConverter;
 public class UdpServer {
 
 	int maxSessionDelayTime = 30000;
-	public volatile int currenSendMessageNum = 0;
+	public volatile int currentSendMessageNum = 0;
 	public DatagramSocket serverSocket;
 	public volatile boolean stoped = false;
-	public Map<Long, Session> sessionMap = new HashMap<Long, Session>();
+	public volatile Map<Long, Session> sessionMap = new HashMap<Long, Session>();
 	SendServicer sendServicer = null;
 	ReceiveServicer receiveServicer = null;
+	ReportStatus reportStatus=null;
 	ExecutorService threadPool = Executors.newSingleThreadExecutor();
 	Thread sendThread;
 	Thread reciveThread;
+	Thread reportThread;
+	
+	volatile long recvCount=0;
+	volatile long sendCount=0;
 
 
 	public UdpServer(int port) throws BindException {
@@ -43,7 +48,11 @@ public class UdpServer {
 	}
 
 	public synchronized void removeSession(long id) {
-		if (sessionMap.get(id) != null) {
+		Session session=sessionMap.get(id);
+		if (session != null) {
+			if(session.currentSendUdpMessage(null)!=null){
+				currentSendMessageNum--;
+			}
 			sessionMap.remove(id);
 		}
 
@@ -53,12 +62,15 @@ public class UdpServer {
 
 		sendServicer = new SendServicer();
 		receiveServicer = new ReceiveServicer();
+		reportStatus=new ReportStatus();
 
 		sendThread = new Thread(sendServicer);
 		reciveThread = new Thread(receiveServicer);
+		reportThread=new Thread(reportStatus);
 
 		// sendThread.start();
 		reciveThread.start();
+		reportThread.start();
 
 	}
 
@@ -112,7 +124,7 @@ public class UdpServer {
 		if (session.currentSendUdpMessage(null) == null) {
 			message.setSessionId(session.getId());
 			message.setSequenceId(session.lastSendMessage.sequenceId + 1);
-			currenSendMessageNum++;
+			currentSendMessageNum++;
 			session.currentSendUdpMessage(message);
 
 			threadPool.execute(sendThread);
@@ -123,6 +135,39 @@ public class UdpServer {
 		}
 
 	}
+	
+	public class ReportStatus implements Runnable{
+		int interval=10000;
+		long nextReportTime;
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			nextReportTime=System.currentTimeMillis();
+			while(!stoped){
+				if (System.currentTimeMillis()>=nextReportTime) {
+					nextReportTime+=interval;
+					report();
+					try {
+						Thread.currentThread();
+						Thread.sleep(interval);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+			
+		}
+		private void report(){
+			System.out.print("sessionMap.size():"+sessionMap.size());
+			System.out.print("  |  currentSendMessageNum:"+currentSendMessageNum);
+			System.out.print("  |  recvCount:"+recvCount);
+			System.out.println("  |  sendCount:"+sendCount);
+		}
+		
+	}
+	
 
 	public class SendServicer implements Runnable {
 		volatile Session session;
@@ -130,7 +175,7 @@ public class UdpServer {
 		@Override
 		public void run() {
 			// System.out.println("send Thread run");
-			while (!(currenSendMessageNum == 0)) {
+			while (!(currentSendMessageNum == 0)) {
 
 				try {
 
@@ -139,8 +184,7 @@ public class UdpServer {
 
 						if (session.lastSendTime != 0
 								&& (System.currentTimeMillis() - session.lastSendTime) > maxSessionDelayTime) {// 如果session很久没有发消息了，就删掉session
-							// System.out.println("Session:" + session.getId()+
-							// " time out!");
+							 System.out.println("Session:" + session.getId()+" time out!");
 							removeSession(session.id);
 							continue;
 						}
@@ -150,7 +194,7 @@ public class UdpServer {
 									.getSequenceId()) {// 如果对方还没收到这条消息
 								if (session.timeOutMultiple > session.maxResendTimes) {// 如果单条消息重发次数超过maxResendTimes，删掉session
 									sessionMap.remove(session.getId());
-									currenSendMessageNum--;
+									currentSendMessageNum--;
 								} else {
 									if (System.currentTimeMillis() - session.lastSendTime > session.getTimeOut()
 											* session.timeOutMultiple) {
@@ -160,7 +204,7 @@ public class UdpServer {
 										if (session.currentSendUdpMessage(null).getType() != 1) {
 
 											session.setCurrentSendMessage(null);
-											currenSendMessageNum--;
+											currentSendMessageNum--;
 										}
 
 									}
@@ -169,7 +213,7 @@ public class UdpServer {
 							} else {
 								session.timeOutMultiple = 0;
 								session.setCurrentSendMessage(null);
-								currenSendMessageNum--;
+								currentSendMessageNum--;
 							}
 
 						}
@@ -177,7 +221,7 @@ public class UdpServer {
 				} catch (ConcurrentModificationException e) {
 
 					// e.printStackTrace();
-					// System.out.println("不知道什么问题，先不管。。");
+					 System.out.println("不知道什么问题，先不管。。");
 				}
 
 			}
@@ -192,6 +236,7 @@ public class UdpServer {
 
 		public synchronized void sendUdpMessage(DatagramSocket sendSocket, SocketAddress address, UdpMessage message) {
 			// System.out.println("Udp send, message:"+message.toString());
+			sendCount++;
 			try {
 				byte[] temp = message.toBytes();
 				DatagramPacket sendPacket = new DatagramPacket(temp, temp.length, address);
@@ -234,6 +279,7 @@ public class UdpServer {
 				try {
 					// System.out.println("recv...");
 					serverSocket.receive(recvPacket);
+					recvCount++;
 
 				} catch (IOException e) {
 					// System.out.println("recvTread终止！");
