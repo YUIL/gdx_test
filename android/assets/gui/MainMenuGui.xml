@@ -133,4 +133,10 @@
 		<y>0</y>
 		<skin name="default"></skin>
 	</actor>
+	
+	<actor id="6" type="textButton" name="B2dTest1" text="B2dTest1">
+		<x>500</x>
+		<y>0</y>
+		<skin name="default"></skin>
+	</actor>
 </stage>
