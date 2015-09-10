@@ -33,6 +33,8 @@ public class UdpServer {
 	
 	volatile long recvCount=0;
 	volatile long sendCount=0;
+	volatile long recvDataLength=0;
+	volatile long sendDataLength=0;
 
 
 	public UdpServer(int port) throws BindException {
@@ -139,6 +141,7 @@ public class UdpServer {
 	public class ReportStatus implements Runnable{
 		int interval=10000;
 		long nextReportTime;
+		long reportTimes;
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
@@ -160,10 +163,17 @@ public class UdpServer {
 			
 		}
 		private void report(){
+			reportTimes++;
+			System.out.print(reportTimes);
+			System.out.print("{");
 			System.out.print("sessionMap.size():"+sessionMap.size());
 			System.out.print("  |  currentSendMessageNum:"+currentSendMessageNum);
 			System.out.print("  |  recvCount:"+recvCount);
-			System.out.println("  |  sendCount:"+sendCount);
+			System.out.print("  |  sendCount:"+sendCount);
+			System.out.print("  |  recvDataLength:"+recvDataLength);
+			System.out.print("  |  sendDataLength:"+sendDataLength);
+			System.out.print("}");
+			System.out.println();
 		}
 		
 	}
@@ -237,6 +247,7 @@ public class UdpServer {
 		public synchronized void sendUdpMessage(DatagramSocket sendSocket, SocketAddress address, UdpMessage message) {
 			// System.out.println("Udp send, message:"+message.toString());
 			sendCount++;
+			sendDataLength+=message.getData().length;
 			try {
 				byte[] temp = message.toBytes();
 				DatagramPacket sendPacket = new DatagramPacket(temp, temp.length, address);
@@ -291,6 +302,7 @@ public class UdpServer {
 
 				} else {
 					UdpMessage message = new UdpMessage(recvPacket);
+					recvDataLength+=message.getData().length;
 					/*
 					 * String recvString=new String(message.getData());
 					 * JsonValue jsonValue; JsonReader jsonReader = new
