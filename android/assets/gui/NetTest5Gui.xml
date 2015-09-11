@@ -74,5 +74,10 @@
         <y>200</y>
         <skin name="default"></skin>
     </actor>
+         <actor id="6" type="textButton" name="W" text="WWW">
+        <x>600</x>
+        <y>300</y>
+        <skin name="default"></skin>
+    </actor>
         
 </stage>

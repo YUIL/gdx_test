@@ -440,5 +440,14 @@ public class NetTest5Screen extends TestScreen2D {
 			}
 		});
 		
+		stage.getRoot().findActor("W").addListener(new ActorInputListenner() {
+			
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				gameObjectName=((TextArea)stage.getRoot().findActor("userName")).getText();
+
+				wJustUpAction();
+			}
+		});
+		
 	}
 }
