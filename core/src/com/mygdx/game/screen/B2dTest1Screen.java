@@ -102,11 +102,11 @@ public class B2dTest1Screen extends TestScreen2D {
 		// and tell it to sleep when possible.
 		world = new World(new Vector2(0, -10), true);
 
-		float[] vertices = {-0.07421887f, -0.16276085f, -0.12109375f, -0.22786504f, -0.157552f, -0.7122401f, 0.04296875f,
+		/*float[] vertices = {-0.07421887f, -0.16276085f, -0.12109375f, -0.22786504f, -0.157552f, -0.7122401f, 0.04296875f,
 			-0.7122401f, 0.110677004f, -0.6419276f, 0.13151026f, -0.49869835f, 0.08984375f, -0.3190109f};
 
 		PolygonShape shape = new PolygonShape();
-		shape.set(vertices);
+		shape.set(vertices);*/
 
 		// next we create a static ground platform. This platform
 		// is not moveable and will not react to any influences from
@@ -136,7 +136,7 @@ public class B2dTest1Screen extends TestScreen2D {
 		// We also create a simple ChainShape we put above our
 		// ground polygon for extra funkyness.
 		ChainShape chainShape = new ChainShape();
-		chainShape.createLoop(new Vector2[] {new Vector2(-10, 10), new Vector2(-10, 5), new Vector2(10, 5), new Vector2(10, 11),});
+		chainShape.createLoop(new Vector2[] {new Vector2(-5, 8),new Vector2(-10, 10), new Vector2(-10, 5), new Vector2(10, 5), new Vector2(10, 11),});
 		BodyDef chainBodyDef = new BodyDef();
 		chainBodyDef.type = BodyType.StaticBody;
 		Body chainBody = world.createBody(chainBodyDef);
@@ -190,13 +190,13 @@ public class B2dTest1Screen extends TestScreen2D {
 		// next we create the 50 box bodies using the PolygonShape we just
 		// defined. This process is similar to the one we used for the ground
 		// body. Note that we reuse the polygon for each body fixture.
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 1; i++) {
 			// Create the BodyDef, set a random position above the
 			// ground and create a new body
 			BodyDef boxBodyDef = new BodyDef();
 			boxBodyDef.type = BodyType.DynamicBody;
-			boxBodyDef.position.x = -24 + (float)(Math.random() * 48);
-			boxBodyDef.position.y = 10 + (float)(Math.random() * 100);
+			boxBodyDef.position.x = 5;
+			boxBodyDef.position.y = 20;
 			Body boxBody = world.createBody(boxBodyDef);
 
 			boxBody.createFixture(boxPoly, 1);
@@ -235,7 +235,9 @@ public class B2dTest1Screen extends TestScreen2D {
 		batch.getProjectionMatrix().set(camera.combined);
 		batch.begin();
 		for (int i = 0; i < boxes.size(); i++) {
+			
 			Body box = boxes.get(i);
+			
 			Vector2 position = box.getPosition(); // that's the box's center position
 			float angle = MathUtils.radiansToDegrees * box.getAngle(); // the rotation angle around the center
 			batch.draw(textureRegion, position.x - 1, position.y - 1, // the bottom left corner of the box, unrotated
@@ -243,6 +245,7 @@ public class B2dTest1Screen extends TestScreen2D {
 				2, 2, // the width and height of the box
 				1, 1, // the scale on the x- and y-axis
 				angle); // the rotation angle
+			System.out.println(box.getLinearVelocity());
 		}
 		batch.end();
 

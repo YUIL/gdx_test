@@ -12,13 +12,13 @@ import com.mygdx.game.stage.StageManager;
 
 public abstract class  TestScreen implements Screen {
 	public class ScreenLogic implements Runnable{
-		volatile long delay=1;
+		volatile int delay=1;
 		volatile boolean isStoped=false;
 		long lastRunTime=0;
 		public ScreenLogic(){
 
 		}
-		public ScreenLogic(long delay){
+		public ScreenLogic(int delay){
 			this.delay=delay;
 		}
 		public synchronized void stop(){

@@ -50,14 +50,14 @@ public class UiTest2Screen extends TestScreen
         
         
         
-        String s="{type:1,x:1,y:1,login:{name:}}";
+        String s="{list:[{a:1},{a:2}]}";
 
 
         JsonValue jsonValue;
         JsonReader jsonReader=new JsonReader();
         jsonValue =jsonReader.parse(s);
-      
-       System.out.println(jsonValue.get("login").get("name").asString().equals("")); 
+     
+       System.out.println(jsonValue.get("list").get(0)); 
 
 
 

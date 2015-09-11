@@ -298,6 +298,19 @@ public class MainMenuScreen extends TestScreen2D {
 				return true;
 			}
 		});
+		stage.getRoot().findActor("NetTest6")
+		.addListener(new InputListener() {
+			public void touchUp(InputEvent event, float x, float y,
+								int pointer, int button) {
+				game.setScreen(new NetTest6Screen(game));
+				return;
+			}
+
+			public boolean touchDown(InputEvent event, float x,
+									 float y, int pointer, int button) {
+				return true;
+			}
+		});
 	}
 
 }
