@@ -29,7 +29,7 @@ import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
 
 public class NetTest6Screen extends TestScreen2D {
-	OrthographicCamera camera=new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+	OrthographicCamera camera=new OrthographicCamera(Gdx.graphics.getWidth()/10,Gdx.graphics.getHeight()/10);
 	TextureRegion textureRegion = new TextureRegion(new Texture(Gdx.files.internal("images/role1.png")));
 	volatile UdpServer udpServer;
 	volatile Session session;
@@ -79,10 +79,10 @@ public class NetTest6Screen extends TestScreen2D {
 			
 			Vector2 position = gameObject.getPosition(); // that's the box's center position
 			float angle = MathUtils.radiansToDegrees * gameObject.getBody().getAngle(); // the rotation angle around the center
-			batch.draw(textureRegion, position.x - 1, position.y - 1, // the bottom left corner of the box, unrotated
-				1f, 1f, // the rotation center relative to the bottom left corner of the box
+			batch.draw(textureRegion, position.x - gameObject.getWidth(), position.y - gameObject.getHeight(), // the bottom left corner of the box, unrotated
+				0f, 0f, // the rotation center relative to the bottom left corner of the box
 				gameObject.getWidth(), gameObject.getHeight(), // the width and height of the box
-				1, 1, // the scale on the x- and y-axis
+				2, 2, // the scale on the x- and y-axis
 				angle);
 		}
 		batch.end();

@@ -87,13 +87,13 @@ public class GameWorldB2D {
 	
 	private void createGround(){
 		PolygonShape groundPoly = new PolygonShape();
-		groundPoly.setAsBox(50, 1);
+		groundPoly.setAsBox(200, 1);
 
 
 		BodyDef groundBodyDef = new BodyDef();
 		groundBodyDef.type = BodyType.StaticBody;
-		/*groundBodyDef.position.x = 0;
-		groundBodyDef.position.y = 100;*/
+		groundBodyDef.position.x = 0;
+		groundBodyDef.position.y = 0;
 		ground.body = box2dWorld.createBody(groundBodyDef);
 
 
@@ -117,7 +117,7 @@ public class GameWorldB2D {
 		System.out.println("box2dWorld has create");
 		createGround();
 
-		addBoxGameObject("test", 5, 50, 20, 20, 1);
+		addBoxGameObject("test", 5, 50, 1, 1, 1);
 		
 		
 
