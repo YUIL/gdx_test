@@ -52,25 +52,35 @@ public class GameWorldB2D {
 		gameObjectArray.removeValue(gameObject, true);
 	}
 	
-	public void addBoxGameObject(String name,float x,float y,float width,float height,float density){
-		gameObjectArray.add(createBoxGameObject(name, x, y, width, height, density));
+	public GameObjectB2D addBoxGameObject(String name,float x,float y,float width,float height,float density){
+		return addBoxGameObject(name, x, y, 0,0,width, height, density,0,0);
+	}
+	public GameObjectB2D addBoxGameObject(String name,float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
+		GameObjectB2D gameObject=createBoxGameObject(name, x, y, angle,angularVelocity,width, height, density,lx,ly);
+		gameObjectArray.add(gameObject);
+		return gameObject;
 	}
 	
-	public GameObjectB2D createBoxGameObject(String name,float x,float y,float width,float height,float density){
+	public GameObjectB2D createBoxGameObject(String name,float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
 		PolygonShape boxPoly = new PolygonShape();
-		boxPoly.setAsBox(width, height);
+		boxPoly.setAsBox(width/2, height/2);
 		
 		BodyDef boxBodyDef = new BodyDef();
 		boxBodyDef.type = BodyType.DynamicBody;
 		boxBodyDef.position.x = x;
 		boxBodyDef.position.y = y;
+		boxBodyDef.angle=angle;
 		Body boxBody = box2dWorld.createBody(boxBodyDef);
 
-		boxBody.createFixture(boxPoly, 1);
+		boxBody.createFixture(boxPoly, density);
 		
 		GameObjectB2D gameObject=createGameObject(name, boxBody);
 		gameObject.width=width;
 		gameObject.height=height;
+		boxBody.setLinearVelocity(lx, ly);
+		boxBody.setFixedRotation(true);
+		
+		boxBody.setAngularVelocity(angularVelocity);
 		return gameObject;
 		
 		// add the box to our list of boxes
@@ -87,7 +97,7 @@ public class GameWorldB2D {
 	
 	private void createGround(){
 		PolygonShape groundPoly = new PolygonShape();
-		groundPoly.setAsBox(200, 1);
+		groundPoly.setAsBox(30, 1);
 
 
 		BodyDef groundBodyDef = new BodyDef();
@@ -117,9 +127,16 @@ public class GameWorldB2D {
 		System.out.println("box2dWorld has create");
 		createGround();
 
-		addBoxGameObject("test", 5, 50, 1, 1, 1);
+		//addBoxGameObject("test", 5, 50, 2, 2, 1);
 		
 		
+		ChainShape chainShape = new ChainShape();
+		chainShape.createLoop(new Vector2[] {new Vector2(-5, 8),new Vector2(-10, 10), new Vector2(-10, 5), new Vector2(10, 5), new Vector2(10, 11),});
+		BodyDef chainBodyDef = new BodyDef();
+		chainBodyDef.type = BodyType.StaticBody;
+		Body chainBody =box2dWorld.createBody(chainBodyDef);
+		chainBody.createFixture(chainShape, 0);
+		chainShape.dispose();
 
 		/*ChainShape chainShape = new ChainShape();
 		chainShape.createLoop(new Vector2[] {new Vector2(-10, 10), new Vector2(-10, 5), new Vector2(10, 5), new Vector2(10, 11),});
@@ -155,11 +172,13 @@ public class GameWorldB2D {
 	public String gameObjectArrayToString(Array<GameObjectB2D> array){
 		StringBuffer stringBuffer=new StringBuffer();
 		stringBuffer.append("[");
-		for (int i = 0; i < array.size; i++) {
-			stringBuffer.append(array.get(i).toJson());
-			stringBuffer.append(",");
+		if (array.size>0){
+			for (int i = 0; i < array.size; i++) {
+				stringBuffer.append(array.get(i).toJson());
+				stringBuffer.append(",");
+			}
+			stringBuffer.delete(stringBuffer.length()-1, stringBuffer.length());
 		}
-		stringBuffer.delete(stringBuffer.length()-1, stringBuffer.length());
 		stringBuffer.append("]");
 		return new String(stringBuffer);
 	}

@@ -2,11 +2,13 @@ package com.mygdx.game.server;
 
 import java.net.BindException;
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.mygdx.game.entity.GameObjectB2D;
 import com.mygdx.game.entity.GameWorldB2D;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpServer;
@@ -23,6 +25,9 @@ public class NetTest6LogicServer {
 	JsonReader jsonReader = new JsonReader();
 	boolean stoped = false;
 	volatile GameWorldB2D gameWorld;
+	int autoBoardCastInterval=32;
+	long nextAutoBoardCastTime=0;
+
 
 	public class GameWorldLogic implements Runnable {
 
@@ -30,25 +35,29 @@ public class NetTest6LogicServer {
 			// TODO Auto-generated constructor stub
 		}
 
-		float interval = 1;
-		long lastUpdateTime = 0;
-		long upDateTime = 0;
+		int interval = 1;
+		long nextUpdateTime = 0;
 
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			lastUpdateTime = System.currentTimeMillis();
+			nextUpdateTime = System.currentTimeMillis();
 			while (true) {
-				upDateTime = System.currentTimeMillis();
-				if (upDateTime - lastUpdateTime >= interval) {
-					lastUpdateTime = upDateTime;
+				if (System.currentTimeMillis() - nextUpdateTime >= interval) {
+					nextUpdateTime +=interval;
 					if (gameWorld.getGameObjectArray().size != 0) {
-						gameWorld.update(interval / 1000);
+						gameWorld.update(interval / 1000f);
+						String str=gameWorld.gameObjectArrayToString();
+						if (System.currentTimeMillis()-nextAutoBoardCastTime>autoBoardCastInterval) {
+							nextAutoBoardCastTime=System.currentTimeMillis();
+							boardCast("{gago:"+str+"}");
+						}
+						
 					}
 				}
 				try {
 					Thread.currentThread();
-					Thread.sleep(1);
+					Thread.sleep((long) interval);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -98,9 +107,9 @@ public class NetTest6LogicServer {
 		 * }
 		 */
 		Session session;
-		if (!udpServer.sessionMap.isEmpty()) {
-			for (Map.Entry<Long, Session> entry : udpServer.sessionMap.entrySet()) {
-				session = entry.getValue();
+		if (udpServer.sessionArray.size!=0) {
+			for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator.hasNext();) {
+				session =  iterator.next();
 				udpServer.send(str.getBytes(), session);
 			}
 		}
@@ -111,17 +120,82 @@ public class NetTest6LogicServer {
 		 if (!recvString.equals("")) { 
 			 System.out.println("recv:" + recvString);
 			 jsonValue = jsonReader.parse(recvString);
+			 if (jsonValue.get("rpc") != null) {
+				 jsonValue = jsonValue.get("rpc");
+				 if(jsonValue.get("af")!=null){
+					 jsonValue = jsonValue.get("af");
+					 String name=jsonValue.getString("n");
+					 GameObjectB2D gameObject=gameWorld.findGameObject(name);
+					 if (gameObject!=null){
+						 float forceX=jsonValue.getFloat("fx");
+						 float forceY=jsonValue.getFloat("fy");
+						 if(gameObject.getSpeed()<gameObject.getMaxSpeed()){
+							 if(forceX==0){
+								 if(gameObject.getBody().getLinearVelocity().y<1&&gameObject.getBody().getLinearVelocity().y>-1){
+									 gameObject.applyForce(forceX, forceY);
+									// boardCast(recvString);
+								 }
+							 }else{
+								 if (forceX>0&&gameObject.getBody().getLinearVelocity().x<10||forceX<0&&gameObject.getBody().getLinearVelocity().x>-10) {
+									 gameObject.applyForce(forceX, forceY);
+									// boardCast(recvString);
+								}
+							 }
+							
+							 
+						 }
+					 }
+						
+				 }	
+				 
+			 }else{
 				if (jsonValue.get("gago") != null) {
 					String str=gameWorld.gameObjectArrayToString();
 					boardCast("{gago:"+str+"}");
+				}else if(jsonValue.get("ago") != null) {
+					jsonValue=jsonValue.get("ago");
+					String name=jsonValue.getString("n");
+					float x=jsonValue.get("t").get("p").getFloat("x");
+					float y=jsonValue.get("t").get("p").getFloat("y");
+					float angle=jsonValue.get("t").getFloat("a");
+					float angularVelocity=jsonValue.getFloat("av");
+					float width=jsonValue.get("s").getFloat("w");
+					float height=jsonValue.get("s").getFloat("h");
+					float density=jsonValue.getFloat("d");
+					float lx=jsonValue.get("l").getFloat("x");
+					float ly=jsonValue.get("l").getFloat("y");
+					GameObjectB2D gameObject=gameWorld.findGameObject(name);
+					if (gameObject!=null) {
+						
+					}else {
+						gameWorld.addBoxGameObject(name, x, y, angle,angularVelocity, width, height, density, lx, ly);
+						boardCast(recvString);
+					}
+				}else if(jsonValue.get("rgo") != null) {
+					jsonValue=jsonValue.get("rgo");
+					String name=jsonValue.getString("n");
+					GameObjectB2D gameObject=gameWorld.findGameObject(name);
+					if (gameObject!=null) {
+						gameWorld.removeGameObject(name);
+						boardCast(recvString);
+					}
+				}else if(jsonValue.get("ggo") != null) {
+					jsonValue=jsonValue.get("ggo");
+					String name=jsonValue.getString("n");
+					GameObjectB2D gameObject=gameWorld.findGameObject(name);
+					/*if (gameObject!=null) {
+						boardCast("{ggo:"+gameObject.toJson()+"}");
+					}*/
+					String str=gameWorld.gameObjectArrayToString();
+					//boardCast("{gago:"+str+"}");
 				}
+		 	}
 		 }
 		 
 
 		
 	}
 
-	long lastWhileTime = 0;
 	float delta = 0;
 	boolean needSleep = true;
 
@@ -132,7 +206,6 @@ public class NetTest6LogicServer {
 		Thread gameWorldThread = new Thread(gameWorldLogic);
 		gameWorldThread.start();
 		udpServer.start();
-		lastWhileTime = System.nanoTime();
 		while (!stoped) {
 			// System.out.println("while
 			// time:"+(System.nanoTime()-lastWhileTime));
@@ -141,9 +214,10 @@ public class NetTest6LogicServer {
 			// delta=((System.nanoTime()-lastWhileTime)/10000f);
 			// gameWorld.update(delta);
 			try {
-				if (!udpServer.sessionMap.isEmpty()) {
-					for (Map.Entry<Long, Session> entry : udpServer.sessionMap.entrySet()) {
-						session = entry.getValue();
+				if (udpServer.sessionArray.size!=0) {
+					for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator
+							.hasNext();) {
+						session = iterator.next();
 						while (!session.getRecvMessageQueue().isEmpty()) {
 							recvString = new String(session.getRecvMessageQueue().poll().getData());
 							if (recvString != null) {

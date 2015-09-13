@@ -7,7 +7,10 @@ import com.badlogic.gdx.physics.box2d.Shape.Type;
 public class GameObjectB2D {
 	String name;
 	Body body;
+	int maxSpeed=100;
 	float width, height;
+	
+	
 
 	public GameObjectB2D(String name) {
 		this.name = name;
@@ -16,6 +19,23 @@ public class GameObjectB2D {
 	public GameObjectB2D(String name, Body body) {
 		this.name = name;
 		this.body = body;
+	}
+	
+	
+	public void applyForce(float forceX,float forceY){
+		body.applyForce(forceX, forceY, getPosition().x, getPosition().y, true);
+	}
+
+	public float getSpeed(){
+		return Vector2.len(body.getLinearVelocity().x, body.getLinearVelocity().y);
+		
+	}
+	public int getMaxSpeed() {
+		return maxSpeed;
+	}
+
+	public void setMaxSpeed(int maxSpeed) {
+		this.maxSpeed = maxSpeed;
 	}
 
 	public Vector2 getPosition() {
@@ -38,8 +58,9 @@ public class GameObjectB2D {
 	public String toJson() {
 
 		return "{n:" + name + ",t:{p:{x:" + body.getPosition().x + ",y:" + body.getPosition().y + "},a:"
-				+ body.getAngle() + "},s:{w:" + width + ",h:" + height + "},d:" + getDensity() + ",l:{x:"
+				+ body.getAngle() + "},av:"+body.getAngularVelocity()+",s:{w:" + width + ",h:" + height + "},d:" + getDensity() + ",l:{x:"
 				+ body.getLinearVelocity().x + ",y:" + body.getLinearVelocity().y + "}}";
+		
 	}
 
 	public String getName() {
@@ -72,5 +93,14 @@ public class GameObjectB2D {
 
 	public void setBody(Body body) {
 		this.body = body;
+	}
+	
+	public void update(float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
+		this.body.setTransform(x, y, angle);
+		this.body.setAngularVelocity(angularVelocity);
+		this.width=width;
+		this.height=height;
+		this.body.getFixtureList().get(0).setDensity(density);
+		this.body.setLinearVelocity(lx, ly);
 	}
 }

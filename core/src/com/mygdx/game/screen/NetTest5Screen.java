@@ -2,6 +2,7 @@ package com.mygdx.game.screen;
 
 import java.net.BindException;
 import java.net.InetSocketAddress;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
@@ -191,9 +192,10 @@ public class NetTest5Screen extends TestScreen2D {
 
 								}
 							} else {
-								if (!udpServer.sessionMap.isEmpty()) {
-									for (Map.Entry<Long, Session> entry : udpServer.sessionMap.entrySet()) {
-										session = entry.getValue();
+								if (udpServer.sessionArray.size!=0) {
+									for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator.hasNext();) {
+										session = iterator.next();
+										
 									}
 								}
 							}
@@ -309,7 +311,7 @@ public class NetTest5Screen extends TestScreen2D {
 					session.setContactorAddress(
 							new InetSocketAddress(((TextArea) (stage.getRoot().findActor("remoteIp"))).getText(),
 									Integer.parseInt(((TextArea) (stage.getRoot().findActor("remotePort"))).getText())));
-					udpServer.sessionMap.put(session.getId(), session);
+					udpServer.sessionArray.add(session);
 				}
 				return udpServer.send(str.getBytes(), session);
 			}

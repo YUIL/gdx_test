@@ -21,7 +21,7 @@ public class Test2 {
 		}
 		Session session=new Session(new Random().nextLong());
 		session.setContactorAddress(new InetSocketAddress("127.0.0.1", 9091));
-		server.sessionMap.put(session.getId(), session);
+		server.sessionArray.add(session);
 		server.start();
 		
 		

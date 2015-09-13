@@ -92,7 +92,7 @@ public class UserServer {
 	}
 	
 	public void start() {
-		System.out.println("UserServer start!");
+		/*System.out.println("UserServer start!");
 		udpServer.start();
 		while (!stoped) {
 			try {
@@ -139,6 +139,6 @@ public class UserServer {
 				e.printStackTrace();
 			}
 		}
-		udpServer.stop();
+		udpServer.stop();*/
 	}
 }

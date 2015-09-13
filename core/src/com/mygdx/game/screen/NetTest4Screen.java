@@ -2,6 +2,7 @@ package com.mygdx.game.screen;
 
 import java.net.BindException;
 import java.net.InetSocketAddress;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
@@ -32,7 +33,7 @@ public class NetTest4Screen extends TestScreen2D {
 
 	volatile Label console;
 	String recvString = null;
-	volatile UdpServer server;
+	volatile UdpServer udpServer;
 	Texture texture = new Texture(Gdx.files.internal("images/button_0.png"));
 	volatile Session session;
 	int temp1 = 0;
@@ -68,7 +69,7 @@ public class NetTest4Screen extends TestScreen2D {
 			public void run() {
 				while (!isStoped) {
 					try {
-						if (server != null) {
+						if (udpServer != null) {
 							if(System.currentTimeMillis()-lastAutoSendTime>autoSendIterval){
 								lastAutoSendTime=System.currentTimeMillis();
 								sendMessage("");
@@ -85,9 +86,10 @@ public class NetTest4Screen extends TestScreen2D {
 
 								}
 							} else {
-								if (!server.sessionMap.isEmpty()) {
-									for (Map.Entry<Long, Session> entry : server.sessionMap.entrySet()) {
-										session = entry.getValue();
+								if (udpServer.sessionArray.size!=0) {
+									for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator.hasNext();) {
+										session = iterator.next();
+										
 									}
 								}
 							}
@@ -344,7 +346,7 @@ public class NetTest4Screen extends TestScreen2D {
 			System.err.println("message==null");
 		}else{
 			//disposeSendMessage(str);
-			if (server == null) {
+			if (udpServer == null) {
 				System.err.println("updServer==null");
 			} else {
 				if (session == null) {
@@ -352,9 +354,9 @@ public class NetTest4Screen extends TestScreen2D {
 					session.setContactorAddress(
 							new InetSocketAddress(((TextArea) (stage.getRoot().findActor("remoteIp"))).getText(),
 									Integer.parseInt(((TextArea) (stage.getRoot().findActor("remotePort"))).getText())));
-					server.sessionMap.put(session.getId(), session);
+					udpServer.sessionArray.add(session);
 				}
-				return server.send(str.getBytes(), session);
+				return udpServer.send(str.getBytes(), session);
 			}
 		}
 		return false;
@@ -404,8 +406,8 @@ public class NetTest4Screen extends TestScreen2D {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		if (server != null) {
-			server.stop();
+		if (udpServer != null) {
+			udpServer.stop();
 		}
 		screenLogic.stop();
 	}
@@ -415,7 +417,7 @@ public class NetTest4Screen extends TestScreen2D {
 		// TODO Auto-generated method stub
 		stage.dispose();
 		skin.dispose();
-		server.stop();
+		udpServer.stop();
 		screenLogic.stop();
 	}
 
@@ -429,7 +431,7 @@ public class NetTest4Screen extends TestScreen2D {
 		if(port<10000){
 			try {
 				System.out.println("try port:"+port);
-				server = new UdpServer(port);
+				udpServer = new UdpServer(port);
 				return true;
 			} catch (BindException e) {
 				System.out.println(port+" exception!");
@@ -446,12 +448,12 @@ public class NetTest4Screen extends TestScreen2D {
 	public void inputProcess() {
 		stage.getRoot().findActor("start").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				if(server==null){
+				if(udpServer==null){
 					int port = Integer.parseInt(((TextArea) (stage.getRoot().findActor("localPort"))).getText());
 					System.out.println("server start at port:" + port);
 					initUdpServer(port);
 					
-					server.start();
+					udpServer.start();
 				}	
 			}
 		});

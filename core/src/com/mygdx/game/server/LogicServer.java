@@ -114,12 +114,14 @@ public class LogicServer {
 		 * }
 		 */
 		Session session;
-		if (!udpServer.sessionMap.isEmpty()) {
-			for (Map.Entry<Long, Session> entry : udpServer.sessionMap.entrySet()) {
-				session = entry.getValue();
+		if (udpServer.sessionArray.size!=0) {
+			for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator
+					.hasNext();) {
+				session = iterator.next();
 				udpServer.send(str.getBytes(), session);
 			}
 		}
+		
 	}
 
 	public void disposeMessage() {
@@ -234,9 +236,10 @@ public class LogicServer {
 			// delta=((System.nanoTime()-lastWhileTime)/10000f);
 			// gameWorld.update(delta);
 			try {
-				if (!udpServer.sessionMap.isEmpty()) {
-					for (Map.Entry<Long, Session> entry : udpServer.sessionMap.entrySet()) {
-						session = entry.getValue();
+				if (udpServer.sessionArray.size!=0) {
+					for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator
+							.hasNext();) {
+						session = iterator.next();
 						while (!session.getRecvMessageQueue().isEmpty()) {
 							recvString = new String(session.getRecvMessageQueue().poll().getData());
 							if (recvString != null) {
@@ -246,6 +249,7 @@ public class LogicServer {
 						}
 					}
 				}
+				
 			} catch (ConcurrentModificationException e) {
 
 				// e.printStackTrace();

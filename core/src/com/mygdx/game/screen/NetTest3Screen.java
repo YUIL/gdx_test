@@ -2,6 +2,7 @@ package com.mygdx.game.screen;
 
 import java.net.BindException;
 import java.net.InetSocketAddress;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Map.Entry;
 
@@ -29,7 +30,7 @@ public class NetTest3Screen extends TestScreen {
 	Skin skin;
 	SpriteBatch batch;
 	BitmapFont bf;
-	UdpServer server;
+	UdpServer udpServer;
 	volatile Session session;
 	String str="no message";
 	public NetTest3Screen(Game game) {
@@ -60,14 +61,16 @@ public class NetTest3Screen extends TestScreen {
 		// TODO Auto-generated method stub
 		super.render(delta);
         Session session;
-		if(server!=null&&!server.sessionMap.isEmpty()) {
-			for (Entry<Long, Session> entry : server.sessionMap.entrySet()) {
-				session = entry.getValue();
+        if (udpServer.sessionArray.size!=0) {
+			for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator
+					.hasNext();) {
+				session = iterator.next();
 				if (!session.getRecvMessageQueue().isEmpty()) {
 					str = new String(session.getRecvMessageQueue().poll().getData());
 				}
 			}
 		}
+		
 		stage.draw();
 		batch.begin();
 		bf.draw(batch, str, 250, 250);
@@ -96,8 +99,8 @@ public class NetTest3Screen extends TestScreen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		if(server!=null) {
-			server.stop();
+		if(udpServer!=null) {
+			udpServer.stop();
 		}
 	}
 
@@ -106,7 +109,7 @@ public class NetTest3Screen extends TestScreen {
 		// TODO Auto-generated method stub
 		stage.dispose();
 		skin.dispose();
-		server.stop();
+		udpServer.stop();
 
 	}
 
@@ -120,7 +123,7 @@ public class NetTest3Screen extends TestScreen {
 							session = new Session(new Random().nextLong());
 							session.setContactorAddress(new InetSocketAddress("127.0.0.1", Integer.parseInt(((TextArea) (stage.getRoot()
 									.findActor("port"))).getText())));
-							server.sessionMap.put(session.getId(), session);
+							udpServer.sessionArray.add(session);
 						}
                         TextArea tx = ((TextArea) (stage.getRoot()
                                 .findActor("sequenceId")));
@@ -139,7 +142,7 @@ public class NetTest3Screen extends TestScreen {
                                 .parseInt(((TextArea) (stage.getRoot()
                                         .findActor("data"))).getText())));
 
-						server.send(message, session);
+						udpServer.send(message, session);
 
 
 
@@ -155,12 +158,12 @@ public class NetTest3Screen extends TestScreen {
 										.findActor("localport"))).getText());
                         System.out.println("port:"+port);
 						try {
-							server = new UdpServer(port);
+							udpServer = new UdpServer(port);
 						} catch (BindException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						server.start();
+						udpServer.start();
 					}
 				});
 	}
