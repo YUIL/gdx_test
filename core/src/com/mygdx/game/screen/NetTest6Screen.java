@@ -259,7 +259,7 @@ public class NetTest6Screen extends TestScreen2D {
 						if (udpServer != null) {
 							if (System.currentTimeMillis() - lastAutoSendTime > autoSendIterval) {
 								lastAutoSendTime = System.currentTimeMillis();
-								//sendMessage("");
+								sendMessage("");
 							}
 							if (session != null) {
 

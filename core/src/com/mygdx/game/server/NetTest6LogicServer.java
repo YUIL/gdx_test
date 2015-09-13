@@ -215,9 +215,8 @@ public class NetTest6LogicServer {
 			// gameWorld.update(delta);
 			try {
 				if (udpServer.sessionArray.size!=0) {
-					for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator
-							.hasNext();) {
-						session = iterator.next();
+					for (int i = 0; i < udpServer.sessionArray.size; i++) {
+						session= udpServer.sessionArray.get(i);
 						while (!session.getRecvMessageQueue().isEmpty()) {
 							recvString = new String(session.getRecvMessageQueue().poll().getData());
 							if (recvString != null) {

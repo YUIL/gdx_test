@@ -98,8 +98,8 @@ public class UdpServer {
 		if (sessionArray.size>0) {
 			
 			try {
-				for (Iterator<Session> iterator = sessionArray.iterator(); iterator.hasNext();) {
-					session =  iterator.next();
+				for (int i = 0; i < sessionArray.size; i++) {
+					session= sessionArray.get(i);
 					if (send(responseMessage, session)) {
 						try {
 							Thread.currentThread();
@@ -200,9 +200,8 @@ public class UdpServer {
 			while (!(currentSendMessageNum == 0)) {
 
 				try {
-					for (Iterator<Session> iterator = sessionArray.iterator(); iterator
-							.hasNext();) {
-						session= iterator.next();
+					for (int i = 0; i < sessionArray.size; i++) {
+						session= sessionArray.get(i);
 						if (session.lastSendTime != 0
 								&& (System.currentTimeMillis() - session.lastSendTime) > maxSessionDelayTime) {// 如果session很久没有发消息了，就删掉session
 							 System.out.println("Session:" + session.getId()+" time out!");
