@@ -5,11 +5,22 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
+import com.mygdx.game.net.udp.UdpServer.SendServicer;
+
 
 public class Session {
 	long id;
 	int timeOut=15;
 	int maxResendTimes=10;
+	SendServicer sendThread;
+
+	public SendServicer getSendThread() {
+		return sendThread;
+	}
+
+	public void setSendThread(SendServicer sendThread) {
+		this.sendThread = sendThread;
+	}
 
 	public short getTimeOutMultiple() {
 		return timeOutMultiple;

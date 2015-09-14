@@ -25,6 +25,7 @@ import com.mygdx.game.input.ActorInputListenner;
 import com.mygdx.game.input.KeyboardStatus;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpServer;
+import com.mygdx.game.net.udp.UdpServer.SendServicer;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
 import com.sun.org.apache.xpath.internal.operations.And;
@@ -233,14 +234,13 @@ public class NetTest6Screen extends TestScreen2D {
 			} else {
 				if (session == null) {
 					System.err.println("session==null");
-					session = new Session(new Random().nextLong());
-					session.setContactorAddress(new InetSocketAddress(
+					
+					session=udpServer.createSession(new Random().nextLong(), new InetSocketAddress(
 							((TextArea) (stage.getRoot().findActor("remoteIp")))
-									.getText(), Integer
-									.parseInt(((TextArea) (stage.getRoot()
-											.findActor("remotePort")))
-											.getText())));
-					udpServer.sessionArray.add(session);
+							.getText(), Integer
+							.parseInt(((TextArea) (stage.getRoot()
+									.findActor("remotePort")))
+									.getText())));
 				}
 				return udpServer.send(str.getBytes(), session);
 			}
@@ -428,7 +428,8 @@ public class NetTest6Screen extends TestScreen2D {
 	private void aJustPressAction() {
 		GameObjectB2D gameObject = gameWorld.findGameObject(gameObjectName);
 		if (gameObject != null) {
-			sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:-1000,fy:0}}}");
+			sendMoveMessage("{rpc:{af:{n:" + gameObjectName + ",fx:-1000,fy:0}}}");
+			//sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:-1000,fy:0}}}");
 		}
 	}
 
@@ -444,7 +445,8 @@ public class NetTest6Screen extends TestScreen2D {
 	private void dJustPressAction() {
 		GameObjectB2D gameObject = gameWorld.findGameObject(gameObjectName);
 		if (gameObject != null) {
-			sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:1000,fy:0}}}");
+			//sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:1000,fy:0}}}");
+			sendMoveMessage("{rpc:{af:{n:" + gameObjectName + ",fx:1000,fy:0}}}");
 		}
 	}
 
@@ -460,7 +462,8 @@ public class NetTest6Screen extends TestScreen2D {
 	private void wJustPressAction() {
 		GameObjectB2D gameObject = gameWorld.findGameObject(gameObjectName);
 		if (gameObject != null) {
-			sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:0,fy:6000}}}");
+			//sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:0,fy:6000}}}");
+			sendMoveMessage("{rpc:{af:{n:" + gameObjectName + ",fx:0,fy:6000}}}");
 		}
 	}
 
@@ -470,6 +473,36 @@ public class NetTest6Screen extends TestScreen2D {
 			sendMessage("{cgo:{name:" + gameObjectName
 					+ ",add:{i:{x:0,y:200}}}}");
 		}*/
+	}
+	
+	public void sendMoveMessage(String str){
+		JsonValue jsonValue = jsonReader.parse(str);
+		 if (jsonValue.get("rpc") != null) {
+			 jsonValue = jsonValue.get("rpc");
+			 if(jsonValue.get("af")!=null){
+				 jsonValue = jsonValue.get("af");
+				 String name=jsonValue.getString("n");
+				 GameObjectB2D gameObject=gameWorld.findGameObject(name);
+				 if (gameObject!=null){
+					 float forceX=jsonValue.getFloat("fx");
+					 if(gameObject.getSpeed()<gameObject.getMaxSpeed()){
+						 if(forceX==0){
+							 if(gameObject.getBody().getLinearVelocity().y<1&&gameObject.getBody().getLinearVelocity().y>-1){
+								sendMessage(str);
+							 }
+						 }else{
+							 if (forceX>0&&gameObject.getBody().getLinearVelocity().x<10||forceX<0&&gameObject.getBody().getLinearVelocity().x>-10) {
+								 sendMessage(str);
+							}
+						 }
+						
+						 
+					 }
+				 }
+					
+			 }	
+			 
+		 }
 	}
 
 	public void inputProcess() {

@@ -25,9 +25,10 @@ public class NetTest6LogicServer {
 	JsonReader jsonReader = new JsonReader();
 	boolean stoped = false;
 	volatile GameWorldB2D gameWorld;
-	int autoBoardCastInterval=50;
+	int autoBoardCastInterval=100;
 	long nextAutoBoardCastTime=0;
-
+	volatile int boardCastCound=0;
+	volatile int boardCastNum=0;
 
 	public class GameWorldLogic implements Runnable {
 
@@ -49,11 +50,14 @@ public class NetTest6LogicServer {
 					if (gameWorld.getGameObjectArray().size != 0) {
 						gameWorld.update(updateInterval / 1000f);
 						String str=gameWorld.gameObjectArrayToString();
-						if (System.currentTimeMillis()-nextAutoBoardCastTime>autoBoardCastInterval) {
+						/*if (System.currentTimeMillis()-nextAutoBoardCastTime>autoBoardCastInterval) {
 							nextAutoBoardCastTime+=autoBoardCastInterval;
 							boardCast("{gago:"+str+"}");
+						}*/
+						if(boardCastNum>boardCastCound){
+							boardCastCound++;
+							boardCast("{gago:"+str+"}");
 						}
-						
 					}
 				}else{
 					try {
@@ -134,12 +138,14 @@ public class NetTest6LogicServer {
 							 if(forceX==0){
 								 if(gameObject.getBody().getLinearVelocity().y<1&&gameObject.getBody().getLinearVelocity().y>-1){
 									 gameObject.applyForce(forceX, forceY);
-									 boardCast(recvString);
+									// boardCast(recvString);
+									 boardCastNum++;
 								 }
 							 }else{
 								 if (forceX>0&&gameObject.getBody().getLinearVelocity().x<10||forceX<0&&gameObject.getBody().getLinearVelocity().x>-10) {
 									 gameObject.applyForce(forceX, forceY);
-									 boardCast(recvString);
+									// boardCast(recvString);
+									 boardCastNum++;
 								}
 							 }
 							

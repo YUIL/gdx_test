@@ -78,7 +78,7 @@ public class GameWorldB2D {
 		gameObject.width=width;
 		gameObject.height=height;
 		boxBody.setLinearVelocity(lx, ly);
-		boxBody.setFixedRotation(true);
+		//boxBody.setFixedRotation(true);
 		
 		boxBody.setAngularVelocity(angularVelocity);
 		return gameObject;
