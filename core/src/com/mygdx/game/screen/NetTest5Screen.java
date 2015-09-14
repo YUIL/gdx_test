@@ -42,6 +42,8 @@ public class NetTest5Screen extends TestScreen2D {
 	Thread screenLogicThread;
 	ScreenLogic screenLogic;
 	int speed=50;
+	long nextUpdateTime=0;
+	int updateInterval=10;
 //	volatile GameWorld
 	public NetTest5Screen(Game game) {
 		super(game);
@@ -167,10 +169,12 @@ public class NetTest5Screen extends TestScreen2D {
 	private void initScreenLogic(){
 		screenLogic = new ScreenLogic(1) {
 			public void run() {
-				lastRunTime=System.currentTimeMillis();
+				//lastRunTime=System.currentTimeMillis();
+				nextUpdateTime=System.currentTimeMillis();
 				while (!isStoped) {
-					if (System.currentTimeMillis()-lastRunTime>1) {
-						lastRunTime+=1;
+					
+					if (System.currentTimeMillis()>nextUpdateTime) {
+						nextUpdateTime+=updateInterval;
 						gameWorld.update(1/1000f);
 						gameWorld.getBeCollidedGameObjectArray().clear();
 					}

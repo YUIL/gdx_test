@@ -48,6 +48,9 @@ public class NetTest6Screen extends TestScreen2D {
 	Thread screenLogicThread;
 	ScreenLogic screenLogic;
 	int speed = 50;
+	long nextUpdateTime=0;
+	int updateInterval=10;
+	
 
 	public NetTest6Screen(Game game) {
 		super(game);
@@ -249,11 +252,11 @@ public class NetTest6Screen extends TestScreen2D {
 	private void initScreenLogic() {
 		screenLogic = new ScreenLogic(1) {
 			public void run() {
-				lastRunTime = System.currentTimeMillis();
+				nextUpdateTime = System.currentTimeMillis();
 				while (!isStoped) {
-					if (System.currentTimeMillis() - lastRunTime > 1) {
-						lastRunTime += delay;
-						gameWorld.update(delay / 1000f);
+					if (System.currentTimeMillis() > nextUpdateTime) {
+						nextUpdateTime += updateInterval;
+						gameWorld.update(updateInterval / 1000f);
 					}
 					try {
 						if (udpServer != null) {
@@ -425,7 +428,7 @@ public class NetTest6Screen extends TestScreen2D {
 	private void aJustPressAction() {
 		GameObjectB2D gameObject = gameWorld.findGameObject(gameObjectName);
 		if (gameObject != null) {
-			sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:-10000,fy:0}}}");
+			sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:-1000,fy:0}}}");
 		}
 	}
 
@@ -441,7 +444,7 @@ public class NetTest6Screen extends TestScreen2D {
 	private void dJustPressAction() {
 		GameObjectB2D gameObject = gameWorld.findGameObject(gameObjectName);
 		if (gameObject != null) {
-			sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:10000,fy:0}}}");
+			sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:1000,fy:0}}}");
 		}
 	}
 
@@ -457,7 +460,7 @@ public class NetTest6Screen extends TestScreen2D {
 	private void wJustPressAction() {
 		GameObjectB2D gameObject = gameWorld.findGameObject(gameObjectName);
 		if (gameObject != null) {
-			sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:0,fy:60000}}}");
+			sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:0,fy:6000}}}");
 		}
 	}
 

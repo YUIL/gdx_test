@@ -25,7 +25,7 @@ public class NetTest6LogicServer {
 	JsonReader jsonReader = new JsonReader();
 	boolean stoped = false;
 	volatile GameWorldB2D gameWorld;
-	int autoBoardCastInterval=32;
+	int autoBoardCastInterval=50;
 	long nextAutoBoardCastTime=0;
 
 
@@ -35,32 +35,34 @@ public class NetTest6LogicServer {
 			// TODO Auto-generated constructor stub
 		}
 
-		int interval = 1;
+		int updateInterval = 10;
 		long nextUpdateTime = 0;
 
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			nextUpdateTime = System.currentTimeMillis();
+			nextAutoBoardCastTime=System.currentTimeMillis();
 			while (true) {
-				if (System.currentTimeMillis() - nextUpdateTime >= interval) {
-					nextUpdateTime +=interval;
+				if (System.currentTimeMillis() > nextUpdateTime) {
+					nextUpdateTime +=updateInterval;
 					if (gameWorld.getGameObjectArray().size != 0) {
-						gameWorld.update(interval / 1000f);
+						gameWorld.update(updateInterval / 1000f);
 						String str=gameWorld.gameObjectArrayToString();
 						if (System.currentTimeMillis()-nextAutoBoardCastTime>autoBoardCastInterval) {
-							nextAutoBoardCastTime=System.currentTimeMillis();
+							nextAutoBoardCastTime+=autoBoardCastInterval;
 							boardCast("{gago:"+str+"}");
 						}
 						
 					}
-				}
-				try {
-					Thread.currentThread();
-					Thread.sleep((long) interval);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				}else{
+					try {
+						Thread.currentThread();
+						Thread.sleep((long) updateInterval);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 
@@ -106,19 +108,18 @@ public class NetTest6LogicServer {
 		 * 
 		 * }
 		 */
+		//System.out.println("send:"+str);
 		Session session;
-		if (udpServer.sessionArray.size!=0) {
-			for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator.hasNext();) {
-				session =  iterator.next();
-				udpServer.send(str.getBytes(), session);
-			}
+		for (int i = 0; i < udpServer.sessionArray.size; i++) {
+			session =  udpServer.sessionArray.get(i);
+			udpServer.send(str.getBytes(), session);
 		}
 	}
 
 	public void disposeMessage() {
 		
 		 if (!recvString.equals("")) { 
-			 System.out.println("recv:" + recvString);
+			// System.out.println("recv:" + recvString);
 			 jsonValue = jsonReader.parse(recvString);
 			 if (jsonValue.get("rpc") != null) {
 				 jsonValue = jsonValue.get("rpc");
@@ -133,12 +134,12 @@ public class NetTest6LogicServer {
 							 if(forceX==0){
 								 if(gameObject.getBody().getLinearVelocity().y<1&&gameObject.getBody().getLinearVelocity().y>-1){
 									 gameObject.applyForce(forceX, forceY);
-									// boardCast(recvString);
+									 boardCast(recvString);
 								 }
 							 }else{
 								 if (forceX>0&&gameObject.getBody().getLinearVelocity().x<10||forceX<0&&gameObject.getBody().getLinearVelocity().x>-10) {
 									 gameObject.applyForce(forceX, forceY);
-									// boardCast(recvString);
+									 boardCast(recvString);
 								}
 							 }
 							
@@ -187,7 +188,7 @@ public class NetTest6LogicServer {
 						boardCast("{ggo:"+gameObject.toJson()+"}");
 					}*/
 					String str=gameWorld.gameObjectArrayToString();
-					//boardCast("{gago:"+str+"}");
+					boardCast("{gago:"+str+"}");
 				}
 		 	}
 		 }

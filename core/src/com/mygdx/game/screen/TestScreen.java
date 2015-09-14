@@ -14,7 +14,7 @@ public abstract class  TestScreen implements Screen {
 	public class ScreenLogic implements Runnable{
 		volatile int delay=1;
 		volatile boolean isStoped=false;
-		long lastRunTime=0;
+		//long lastRunTime=0;
 		public ScreenLogic(){
 
 		}
