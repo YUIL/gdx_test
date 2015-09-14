@@ -51,13 +51,15 @@ public class UiTest2Screen extends TestScreen
         
         
         String s="{list:[{a:1},{a:2}]}";
-
+        String s2="{a:1}";
 
         JsonValue jsonValue;
         JsonReader jsonReader=new JsonReader();
         jsonValue =jsonReader.parse(s);
+        JsonValue jsonValue2=jsonReader.parse(s2);
      
-       System.out.println(jsonValue.get("list").get(0)); 
+       System.out.println(jsonValue.get(0)); 
+       System.out.println(jsonValue2.get(0));
 
 
 

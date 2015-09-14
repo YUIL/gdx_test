@@ -2,7 +2,6 @@ package com.mygdx.game.screen;
 
 import java.net.BindException;
 import java.net.InetSocketAddress;
-import java.util.Map;
 import java.util.Random;
 
 import com.badlogic.gdx.Game;
@@ -13,7 +12,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
@@ -24,23 +22,24 @@ import com.mygdx.game.entity.GameWorldB2D;
 import com.mygdx.game.input.ActorInputListenner;
 import com.mygdx.game.input.KeyboardStatus;
 import com.mygdx.game.net.udp.Session;
+import com.mygdx.game.net.udp.UdpMessage;
+import com.mygdx.game.net.udp.UdpMessageListener;
 import com.mygdx.game.net.udp.UdpServer;
-import com.mygdx.game.net.udp.UdpServer.SendServicer;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
-import com.sun.org.apache.xpath.internal.operations.And;
 
-public class NetTest6Screen extends TestScreen2D {
+public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	OrthographicCamera camera = new OrthographicCamera(
 			Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 10);
 	TextureRegion textureRegion = new TextureRegion(new Texture(
 			Gdx.files.internal("images/role1.png")));
+	TextureRegion backgroundRegion = new TextureRegion(new Texture(
+			Gdx.files.internal("images/NetTest6_background.png")));
 	volatile UdpServer udpServer;
 	volatile Session session;
 	String recvString = null;
 	volatile GameWorldB2D gameWorld = new GameWorldB2D();
 	private Box2DDebugRenderer debugRenderer;
-	JsonValue jsonValue;
 	JsonReader jsonReader = new JsonReader();
 	KeyboardStatus keyboardStatus = new KeyboardStatus();
 	String gameObjectName = null;
@@ -75,9 +74,12 @@ public class NetTest6Screen extends TestScreen2D {
 		// TODO Auto-generated method stub
 		// System.out.println(gameWorld.getGameObjectArray().size);
 
+		
 		super.render(delta);
 		camera.update();
 		batch.getProjectionMatrix().set(camera.combined);
+		
+		
 		debugRenderer.render(gameWorld.getBox2dWorld(), camera.combined);
 		batch.begin();
 		for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
@@ -138,6 +140,11 @@ public class NetTest6Screen extends TestScreen2D {
 		}
 		if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
 			lPressAction();
+		}
+		if(Gdx.input.isKeyJustPressed(Input.Keys.T)){
+			GameObjectB2D gameObject=gameWorld.findGameObject(gameObjectName);
+			camera.position.x=gameObject.getPosition().x;
+			camera.position.y=gameObject.getPosition().y;
 		}
 
 		/*if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
@@ -205,6 +212,7 @@ public class NetTest6Screen extends TestScreen2D {
 			try {
 				System.out.println("try port:" + port);
 				udpServer = new UdpServer(port);
+				udpServer.setUdpMessageListener(this);
 				return true;
 			} catch (BindException e) {
 				System.out.println(port + " exception!");
@@ -257,6 +265,12 @@ public class NetTest6Screen extends TestScreen2D {
 					if (System.currentTimeMillis() > nextUpdateTime) {
 						nextUpdateTime += updateInterval;
 						gameWorld.update(updateInterval / 1000f);
+						GameObjectB2D gameObject=gameWorld.findGameObject(gameObjectName);
+						if(gameObject!=null){
+							camera.position.x=gameObject.getPosition().x;
+							camera.position.y=gameObject.getPosition().y;
+						}
+						
 					}
 					try {
 						if (udpServer != null) {
@@ -264,7 +278,7 @@ public class NetTest6Screen extends TestScreen2D {
 								lastAutoSendTime = System.currentTimeMillis();
 								sendMessage("");
 							}
-							if (session != null) {
+							/*if (session != null) {
 
 								while (!session.getRecvMessageQueue().isEmpty()) {
 									recvString = new String(session
@@ -278,7 +292,7 @@ public class NetTest6Screen extends TestScreen2D {
 								if (udpServer.sessionArray.size!=0) {
 									session=udpServer.sessionArray.get(0);
 								}
-							}
+							}*/
 						}
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -299,94 +313,7 @@ public class NetTest6Screen extends TestScreen2D {
 	}
 
 	public void disposeMessage() {
-		System.out.println(recvString);
-		jsonValue = jsonReader.parse(recvString);
-		if (jsonValue.get("rpc") != null) {
-			jsonValue = jsonValue.get("rpc");
-			if(jsonValue.get("af")!=null){
-				jsonValue = jsonValue.get("af");
-				String name=jsonValue.getString("n");
-				GameObjectB2D gameObject=gameWorld.findGameObject(name);
-				if (gameObject!=null){
-					/*float forceX=jsonValue.getFloat("fx");
-					float forceY=jsonValue.getFloat("fy");
-					gameObject.applyForce(forceX, forceY);*/
-					sendMessage("{ggo:{n:" + name + "}}");
-				}
-				
-			}
-
-		} else {
-			if (jsonValue.get("gago") != null) {
-				jsonValue = jsonValue.get("gago");
-				for (int i = 0; i < jsonValue.size; i++) {
-					String name=jsonValue.get(i).getString("n");
-					float x=jsonValue.get(i).get("t").get("p").getFloat("x");
-					float y=jsonValue.get(i).get("t").get("p").getFloat("y");
-					float angle=jsonValue.get(i).get("t").getFloat("a");
-					float angularVelocity=jsonValue.get(i).getFloat("av");
-					float width=jsonValue.get(i).get("s").getFloat("w");
-					float height=jsonValue.get(i).get("s").getFloat("h");
-					float density=jsonValue.get(i).getFloat("d");
-					float lx=jsonValue.get(i).get("l").getFloat("x");
-					float ly=jsonValue.get(i).get("l").getFloat("y");
-					GameObjectB2D gameObject=gameWorld.findGameObject(name);
-					if (gameObject!=null) {
-						System.out.println("update gameObject");
-						gameObject.update(x, y, angle,angularVelocity, width, height, density, lx, ly);
-					}else {
-						gameObject=gameWorld.addBoxGameObject(name, x, y, angle,angularVelocity, width, height, density, lx, ly);
-						System.out.println(gameObject.toJson());
-					}
-				}
-			}else if(jsonValue.get("ago") != null) {
-				jsonValue=jsonValue.get("ago");
-				String name=jsonValue.getString("n");
-				
-				GameObjectB2D gameObject=gameWorld.findGameObject(name);
-				if (gameObject!=null) {
-					
-				}else {
-					float x=jsonValue.get("t").get("p").getFloat("x");
-					float y=jsonValue.get("t").get("p").getFloat("y");
-					float angle=jsonValue.get("t").getFloat("a");
-					float angularVelocity=jsonValue.getFloat("av");
-					float width=jsonValue.get("s").getFloat("w");
-					float height=jsonValue.get("s").getFloat("h");
-					float density=jsonValue.getFloat("d");
-					float lx=jsonValue.get("l").getFloat("x");
-					float ly=jsonValue.get("l").getFloat("y");
-					gameWorld.addBoxGameObject(name, x, y, angle, angularVelocity,width, height, density, lx, ly);
-				}
-			}else if(jsonValue.get("rgo") != null) {
-				jsonValue=jsonValue.get("rgo");
-				String name=jsonValue.getString("n");
-				GameObjectB2D gameObject=gameWorld.findGameObject(name);
-				if (gameObject!=null) {
-					gameWorld.removeGameObject(name);
-				}
-			}else if(jsonValue.get("ggo") != null) {
-				jsonValue=jsonValue.get("ggo");
-				String name=jsonValue.getString("n");
-				float x=jsonValue.get("t").get("p").getFloat("x");
-				float y=jsonValue.get("t").get("p").getFloat("y");
-				float angle=jsonValue.get("t").getFloat("a");
-				float angularVelocity=jsonValue.getFloat("av");
-				float width=jsonValue.get("s").getFloat("w");
-				float height=jsonValue.get("s").getFloat("h");
-				float density=jsonValue.getFloat("d");
-				float lx=jsonValue.get("l").getFloat("x");
-				float ly=jsonValue.get("l").getFloat("y");
-				GameObjectB2D gameObject=gameWorld.findGameObject(name);
-				if (gameObject!=null) {
-					
-					gameObject.update(x, y, angle,angularVelocity, width, height, density, lx, ly);
-				}else{
-					gameWorld.addBoxGameObject(name, x, y, angle, angularVelocity,width, height, density, lx, ly);
-				}
-			}
-			
-		}
+		
 	}
 
 	private void lPressAction() {
@@ -593,5 +520,100 @@ public class NetTest6Screen extends TestScreen2D {
 			}
 		});
 
+	}
+
+	@Override
+	public void disposeUdpMessage(Session session, UdpMessage message) {
+		// TODO Auto-generated method stub
+		this.session=session;
+		System.out.println(recvString);
+		recvString=new String(message.getData());
+		JsonValue jsonValue = jsonReader.parse(recvString);
+		if (jsonValue.get("rpc") != null) {
+			jsonValue = jsonValue.get("rpc");
+			if(jsonValue.get("af")!=null){
+				jsonValue = jsonValue.get("af");
+				String name=jsonValue.getString("n");
+				GameObjectB2D gameObject=gameWorld.findGameObject(name);
+				if (gameObject!=null){
+					/*float forceX=jsonValue.getFloat("fx");
+					float forceY=jsonValue.getFloat("fy");
+					gameObject.applyForce(forceX, forceY);*/
+					sendMessage("{ggo:{n:" + name + "}}");
+				}
+				
+			}
+
+		} else {
+			if (jsonValue.get("gago") != null) {
+				jsonValue = jsonValue.get("gago");
+				for (int i = 0; i < jsonValue.size; i++) {
+					String name=jsonValue.get(i).getString("n");
+					float x=jsonValue.get(i).get("t").get("p").getFloat("x");
+					float y=jsonValue.get(i).get("t").get("p").getFloat("y");
+					float angle=jsonValue.get(i).get("t").getFloat("a");
+					float angularVelocity=jsonValue.get(i).getFloat("av");
+					float width=jsonValue.get(i).get("s").getFloat("w");
+					float height=jsonValue.get(i).get("s").getFloat("h");
+					float density=jsonValue.get(i).getFloat("d");
+					float lx=jsonValue.get(i).get("l").getFloat("x");
+					float ly=jsonValue.get(i).get("l").getFloat("y");
+					GameObjectB2D gameObject=gameWorld.findGameObject(name);
+					if (gameObject!=null) {
+						System.out.println("update gameObject");
+						gameObject.update(x, y, angle,angularVelocity, width, height, density, lx, ly);
+					}else {
+						gameObject=gameWorld.addBoxGameObject(name, x, y, angle,angularVelocity, width, height, density, lx, ly);
+						System.out.println(gameObject.toJson());
+					}
+				}
+			}else if(jsonValue.get("ago") != null) {
+				jsonValue=jsonValue.get("ago");
+				String name=jsonValue.getString("n");
+				
+				GameObjectB2D gameObject=gameWorld.findGameObject(name);
+				if (gameObject!=null) {
+					
+				}else {
+					float x=jsonValue.get("t").get("p").getFloat("x");
+					float y=jsonValue.get("t").get("p").getFloat("y");
+					float angle=jsonValue.get("t").getFloat("a");
+					float angularVelocity=jsonValue.getFloat("av");
+					float width=jsonValue.get("s").getFloat("w");
+					float height=jsonValue.get("s").getFloat("h");
+					float density=jsonValue.getFloat("d");
+					float lx=jsonValue.get("l").getFloat("x");
+					float ly=jsonValue.get("l").getFloat("y");
+					gameWorld.addBoxGameObject(name, x, y, angle, angularVelocity,width, height, density, lx, ly);
+				}
+			}else if(jsonValue.get("rgo") != null) {
+				jsonValue=jsonValue.get("rgo");
+				String name=jsonValue.getString("n");
+				GameObjectB2D gameObject=gameWorld.findGameObject(name);
+				if (gameObject!=null) {
+					gameWorld.removeGameObject(name);
+				}
+			}else if(jsonValue.get("ggo") != null) {
+				jsonValue=jsonValue.get("ggo");
+				String name=jsonValue.getString("n");
+				float x=jsonValue.get("t").get("p").getFloat("x");
+				float y=jsonValue.get("t").get("p").getFloat("y");
+				float angle=jsonValue.get("t").getFloat("a");
+				float angularVelocity=jsonValue.getFloat("av");
+				float width=jsonValue.get("s").getFloat("w");
+				float height=jsonValue.get("s").getFloat("h");
+				float density=jsonValue.getFloat("d");
+				float lx=jsonValue.get("l").getFloat("x");
+				float ly=jsonValue.get("l").getFloat("y");
+				GameObjectB2D gameObject=gameWorld.findGameObject(name);
+				if (gameObject!=null) {
+					
+					gameObject.update(x, y, angle,angularVelocity, width, height, density, lx, ly);
+				}else{
+					gameWorld.addBoxGameObject(name, x, y, angle, angularVelocity,width, height, density, lx, ly);
+				}
+			}
+			
+		}
 	}
 }

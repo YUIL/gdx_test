@@ -11,7 +11,7 @@
         <y>200</y>
         <skin name="default"></skin>
     </actor>
-     <actor id="1" type="textArea" name="remoteIp" text="123.57.14.122">
+     <actor id="1" type="textArea" name="remoteIp" text="127.0.0.1">
         <x>120</x>
         <y>200</y>
         <skin name="default"></skin>

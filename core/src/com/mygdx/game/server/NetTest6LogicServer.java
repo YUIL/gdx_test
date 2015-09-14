@@ -1,9 +1,8 @@
 package com.mygdx.game.server;
 
 import java.net.BindException;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.utils.JsonReader;
@@ -11,17 +10,18 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.game.entity.GameObjectB2D;
 import com.mygdx.game.entity.GameWorldB2D;
 import com.mygdx.game.net.udp.Session;
+import com.mygdx.game.net.udp.UdpMessage;
+import com.mygdx.game.net.udp.UdpMessageListener;
 import com.mygdx.game.net.udp.UdpServer;
 
 
-public class NetTest6LogicServer {
+public class NetTest6LogicServer implements UdpMessageListener{
 
 	volatile UdpServer udpServer;
 	volatile UserServer userServer;
-	volatile Session session;
-	String recvString;
-	String responseString;
-	JsonValue jsonValue;
+	//volatile Session session;
+	//String recvString;
+	//String responseString;
 	JsonReader jsonReader = new JsonReader();
 	boolean stoped = false;
 	volatile GameWorldB2D gameWorld;
@@ -29,7 +29,11 @@ public class NetTest6LogicServer {
 	long nextAutoBoardCastTime=0;
 	volatile int boardCastCound=0;
 	volatile int boardCastNum=0;
-
+	long disoposeMessageCount=0;
+	MessageProcessor messageProcessor;
+	ExecutorService threadPool= Executors.newSingleThreadExecutor();
+	volatile Thread gameWorldThread;
+	
 	public class GameWorldLogic implements Runnable {
 
 		public GameWorldLogic() {
@@ -74,6 +78,110 @@ public class NetTest6LogicServer {
 
 	}
 
+	public class MessageProcessor implements Runnable{
+		
+		Session session;
+		public Session getSession() {
+			return session;
+		}
+		public void setSession(Session session) {
+			this.session = session;
+		}
+		public UdpMessage getMessage() {
+			return message;
+		}
+		public void setMessage(UdpMessage message) {
+			this.message = message;
+		}
+		UdpMessage message;
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			String recvString = new String(session.getRecvMessageQueue().poll().getData());
+			disoposeMessageCount++;
+			 if (!recvString.equals("")) { 
+				// System.out.println("recv:" + recvString);
+				 JsonValue jsonValue = jsonReader.parse(recvString);
+				 if (jsonValue.get("rpc") != null) {
+					 jsonValue = jsonValue.get("rpc");
+					 if(jsonValue.get("af")!=null){
+						 jsonValue = jsonValue.get("af");
+						 String name=jsonValue.getString("n");
+						 GameObjectB2D gameObject=gameWorld.findGameObject(name);
+						 if (gameObject!=null){
+							 float forceX=jsonValue.getFloat("fx");
+							 float forceY=jsonValue.getFloat("fy");
+							 if(gameObject.getSpeed()<gameObject.getMaxSpeed()){
+								 if(forceX==0){
+									 if(gameObject.getBody().getLinearVelocity().y<1&&gameObject.getBody().getLinearVelocity().y>-1){
+										 gameObject.applyForce(forceX, forceY);
+										// boardCast(recvString);
+										 boardCastNum++;
+									 }
+								 }else{
+									 if (forceX>0&&gameObject.getBody().getLinearVelocity().x<10||forceX<0&&gameObject.getBody().getLinearVelocity().x>-10) {
+										 gameObject.applyForce(forceX, forceY);
+										// boardCast(recvString);
+										 boardCastNum++;
+									}
+								 }
+								
+								 
+							 }
+						 }
+							
+					 }	
+					 
+				 }else{
+					if (jsonValue.get("gago") != null) {
+						String str=gameWorld.gameObjectArrayToString();
+						boardCast("{gago:"+str+"}");
+					}else if(jsonValue.get("ago") != null) {
+						jsonValue=jsonValue.get("ago");
+						String name=jsonValue.getString("n");
+						float x=jsonValue.get("t").get("p").getFloat("x");
+						float y=jsonValue.get("t").get("p").getFloat("y");
+						float angle=jsonValue.get("t").getFloat("a");
+						float angularVelocity=jsonValue.getFloat("av");
+						float width=jsonValue.get("s").getFloat("w");
+						float height=jsonValue.get("s").getFloat("h");
+						float density=jsonValue.getFloat("d");
+						float lx=jsonValue.get("l").getFloat("x");
+						float ly=jsonValue.get("l").getFloat("y");
+						GameObjectB2D gameObject=gameWorld.findGameObject(name);
+						if (gameObject!=null) {
+							
+						}else {
+							gameWorld.addBoxGameObject(name, x, y, angle,angularVelocity, width, height, density, lx, ly);
+							boardCast(recvString);
+						}
+					}else if(jsonValue.get("rgo") != null) {
+						jsonValue=jsonValue.get("rgo");
+						String name=jsonValue.getString("n");
+						GameObjectB2D gameObject=gameWorld.findGameObject(name);
+						if (gameObject!=null) {
+							gameWorld.removeGameObject(name);
+							boardCast(recvString);
+						}
+					}else if(jsonValue.get("ggo") != null) {
+						/*jsonValue=jsonValue.get("ggo");
+						String name=jsonValue.getString("n");
+						GameObjectB2D gameObject=gameWorld.findGameObject(name);
+						if (gameObject!=null) {
+							boardCast("{ggo:"+gameObject.toJson()+"}");
+						}*/
+						String str=gameWorld.gameObjectArrayToString();
+						boardCast("{gago:"+str+"}");
+					}else if(jsonValue.get("stopServer")!=null){
+						udpServer.stop();
+						gameWorldThread.stop();
+					}
+			 	}
+			 }
+			 
+		}
+		
+	}
 	public static void main(String[] args) {
 		/*
 		 * GameObject obj1=new GameObject();
@@ -120,11 +228,11 @@ public class NetTest6LogicServer {
 		}
 	}
 
-	public void disposeMessage() {
-		
+	/*public void disposeMessage(Session session,UdpMessage message) {
+		disoposeMessageCount++;
 		 if (!recvString.equals("")) { 
 			// System.out.println("recv:" + recvString);
-			 jsonValue = jsonReader.parse(recvString);
+			 JsonValue jsonValue = jsonReader.parse(recvString);
 			 if (jsonValue.get("rpc") != null) {
 				 jsonValue = jsonValue.get("rpc");
 				 if(jsonValue.get("af")!=null){
@@ -190,9 +298,9 @@ public class NetTest6LogicServer {
 					jsonValue=jsonValue.get("ggo");
 					String name=jsonValue.getString("n");
 					GameObjectB2D gameObject=gameWorld.findGameObject(name);
-					/*if (gameObject!=null) {
+					if (gameObject!=null) {
 						boardCast("{ggo:"+gameObject.toJson()+"}");
-					}*/
+					}
 					String str=gameWorld.gameObjectArrayToString();
 					boardCast("{gago:"+str+"}");
 				}
@@ -201,7 +309,7 @@ public class NetTest6LogicServer {
 		 
 
 		
-	}
+	}*/
 
 	float delta = 0;
 	boolean needSleep = true;
@@ -210,35 +318,36 @@ public class NetTest6LogicServer {
 	public void start() {
 		System.out.println("LogicServer start!");
 		Runnable gameWorldLogic = new GameWorldLogic();
-		Thread gameWorldThread = new Thread(gameWorldLogic);
+		gameWorldThread = new Thread(gameWorldLogic);
+		
+		messageProcessor=new MessageProcessor();
+		
 		gameWorldThread.start();
+		udpServer.setUdpMessageListener(this);
 		udpServer.start();
-		while (!stoped) {
-			// System.out.println("while
-			// time:"+(System.nanoTime()-lastWhileTime));
-			// lastWhileTime=System.nanoTime();
-
-			// delta=((System.nanoTime()-lastWhileTime)/10000f);
-			// gameWorld.update(delta);
-			try {
-				if (udpServer.sessionArray.size!=0) {
-					for (int i = 0; i < udpServer.sessionArray.size; i++) {
-						session= udpServer.sessionArray.get(i);
-						while (!session.getRecvMessageQueue().isEmpty()) {
-							recvString = new String(session.getRecvMessageQueue().poll().getData());
-							if (recvString != null) {
-								disposeMessage();
-								needSleep = false;
+		/*while (!stoped) {
+			if(udpServer.type1Count>disoposeMessageCount){
+				try {
+					if (udpServer.sessionArray.size!=0) {
+						for (int i = 0; i < udpServer.sessionArray.size; i++) {
+							session= udpServer.sessionArray.get(i);
+							if(session==null)
+								break;
+							while (!session.getRecvMessageQueue().isEmpty()) {
+								recvString = new String(session.getRecvMessageQueue().poll().getData());
+								if (recvString != null) {
+									disposeMessage();
+									
+								}
 							}
 						}
 					}
-				}
-			} catch (ConcurrentModificationException e) {
+				} catch (ConcurrentModificationException e) {
 
-				// e.printStackTrace();
-				// System.out.println("不知道什么问题，先不管。。");
-			}
-			if (needSleep) {
+					// e.printStackTrace();
+					// System.out.println("不知道什么问题，先不管。。");
+				}				
+			}else{
 				try {
 					Thread.currentThread();
 					Thread.sleep(1);
@@ -247,11 +356,17 @@ public class NetTest6LogicServer {
 					e.printStackTrace();
 				}
 			}
-			needSleep = true;
-			// lastWhileTime=System.nanoTime();
-		}
-		udpServer.stop();
-		gameWorldThread.stop();
+			
+		}*/
+		
+	}
+
+	@Override
+	public void disposeUdpMessage(Session session, UdpMessage message) {
+		// TODO Auto-generated method stub
+		messageProcessor.setSession(session);
+		messageProcessor.setMessage(message);
+		threadPool.execute(messageProcessor);
 	}
 
 }

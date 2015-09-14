@@ -27,11 +27,21 @@ public class UdpServer {
 	// SendServicer sendServicer = null;
 	ReceiveServicer receiveServicer = null;
 	ReportStatus reportStatus = null;
-	ExecutorService threadPool = Executors.newFixedThreadPool(10);
+	ExecutorService sendThreadPool;
 	Thread sendThread;
 	Thread reciveThread;
 	Thread reportThread;
+	UdpMessageListener udpMessageListener;
 
+	public UdpMessageListener getUdpMessageListener() {
+		return udpMessageListener;
+	}
+
+	public void setUdpMessageListener(UdpMessageListener udpMessageListener) {
+		this.udpMessageListener = udpMessageListener;
+	}
+
+	public volatile long type1Count = 0;
 	volatile long recvCount = 0;
 	volatile long sendCount = 0;
 	volatile long recvDataLength = 0;
@@ -57,6 +67,13 @@ public class UdpServer {
 	}
 
 	public UdpServer(int port) throws BindException {
+		init(port,10);
+	}
+	
+	public UdpServer(int port,int maximumConections) throws BindException {
+		init(port,maximumConections);
+	}
+	public void init(int port,int maximumConections)throws BindException{
 		try {
 			serverSocket = new DatagramSocket(port);
 
@@ -66,6 +83,7 @@ public class UdpServer {
 
 			e.printStackTrace();
 		}
+		sendThreadPool=Executors.newFixedThreadPool(10);
 	}
 
 	public synchronized void removeSession(long sessionId) {
@@ -79,6 +97,7 @@ public class UdpServer {
 		/*	if (session.currentSendUdpMessage(null) != null) {
 				currentSendMessageNum--;
 			}*/
+			type1Count-=session.getRecvMessageQueue().size();
 			sessionArray.removeValue(session, true);
 		}
 
@@ -152,7 +171,7 @@ public class UdpServer {
 			message.setSequenceId(session.lastSendMessage.sequenceId + 1);
 			//currentSendMessageNum++;
 			session.currentSendUdpMessage(message);
-			threadPool.execute(session.getSendThread());
+			sendThreadPool.execute(session.getSendThread());
 			// threadPool.execute(sendThread);
 			return true;
 		} else {
@@ -346,6 +365,8 @@ public class UdpServer {
 						if (message.getSequenceId() == session.getLastresponseMessage().getSequenceId() + 1) {
 							session.getRecvMessageQueue().add(message);
 							session.setLastresponseMessage(message);
+							udpMessageListener.disposeUdpMessage(session, message);
+							type1Count++;
 							responseMessage.setSequenceId(message.getSequenceId());
 							responseMessage.setType((byte) 2);
 
