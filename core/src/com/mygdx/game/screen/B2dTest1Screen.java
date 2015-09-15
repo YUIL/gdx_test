@@ -96,11 +96,13 @@ public class B2dTest1Screen extends TestScreen2D {
 				// next we create out physics world.
 				createPhysicsWorld();
 
-				 screenLogic = new ScreenLogic(1){
+				 screenLogic = new ScreenLogic(10){
 					 
 					 public void run(){
+						 PolygonShape boxPoly = new PolygonShape();
+							boxPoly.setAsBox(1, 1);
 						 while(true){
-							 
+							// createBox(boxPoly);
 							 //boxes.get(0).applyForce(0, 1, 10, 10, true);
 							// boxes.get(0).setTransform(1, 1, 1);
 							 //boxes.get(0).setLinearVelocity(1, 1);
@@ -211,20 +213,24 @@ public class B2dTest1Screen extends TestScreen2D {
 		for (int i = 0; i < 50; i++) {
 			// Create the BodyDef, set a random position above the
 			// ground and create a new body
-			BodyDef boxBodyDef = new BodyDef();
-			boxBodyDef.type = BodyType.DynamicBody;
-			boxBodyDef.position.x = 5;
-			boxBodyDef.position.y = 20;
-			Body boxBody = world.createBody(boxBodyDef);
-
-			boxBody.createFixture(boxPoly, 1);
-
-			// add the box to our list of boxes
-			boxes.add(boxBody);
+			createBox(boxPoly);
 		}
 
 		// we are done, all that's left is disposing the boxPoly
 		boxPoly.dispose();
+	}
+	
+	public synchronized void createBox(PolygonShape boxPoly){
+		BodyDef boxBodyDef = new BodyDef();
+		boxBodyDef.type = BodyType.DynamicBody;
+		boxBodyDef.position.x = 5;
+		boxBodyDef.position.y = 20;
+		Body boxBody = world.createBody(boxBodyDef);
+
+		boxBody.createFixture(boxPoly, 1);
+
+		// add the box to our list of boxes
+		boxes.add(boxBody);
 	}
 
 	@Override

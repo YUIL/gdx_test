@@ -1,5 +1,9 @@
 package com.mygdx.game.entity;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Shape.Type;
@@ -9,7 +13,8 @@ public class GameObjectB2D {
 	Body body;
 	int maxSpeed=100;
 	float width, height;
-	
+	Queue<GameObjectUpdate> gameObjectCreationQueue=new LinkedList<GameObjectUpdate>();
+
 	
 
 	public GameObjectB2D(String name) {
@@ -95,6 +100,14 @@ public class GameObjectB2D {
 		this.body = body;
 	}
 	
+	public Queue<GameObjectUpdate> getGameObjectCreationQueue() {
+		return gameObjectCreationQueue;
+	}
+
+	public void setGameObjectCreationQueue(Queue<GameObjectUpdate> gameObjectCreationQueue) {
+		this.gameObjectCreationQueue = gameObjectCreationQueue;
+	}
+
 	public synchronized void update(float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
 		
 		this.body.setTransform(x, y, angle);
@@ -103,6 +116,12 @@ public class GameObjectB2D {
 		this.height=height;
 		this.body.getFixtureList().get(0).setDensity(density);
 		this.body.setLinearVelocity(lx, ly);
+		
+	}
+	
+public synchronized void update(GameObjectUpdate gameObjectUpdate){
+		
+		update(gameObjectUpdate.x, gameObjectUpdate.y, gameObjectUpdate.angle, gameObjectUpdate.angularVelocity, gameObjectUpdate.width, gameObjectUpdate.height, gameObjectUpdate.density, gameObjectUpdate.lx, gameObjectUpdate.ly);
 		
 	}
 }

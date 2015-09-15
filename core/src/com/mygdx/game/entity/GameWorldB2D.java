@@ -2,6 +2,10 @@ package com.mygdx.game.entity;
 
 
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -20,13 +24,31 @@ public class GameWorldB2D {
 	private World box2dWorld;
 //	public boolean lock=false;
 	//private ArrayList<Body> boxes = new ArrayList<Body>();
+	Queue<GameObjectCreation> gameObjectCreationQueue=new LinkedList<GameObjectCreation>();
 	Array<GameObjectB2D> gameObjectArray=new Array<GameObjectB2D>();
 	GameObjectB2D ground=new GameObjectB2D("ground");
+	
+	public Queue<GameObjectCreation> getGameObjectCreationQueue() {
+		return gameObjectCreationQueue;
+	}
+	public void setGameObjectCreationQueue(Queue<GameObjectCreation> gameObjectCreationQueue) {
+		this.gameObjectCreationQueue = gameObjectCreationQueue;
+	}
 	public GameWorldB2D() {
 		super();
 		createPhysicsWorld();
 	}
-	public void update(float delta){
+	public synchronized void update(float delta){
+		for (int i = 0; i < gameObjectCreationQueue.size(); i++) {
+			GameObjectCreation gameObjectCreation=gameObjectCreationQueue.poll();
+			addBoxGameObject(gameObjectCreation);
+		}
+		for (int i = 0; i < gameObjectArray.size; i++) {
+			GameObjectB2D gameObject=gameObjectArray.get(i);
+			if (gameObject.getGameObjectCreationQueue().size()>0) {
+				gameObject.update(gameObject.getGameObjectCreationQueue().poll());
+			}
+		}
 		box2dWorld.step(delta, 8, 3);
 	}
 	public synchronized void updateGameObject(GameObjectB2D gameObject,float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
@@ -60,6 +82,10 @@ public class GameWorldB2D {
 	
 	public GameObjectB2D addBoxGameObject(String name,float x,float y,float width,float height,float density){
 		return addBoxGameObject(name, x, y, 0,0,width, height, density,0,0);
+	}
+	public GameObjectB2D addBoxGameObject(GameObjectCreation creation){
+		return addBoxGameObject(creation.name, 
+				creation.x, creation.y, creation.angle, creation.angularVelocity, creation.width, creation.height, creation.density, creation.lx, creation.ly);
 	}
 	public GameObjectB2D addBoxGameObject(String name,float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
 		GameObjectB2D gameObject=createBoxGameObject(name, x, y, angle,angularVelocity,width, height, density,lx,ly);

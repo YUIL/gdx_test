@@ -19,6 +19,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.game.entity.GameObjectB2D;
+import com.mygdx.game.entity.GameObjectCreation;
+import com.mygdx.game.entity.GameObjectUpdate;
 import com.mygdx.game.entity.GameWorldB2D;
 import com.mygdx.game.input.ActorInputListenner;
 import com.mygdx.game.input.KeyboardStatus;
@@ -577,7 +579,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 					GameObjectB2D gameObject=gameWorld.findGameObject(name);
 					if (gameObject!=null) {
 						//System.out.println("update gameObject");
-						gameWorld.updateGameObject(gameObject,x, y, angle,angularVelocity, width, height, density, lx, ly);
+						gameObject.getGameObjectCreationQueue().add(new GameObjectUpdate(x, y, angle, angularVelocity, width, height, density, lx, ly));
 					}else {
 						gameObject=gameWorld.addBoxGameObject(name, x, y, angle,angularVelocity, width, height, density, lx, ly);
 						System.out.println(gameObject.toJson());
@@ -600,7 +602,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 					float density=jsonValue.getFloat("d");
 					float lx=jsonValue.get("l").getFloat("x");
 					float ly=jsonValue.get("l").getFloat("y");
-					gameWorld.addBoxGameObject(name, x, y, angle, angularVelocity,width, height, density, lx, ly);
+					gameWorld.getGameObjectCreationQueue().add(new GameObjectCreation(name, x, y, angle, angularVelocity, width, height, density, lx, ly));
 				}
 			}else if(jsonValue.get("rgo") != null) {
 				jsonValue=jsonValue.get("rgo");
@@ -623,9 +625,9 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 				float ly=jsonValue.get("l").getFloat("y");
 				GameObjectB2D gameObject=gameWorld.findGameObject(name);
 				if (gameObject!=null) {
-					gameWorld.updateGameObject(gameObject,x, y, angle,angularVelocity, width, height, density, lx, ly);
+					gameObject.getGameObjectCreationQueue().add(new GameObjectUpdate(x, y, angle, angularVelocity, width, height, density, lx, ly));
 				}else{
-					gameWorld.addBoxGameObject(name, x, y, angle, angularVelocity,width, height, density, lx, ly);
+					gameWorld.getGameObjectCreationQueue().add(new GameObjectCreation(name, x, y, angle, angularVelocity, width, height, density, lx, ly));
 				}
 			}
 			disposing=false;
