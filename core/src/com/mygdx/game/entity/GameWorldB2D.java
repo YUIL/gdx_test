@@ -1,6 +1,6 @@
 package com.mygdx.game.entity;
 
-import java.util.ArrayList;
+
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -18,6 +18,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class GameWorldB2D {
 	private World box2dWorld;
+//	public boolean lock=false;
 	//private ArrayList<Body> boxes = new ArrayList<Body>();
 	Array<GameObjectB2D> gameObjectArray=new Array<GameObjectB2D>();
 	GameObjectB2D ground=new GameObjectB2D("ground");
@@ -27,6 +28,11 @@ public class GameWorldB2D {
 	}
 	public void update(float delta){
 		box2dWorld.step(delta, 8, 3);
+	}
+	public synchronized void updateGameObject(GameObjectB2D gameObject,float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
+	
+		gameObject.update(x, y, angle, angularVelocity, width, height, density, lx, ly);
+
 	}
 	public GameObjectB2D findGameObject(String name){
 		for (int i = 0; i < gameObjectArray.size; i++) {
@@ -104,7 +110,10 @@ public class GameWorldB2D {
 		groundBodyDef.type = BodyType.StaticBody;
 		groundBodyDef.position.x = 0;
 		groundBodyDef.position.y = 0;
-		ground.body = box2dWorld.createBody(groundBodyDef);
+		if(!box2dWorld.isLocked()){
+			ground.body = box2dWorld.createBody(groundBodyDef);
+		}
+		
 
 
 		FixtureDef fixtureDef = new FixtureDef();

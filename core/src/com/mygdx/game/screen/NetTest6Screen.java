@@ -7,6 +7,7 @@ import java.util.Random;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -34,7 +35,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	TextureRegion textureRegion = new TextureRegion(new Texture(
 			Gdx.files.internal("images/role1.png")));
 	TextureRegion backgroundRegion = new TextureRegion(new Texture(
-			Gdx.files.internal("images/NetTest6_background.png")));
+			Gdx.files.internal("images/NetTest6_background2.png")));
 	volatile UdpServer udpServer;
 	volatile Session session;
 	String recvString = null;
@@ -50,7 +51,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	int speed = 50;
 	long nextUpdateTime=0;
 	int updateInterval=10;
-	
+	volatile boolean disposing=false;
 
 	public NetTest6Screen(Game game) {
 		super(game);
@@ -74,13 +75,24 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 		// TODO Auto-generated method stub
 		// System.out.println(gameWorld.getGameObjectArray().size);
 
-		
-		super.render(delta);
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
+		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.f);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		stage.getCamera().update();
+		batch.getProjectionMatrix().set(stage.getCamera().combined);
+		batch.begin();
+		batch.draw(backgroundRegion,0-camera.position.x*10-205,0-camera.position.y*10,
+				0, 0,
+				backgroundRegion.getRegionWidth(),backgroundRegion.getRegionHeight(),
+				1.5f,1.5f,
+				0);
+		batch.end();
 		camera.update();
 		batch.getProjectionMatrix().set(camera.combined);
 		
 		
-		debugRenderer.render(gameWorld.getBox2dWorld(), camera.combined);
+		//debugRenderer.render(gameWorld.getBox2dWorld(), camera.combined);
 		batch.begin();
 		for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
 			GameObjectB2D gameObject = gameWorld.getGameObjectArray().get(i);
@@ -102,6 +114,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 					angle);
 		}
 		batch.end();
+		super.render(delta);
 		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
 			// aPressAction();
 			if (!keyboardStatus.isaJustPress()) {
@@ -264,7 +277,9 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 				while (!isStoped) {
 					if (System.currentTimeMillis() > nextUpdateTime) {
 						nextUpdateTime += updateInterval;
-						gameWorld.update(updateInterval / 1000f);
+						if (!disposing) {
+							gameWorld.update(updateInterval / 1000f);
+						}
 						GameObjectB2D gameObject=gameWorld.findGameObject(gameObjectName);
 						if(gameObject!=null){
 							camera.position.x=gameObject.getPosition().x;
@@ -525,7 +540,8 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	@Override
 	public void disposeUdpMessage(Session session, UdpMessage message) {
 		// TODO Auto-generated method stub
-		this.session=session;
+		disposing=true;
+		if(session==null)this.session=session;
 		System.out.println(recvString);
 		recvString=new String(message.getData());
 		JsonValue jsonValue = jsonReader.parse(recvString);
@@ -560,8 +576,8 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 					float ly=jsonValue.get(i).get("l").getFloat("y");
 					GameObjectB2D gameObject=gameWorld.findGameObject(name);
 					if (gameObject!=null) {
-						System.out.println("update gameObject");
-						gameObject.update(x, y, angle,angularVelocity, width, height, density, lx, ly);
+						//System.out.println("update gameObject");
+						gameWorld.updateGameObject(gameObject,x, y, angle,angularVelocity, width, height, density, lx, ly);
 					}else {
 						gameObject=gameWorld.addBoxGameObject(name, x, y, angle,angularVelocity, width, height, density, lx, ly);
 						System.out.println(gameObject.toJson());
@@ -607,13 +623,12 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 				float ly=jsonValue.get("l").getFloat("y");
 				GameObjectB2D gameObject=gameWorld.findGameObject(name);
 				if (gameObject!=null) {
-					
-					gameObject.update(x, y, angle,angularVelocity, width, height, density, lx, ly);
+					gameWorld.updateGameObject(gameObject,x, y, angle,angularVelocity, width, height, density, lx, ly);
 				}else{
 					gameWorld.addBoxGameObject(name, x, y, angle, angularVelocity,width, height, density, lx, ly);
 				}
 			}
-			
+			disposing=false;
 		}
 	}
 }

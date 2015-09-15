@@ -1,6 +1,8 @@
 package com.mygdx.game.screen;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -44,7 +46,7 @@ public class B2dTest1Screen extends TestScreen2D {
 
 	/** the immediate mode renderer to output our debug drawings **/
 	private ShapeRenderer renderer;
-
+	ExecutorService threadPool= Executors.newSingleThreadExecutor();
 	/** box2d debug renderer **/
 	private Box2DDebugRenderer debugRenderer;
 
@@ -64,7 +66,7 @@ public class B2dTest1Screen extends TestScreen2D {
 
 	/** our mouse joint **/
 	private MouseJoint mouseJoint = null;
-
+	ScreenLogic screenLogic;
 	/** a hit body **/
 	Body hitBody = null;
 	public B2dTest1Screen(Game game) {
@@ -94,6 +96,21 @@ public class B2dTest1Screen extends TestScreen2D {
 				// next we create out physics world.
 				createPhysicsWorld();
 
+				 screenLogic = new ScreenLogic(1){
+					 
+					 public void run(){
+						 while(true){
+							 
+							 //boxes.get(0).applyForce(0, 1, 10, 10, true);
+							// boxes.get(0).setTransform(1, 1, 1);
+							 //boxes.get(0).setLinearVelocity(1, 1);
+							 //boxes.get(0).getFixtureList().get(0).setDensity(1);
+							 //boxes.get(0).setAngularVelocity(1);
+						 }
+						
+					 }
+				 };
+				 threadPool.execute(screenLogic);
 				// register ourselfs as an InputProcessor
 	}
 
@@ -178,6 +195,7 @@ public class B2dTest1Screen extends TestScreen2D {
 // System.out.println("post solve, normal impulses: " + ni[0] + ", " + ni[1] + ", tangent impulses: " + ti[0] + ", " + ti[1]);
 			}
 		});
+		
 	}
 
 	private void createBoxes () {
@@ -190,7 +208,7 @@ public class B2dTest1Screen extends TestScreen2D {
 		// next we create the 50 box bodies using the PolygonShape we just
 		// defined. This process is similar to the one we used for the ground
 		// body. Note that we reuse the polygon for each body fixture.
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 50; i++) {
 			// Create the BodyDef, set a random position above the
 			// ground and create a new body
 			BodyDef boxBodyDef = new BodyDef();
@@ -211,6 +229,10 @@ public class B2dTest1Screen extends TestScreen2D {
 
 	@Override
 	public void render (float delta) {
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
+		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.f);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		super.render(delta);
 		// first we update the world. For simplicity
 		// we use the delta time provided by the Graphics

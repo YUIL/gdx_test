@@ -95,12 +95,14 @@ public class GameObjectB2D {
 		this.body = body;
 	}
 	
-	public void update(float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
+	public synchronized void update(float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
+		
 		this.body.setTransform(x, y, angle);
 		this.body.setAngularVelocity(angularVelocity);
 		this.width=width;
 		this.height=height;
 		this.body.getFixtureList().get(0).setDensity(density);
 		this.body.setLinearVelocity(lx, ly);
+		
 	}
 }

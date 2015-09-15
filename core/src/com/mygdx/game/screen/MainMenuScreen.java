@@ -1,6 +1,8 @@
 package com.mygdx.game.screen;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -48,6 +50,10 @@ public class MainMenuScreen extends TestScreen2D {
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
+		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.f);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		super.render(delta);
 		stage.act(delta);
 		stage.draw();
