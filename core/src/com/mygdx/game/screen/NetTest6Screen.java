@@ -287,6 +287,12 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 							camera.position.x=gameObject.getPosition().x;
 							camera.position.y=gameObject.getPosition().y;
 						}
+						for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
+							GameObjectB2D gameObject2=gameWorld.getGameObjectArray().get(i);
+							if(gameObject2.getPosition().y<-50){
+								sendMessage("{ggo:{n:"+gameObject2.getName()+"}}");
+							}
+						}
 						
 					}
 					try {
@@ -499,9 +505,12 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 			}
 		});
 		stage.getRoot().findActor("Z").addListener(new ActorInputListenner() {
-
+			
 			public void touchUp(InputEvent event, float x, float y,
 					int pointer, int button) {
+				
+				stage.unfocus( stage.getRoot().findActor(
+						"userName"));
 				gameObjectName = ((TextArea) stage.getRoot().findActor(
 						"userName")).getText();
 
@@ -557,7 +566,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 					/*float forceX=jsonValue.getFloat("fx");
 					float forceY=jsonValue.getFloat("fy");
 					gameObject.applyForce(forceX, forceY);*/
-					sendMessage("{ggo:{n:" + name + "}}");
+					sendMessage("{gago:}");
 				}
 				
 			}

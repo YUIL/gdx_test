@@ -25,9 +25,18 @@ public class GameWorldB2D {
 //	public boolean lock=false;
 	//private ArrayList<Body> boxes = new ArrayList<Body>();
 	Queue<GameObjectCreation> gameObjectCreationQueue=new LinkedList<GameObjectCreation>();
+	Queue<GameObjectB2D> gameObjectRemoveQueue=new LinkedList<GameObjectB2D>();
 	Array<GameObjectB2D> gameObjectArray=new Array<GameObjectB2D>();
 	GameObjectB2D ground=new GameObjectB2D("ground");
 	
+	
+	
+	public Queue<GameObjectB2D> getGameObjectRemoveQueue() {
+		return gameObjectRemoveQueue;
+	}
+	public void setGameObjectRemoveQueue(Queue<GameObjectB2D> gameObjectRemoveQueue) {
+		this.gameObjectRemoveQueue = gameObjectRemoveQueue;
+	}
 	public Queue<GameObjectCreation> getGameObjectCreationQueue() {
 		return gameObjectCreationQueue;
 	}
@@ -39,6 +48,10 @@ public class GameWorldB2D {
 		createPhysicsWorld();
 	}
 	public synchronized void update(float delta){
+		for (int i = 0; i < gameObjectRemoveQueue.size(); i++) {
+			GameObjectB2D gameObject=gameObjectRemoveQueue.poll();
+			removeGameObject(gameObject);
+		}
 		for (int i = 0; i < gameObjectCreationQueue.size(); i++) {
 			GameObjectCreation gameObjectCreation=gameObjectCreationQueue.poll();
 			addBoxGameObject(gameObjectCreation);
@@ -76,8 +89,11 @@ public class GameWorldB2D {
 	}
 	
 	public void removeGameObject(GameObjectB2D gameObject){
-		box2dWorld.destroyBody(gameObject.body);
-		gameObjectArray.removeValue(gameObject, true);
+		if (gameObjectArray.contains(gameObject, true)) {
+			box2dWorld.destroyBody(gameObject.body);
+			gameObjectArray.removeValue(gameObject, true);
+		}
+		
 	}
 	
 	public GameObjectB2D addBoxGameObject(String name,float x,float y,float width,float height,float density){

@@ -1,5 +1,7 @@
 package com.mygdx.game.entity;
 
+import java.util.Random;
+
 public class GameObjectCreation {
 	
 	public GameObjectCreation(String name, float x, float y, float angle, float angularVelocity, float width,
@@ -26,4 +28,9 @@ public class GameObjectCreation {
 	public float density;
 	public float lx;
 	public float ly;
+	
+	public static GameObjectCreation random(String name){
+		Random r=new Random();
+		return new GameObjectCreation(name, r.nextFloat()*30-15, 30, 1, 0, 2, 2, 1, 0, 0);
+	}
 }

@@ -10,7 +10,7 @@ import com.mygdx.game.net.udp.UdpServer.SendServicer;
 
 public class Session {
 	long id;
-	int timeOut=30;
+	int timeOut=15;
 	int maxResendTimes=10;
 	SendServicer sendThread;
 

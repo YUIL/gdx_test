@@ -96,13 +96,17 @@ public class B2dTest1Screen extends TestScreen2D {
 				// next we create out physics world.
 				createPhysicsWorld();
 
-				 screenLogic = new ScreenLogic(10){
+				 screenLogic = new ScreenLogic(1){
 					 
 					 public void run(){
 						 PolygonShape boxPoly = new PolygonShape();
 							boxPoly.setAsBox(1, 1);
 						 while(true){
-							// createBox(boxPoly);
+							/* if (world.getBodyCount()>2) {
+								 world.destroyBody(boxes.get(0));
+								 boxes.remove(0);
+							}*/
+							
 							 //boxes.get(0).applyForce(0, 1, 10, 10, true);
 							// boxes.get(0).setTransform(1, 1, 1);
 							 //boxes.get(0).setLinearVelocity(1, 1);

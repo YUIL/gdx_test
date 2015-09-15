@@ -14,6 +14,7 @@ import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpMessage;
 import com.mygdx.game.net.udp.UdpMessageListener;
 import com.mygdx.game.net.udp.UdpServer;
+import com.sun.xml.internal.ws.api.pipe.NextAction;
 
 public class NetTest6LogicServer implements UdpMessageListener {
 
@@ -33,7 +34,11 @@ public class NetTest6LogicServer implements UdpMessageListener {
 	MessageProcessor messageProcessor;
 	ExecutorService threadPool = Executors.newSingleThreadExecutor();
 	volatile Thread gameWorldThread;
-
+	
+	volatile int autoAddIterval=10000;
+	volatile long nextAutoAddTime=0;
+	volatile int autoNum=0;
+	
 	public class GameWorldLogic implements Runnable {
 
 		public GameWorldLogic() {
@@ -42,17 +47,41 @@ public class NetTest6LogicServer implements UdpMessageListener {
 
 		int updateInterval = 10;
 		long nextUpdateTime = 0;
+		
+		
 
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
+			nextAutoAddTime=System.currentTimeMillis();
 			nextUpdateTime = System.currentTimeMillis();
+			boolean needBoard=false;
 			//nextAutoBoardCastTime = System.currentTimeMillis();
 			while (!stoped) {
 				if (System.currentTimeMillis() > nextUpdateTime) {
 					nextUpdateTime += updateInterval;
+					if (gameWorld.getGameObjectArray().size<3) {
+						if (System.currentTimeMillis()>nextAutoAddTime) {
+							nextAutoAddTime+=autoAddIterval;
+							gameWorld.addBoxGameObject(GameObjectCreation.random(String.valueOf(autoNum)));
+							autoNum++;
+							needBoard=true;
+						}
+					}
+					
+					for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
+						GameObjectB2D gameObject=gameWorld.getGameObjectArray().get(i);
+						if (gameObject.getBody().getPosition().y<-50) {
+							gameWorld.getGameObjectRemoveQueue().add(gameObject);
+							needBoard=true;
+						}
+					}
 					gameWorld.update(updateInterval / 1000f);
 					
+					
+					if (needBoard) {
+						boardCastNum++;
+					}
 					/*
 					 * if (System.currentTimeMillis()-nextAutoBoardCastTime>
 					 * autoBoardCastInterval) {
@@ -73,6 +102,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 						e.printStackTrace();
 					}
 				}
+				needBoard =false;
 			}
 			System.out.println("worldLogic stoped");
 		}
@@ -173,15 +203,16 @@ public class NetTest6LogicServer implements UdpMessageListener {
 							boardCast(recvString);
 						}
 					} else if (jsonValue.get("ggo") != null) {
-						/*
-						 * jsonValue=jsonValue.get("ggo"); String
-						 * name=jsonValue.getString("n"); GameObjectB2D
-						 * gameObject=gameWorld.findGameObject(name); if
-						 * (gameObject!=null) {
-						 * boardCast("{ggo:"+gameObject.toJson()+"}"); }
-						 */
-						String str = gameWorld.gameObjectArrayToString();
-						boardCast("{gago:" + str + "}");
+						
+						jsonValue=jsonValue.get("ggo"); 
+						String name=jsonValue.getString("n"); 
+						GameObjectB2D gameObject=gameWorld.findGameObject(name);
+						if(gameObject!=null) { 
+							//boardCast("{ggo:"+gameObject.toJson()+"}");
+							udpServer.send(("{ggo:"+gameObject.toJson()+"}").getBytes(), session);
+						} else{
+							udpServer.send(("{rgo:{n:"+name+"}}").getBytes(), session);
+						}	
 					} else if (jsonValue.get("stopServer") != null) {
 						//udpServer.stop();
 						stoped=true;
