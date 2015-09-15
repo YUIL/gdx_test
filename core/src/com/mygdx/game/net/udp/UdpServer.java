@@ -237,8 +237,8 @@ public class UdpServer {
 						if (session.currentSendUdpMessage(null).getSequenceId() != session.getLastSendMessage()
 								.getSequenceId()) {// 如果对方还没收到这条消息
 							if (session.timeOutMultiple > session.maxResendTimes) {// 如果单条消息重发次数超过maxResendTimes，删掉session
-								sessionArray.removeValue(session, true);
-								//currentSendMessageNum--;
+								removeSession(session);
+								break;
 							} else {
 								if (System.currentTimeMillis() - session.lastSendTime > session.getTimeOut()
 										* session.timeOutMultiple) {
@@ -246,18 +246,23 @@ public class UdpServer {
 									// System.out.println("send");
 									sendUdpMessage(session, session.currentSendUdpMessage(null));
 									if (session.currentSendUdpMessage(null).getType() != 1) {
-
 										session.setCurrentSendMessage(null);
-										//currentSendMessageNum--;
 									}
 
+								}else{
+									try {
+										Thread.sleep(session.getTimeOut()
+												* session.timeOutMultiple);
+									} catch (InterruptedException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								}
 							}
 
 						} else {
 							session.timeOutMultiple = 0;
 							session.setCurrentSendMessage(null);
-							//currentSendMessageNum--;
 						}
 
 

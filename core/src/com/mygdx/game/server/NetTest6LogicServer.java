@@ -23,7 +23,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 	// String recvString;
 	// String responseString;
 	JsonReader jsonReader = new JsonReader();
-	boolean stoped = false;
+	volatile boolean stoped = false;
 	volatile GameWorldB2D gameWorld;
 	int autoBoardCastInterval = 100;
 	long nextAutoBoardCastTime = 0;
@@ -47,13 +47,12 @@ public class NetTest6LogicServer implements UdpMessageListener {
 		public void run() {
 			// TODO Auto-generated method stub
 			nextUpdateTime = System.currentTimeMillis();
-			nextAutoBoardCastTime = System.currentTimeMillis();
-			while (true) {
+			//nextAutoBoardCastTime = System.currentTimeMillis();
+			while (!stoped) {
 				if (System.currentTimeMillis() > nextUpdateTime) {
 					nextUpdateTime += updateInterval;
-
 					gameWorld.update(updateInterval / 1000f);
-					String str = gameWorld.gameObjectArrayToString();
+					
 					/*
 					 * if (System.currentTimeMillis()-nextAutoBoardCastTime>
 					 * autoBoardCastInterval) {
@@ -61,13 +60,13 @@ public class NetTest6LogicServer implements UdpMessageListener {
 					 * boardCast("{gago:"+str+"}"); }
 					 */
 					if (boardCastNum > boardCastCound) {
+						String str = gameWorld.gameObjectArrayToString();
 						boardCastCound++;
 						boardCast("{gago:" + str + "}");
 					}
 
 				} else {
 					try {
-						Thread.currentThread();
 						Thread.sleep(updateInterval);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
@@ -75,7 +74,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 					}
 				}
 			}
-
+			System.out.println("worldLogic stoped");
 		}
 
 	}
@@ -184,8 +183,8 @@ public class NetTest6LogicServer implements UdpMessageListener {
 						String str = gameWorld.gameObjectArrayToString();
 						boardCast("{gago:" + str + "}");
 					} else if (jsonValue.get("stopServer") != null) {
-						udpServer.stop();
-						gameWorldThread.stop();
+						//udpServer.stop();
+						stoped=true;
 					}
 				}
 			}
