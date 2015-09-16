@@ -76,7 +76,7 @@ public class NetTest4Screen extends TestScreen2D {
 							}
 							if (session != null) {
 								
-								while (!session.getRecvMessageQueue().isEmpty()) {
+								/*while (!session.getRecvMessageQueue().isEmpty()) {
 									recvString = new String(session.getRecvMessageQueue().poll().getData());
 									if (recvString!=null){
 										disposeMessage();
@@ -84,7 +84,7 @@ public class NetTest4Screen extends TestScreen2D {
 									
 									
 
-								}
+								}*/
 							} else {
 								if (udpServer.sessionArray.size!=0) {
 									for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator.hasNext();) {

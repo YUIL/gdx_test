@@ -33,11 +33,11 @@ public class Session {
 	short timeOutMultiple=0;
 	long lastSendTime;
 	InetSocketAddress contactorAddress;
-	byte state;
 	UdpMessage currentSendMessage;
-	volatile UdpMessage lastSendMessage;
-	UdpMessage lastRecvMessage;
-	volatile Queue<UdpMessage> recvMessageQueue;
+	public  int lastSendSequenceId;
+	public  int lastRecvSequenceId;
+
+	//volatile Queue<UdpMessage> recvMessageQueue;
 
 	public Session(){
 		init(new Random().nextLong());
@@ -49,9 +49,11 @@ public class Session {
 	private void init(long id){
 		System.out.println("new session,id:"+id);
 		this.id=id;
-		this.setLastSendMessage(new UdpMessage(id, -1));
-		this.setLastresponseMessage(new UdpMessage(id, -1));
-		recvMessageQueue=new LinkedList<UdpMessage>();
+		lastSendSequenceId=-1;
+		lastRecvSequenceId=-1;
+/*		this.setLastSendMessage(new UdpMessage(id, -1));
+		this.setLastresponseMessage(new UdpMessage(id, -1));*/
+		//recvMessageQueue=new LinkedList<UdpMessage>();
 	}
 	public long getId() {
 		return id;
@@ -71,44 +73,31 @@ public class Session {
 	public void setContactorAddress(InetSocketAddress contactorAddress) {
 		this.contactorAddress = contactorAddress;
 	}
-	public byte getState() {
-		return state;
-	}
-	public void setState(byte state) {
-		this.state = state;
-	}
 	public UdpMessage getCurrentSendMessage() {
 		return currentSendMessage;
 	}
 	public void setCurrentSendMessage(UdpMessage currentSendMessage) {
 		this.currentSendMessage = currentSendMessage;
 	}
-	public synchronized UdpMessage getLastSendMessage() {
+/*	public synchronized UdpMessage getLastSendMessage() {
 		return lastSendMessage;
 	}
 	public synchronized void setLastSendMessage(UdpMessage lastSendMessage) {
 		this.lastSendMessage = lastSendMessage;
-	}
+	}*/
 	public long getLastSendTime() {
 		return lastSendTime;
 	}
 	public void setLastSendTime(long lastSendTime) {
 		this.lastSendTime = lastSendTime;
 	}
-	public   Queue<UdpMessage> getRecvMessageQueue() {
+/*	public   Queue<UdpMessage> getRecvMessageQueue() {
 		return recvMessageQueue;
 	}
 	public   void setRecvMessageQueue(Queue<UdpMessage> responseMessageQueue) {
 		this.recvMessageQueue = responseMessageQueue;
 	}
-	public UdpMessage getLastresponseMessage() {
-		return lastRecvMessage;
-	}
-	public void setLastresponseMessage(UdpMessage lastresponseMessage) {
-		this.lastRecvMessage = lastresponseMessage;
-	}
-	
-	
+	*/
 	public synchronized UdpMessage currentSendUdpMessage(UdpMessage message){
 		if (message==null){
 			return this.currentSendMessage;
@@ -121,16 +110,13 @@ public class Session {
 
 	@Override
 	public String toString() {
-		return "Session{" +
-				"id=" + id +
-				", timeOut=" + timeOut +
-				", lastSendTime=" + lastSendTime +
-				", contactorAddress=" + contactorAddress +
-				", state=" + state +
-				", currentSendMessage=" + currentSendMessage +
-				", lastSendMessage=" + lastSendMessage +
-				", lastRecvMessage=" + lastRecvMessage +
-				", recvMessageQueue=" + recvMessageQueue +
-				'}';
+		return "Session [id=" + id + ", timeOut=" + timeOut + ", maxResendTimes=" + maxResendTimes + ", sendThread="
+				+ sendThread + ", timeOutMultiple=" + timeOutMultiple + ", lastSendTime=" + lastSendTime
+				+ ", contactorAddress=" + contactorAddress + ", currentSendMessage=" + currentSendMessage
+				+ ", lastSendSequenceId=" + lastSendSequenceId + ", lastRecvSequenceId=" + lastRecvSequenceId + "]";
 	}
+
+	
+
+
 }

@@ -62,6 +62,7 @@ public class Test {
         //关闭线程池 
         pool.shutdown(); */
 		//UdpMessage message=new UdpMessage();
+		System.out.println("".getBytes().length);
 		
 	}
 	static class MyThread extends Thread{ 

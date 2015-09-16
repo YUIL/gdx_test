@@ -62,13 +62,13 @@ public class NetTest3Screen extends TestScreen {
 		super.render(delta);
         Session session;
         if (udpServer.sessionArray.size!=0) {
-			for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator
+			/*for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator
 					.hasNext();) {
 				session = iterator.next();
 				if (!session.getRecvMessageQueue().isEmpty()) {
 					str = new String(session.getRecvMessageQueue().poll().getData());
 				}
-			}
+			}*/
 		}
 		
 		stage.draw();
@@ -127,7 +127,7 @@ public class NetTest3Screen extends TestScreen {
 						}
                         TextArea tx = ((TextArea) (stage.getRoot()
                                 .findActor("sequenceId")));
-                        tx.setText(String.valueOf(session.getLastSendMessage().getSequenceId()  + 1));
+                        tx.setText(String.valueOf(session.lastSendSequenceId  + 1));
                       //  tx.setText(String.valueOf(Integer.parseInt(tx.getText()) + 1));
 						UdpMessage message = new UdpMessage();
 						message.setSessionId(session.getId());

@@ -240,13 +240,13 @@ public class LogicServer {
 					for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator
 							.hasNext();) {
 						session = iterator.next();
-						while (!session.getRecvMessageQueue().isEmpty()) {
+					/*	while (!session.getRecvMessageQueue().isEmpty()) {
 							recvString = new String(session.getRecvMessageQueue().poll().getData());
 							if (recvString != null) {
 								disposeMessage();
 								needSleep = false;
 							}
-						}
+						}*/
 					}
 				}
 				

@@ -41,7 +41,6 @@ public class UdpServer {
 		this.udpMessageListener = udpMessageListener;
 	}
 
-	public volatile long type1Count = 0;
 	volatile long recvCount = 0;
 	volatile long sendCount = 0;
 	volatile long recvDataLength = 0;
@@ -97,7 +96,6 @@ public class UdpServer {
 		/*	if (session.currentSendUdpMessage(null) != null) {
 				currentSendMessageNum--;
 			}*/
-			type1Count-=session.getRecvMessageQueue().size();
 			sessionArray.removeValue(session, true);
 		}
 
@@ -168,7 +166,7 @@ public class UdpServer {
 		// System.out.println("send(UdpMessage message, Session session)");
 		if (session.currentSendUdpMessage(null) == null) {
 			message.setSessionId(session.getId());
-			message.setSequenceId(session.lastSendMessage.sequenceId + 1);
+			message.setSequenceId(session.lastSendSequenceId + 1);
 			//currentSendMessageNum++;
 			session.currentSendUdpMessage(message);
 			sendThreadPool.execute(session.getSendThread());
@@ -234,8 +232,7 @@ public class UdpServer {
 		public void run() {
 			// System.out.println("send Thread run");
 			while ((session.currentSendUdpMessage(null) != null)) {
-						if (session.currentSendUdpMessage(null).getSequenceId() != session.getLastSendMessage()
-								.getSequenceId()) {// 如果对方还没收到这条消息
+						if (session.currentSendUdpMessage(null).getSequenceId() != session.lastSendSequenceId) {// 如果对方还没收到这条消息
 							if (session.timeOutMultiple > session.maxResendTimes) {// 如果单条消息重发次数超过maxResendTimes，删掉session
 								removeSession(session);
 								break;
@@ -286,7 +283,9 @@ public class UdpServer {
 		public synchronized void sendUdpMessage(DatagramSocket sendSocket, SocketAddress address, UdpMessage message) {
 			// System.out.println("Udp send, message:"+message.toString());
 			sendCount++;
-			sendDataLength += message.getData().length;
+			if (message.getData()!=null) {
+				sendDataLength += message.getData().length;
+			}
 			try {
 				byte[] temp = message.toBytes();
 				DatagramPacket sendPacket = new DatagramPacket(temp, temp.length, address);
@@ -311,6 +310,8 @@ public class UdpServer {
 		byte[] bytes1 = new byte[bytesLength];
 		byte[] recvBuf = new byte[bytesLength];
 		UdpMessage recvMessageBuf =new UdpMessage();
+		UdpMessage responseMessage = new UdpMessage();
+		
 		//UdpMessage responseMessage;
 		@Override
 		public void run() {
@@ -343,6 +344,7 @@ public class UdpServer {
 				} else {
 					recvMessageBuf.setData(null);
 					recvMessageBuf.initUdpMessageByDatagramPacket(recvPacket);
+					System.out.println("udp recv:"+recvMessageBuf.toString());
 					//UdpMessage recvMessageBuf = new UdpMessage(recvPacket);
 					//recvDataLength += recvMessageBuf.getData().length;
 					/*
@@ -350,9 +352,6 @@ public class UdpServer {
 					 * JsonValue jsonValue; JsonReader jsonReader = new
 					 * JsonReader(); jsonValue = jsonReader.parse(recvString);
 					 */
-					
-					 System.out.println("Udp recive:" + recvMessageBuf.toString());
-
 					session = findSession(recvMessageBuf.getSessionId());
 					if (session == null) {
 						 System.out.println("add session");
@@ -361,23 +360,19 @@ public class UdpServer {
 						// System.out.println(session.toString());
 
 					}
-					System.out.println("Upd lastR:"+session.getLastresponseMessage().toString());
-					UdpMessage responseMessage = new UdpMessage();
+					
 					responseMessage.setSessionId(session.getId());
 					switch (recvMessageBuf.getType()) {
 					case 0:
 						removeSession(recvMessageBuf.getSessionId());
 					case 1:
 
-						responseMessage.setLength(4);
-						responseMessage.setData(JavaDataConverter.intToBytes(1));
-						if (recvMessageBuf.getSequenceId() == session.getLastresponseMessage().getSequenceId() + 1) {
-							session.getRecvMessageQueue().add(recvMessageBuf);
-							session.getLastresponseMessage().setSequenceId(recvMessageBuf.getSequenceId());
+						
+						if (recvMessageBuf.getSequenceId() == session.lastRecvSequenceId+ 1) {
+							//session.getRecvMessageQueue().add(recvMessageBuf);
+							session.lastRecvSequenceId=recvMessageBuf.getSequenceId();
 							
-							System.out.println("udp sendDisposeMessage");
 							udpMessageListener.disposeUdpMessage(session, recvMessageBuf);
-							type1Count++;
 							responseMessage.setSequenceId(recvMessageBuf.getSequenceId());
 							responseMessage.setType((byte) 2);
 
@@ -385,10 +380,10 @@ public class UdpServer {
 							session.getSendThread().sendUdpMessage(responseMessage);
 							// System.out.println("session
 							// size:"+sessionMap.size());
-						} else if (recvMessageBuf.getSequenceId() == session.getLastresponseMessage().getSequenceId()) {
+						} else if (recvMessageBuf.getSequenceId() == session.lastRecvSequenceId) {
 							// System.out.println("lastrecv:" +
 							// session.getLastresponseMessage());
-							responseMessage.setSequenceId(session.lastRecvMessage.getSequenceId());
+							responseMessage.setSequenceId(session.lastRecvSequenceId);
 							responseMessage.setType((byte) 3);
 							session.getSendThread().sendUdpMessage(responseMessage);
 
@@ -399,7 +394,7 @@ public class UdpServer {
 						if (session != null && session.currentSendUdpMessage(null) != null) {
 							if (recvMessageBuf.getSequenceId() == session.currentSendUdpMessage(null).sequenceId) {
 								// System.out.println("发送成功");
-								session.setLastSendMessage(session.currentSendUdpMessage(null));
+								session.lastSendSequenceId=session.currentSendUdpMessage(null).getSequenceId();
 
 							}
 						} else {
@@ -411,7 +406,7 @@ public class UdpServer {
 						if (session != null && session.currentSendUdpMessage(null) != null) {
 							if (recvMessageBuf.getSequenceId() == session.currentSendUdpMessage(null).getSequenceId()) {
 								// System.out.println("发送成功");
-								session.setLastSendMessage(session.currentSendUdpMessage(null));
+								session.lastSendSequenceId=session.currentSendUdpMessage(null).getSequenceId();
 
 							} else {
 								// System.out.println("真不对！");

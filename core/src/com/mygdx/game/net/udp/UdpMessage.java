@@ -117,12 +117,14 @@ public class UdpMessage {
 	}
 
 	public byte[] toBytes() {
-		byte[] dest = new byte[17 + data.length];
+		byte[] dest = new byte[17 + length];
 		System.arraycopy(JavaDataConverter.longToBytes(sessionId), 0, dest, 0,8);		
 		System.arraycopy(JavaDataConverter.intToBytes(sequenceId), 0, dest, 8,4);
 		System.arraycopy(JavaDataConverter.intToBytes(type), 0, dest, 12, 1);
 		System.arraycopy(JavaDataConverter.intToBytes(length), 0, dest, 13, 4);
-		System.arraycopy(data, 0, dest, 17, data.length);
+		if (data!=null) {
+			System.arraycopy(data, 0, dest, 17, length);
+		}
 		return dest;
 	}
 	@Override

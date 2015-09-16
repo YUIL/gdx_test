@@ -134,11 +134,10 @@ public class NetTest6LogicServer implements UdpMessageListener {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			System.out.print("disposeMessage:");
-			System.out.println(message.toString());
+			/*System.out.print("disposeMessage:");
+			System.out.println(message.toString());*/
 			String recvString = new String(message.getData());
 			if (!recvString.equals("")) {
-				 System.out.println("recv:" + recvString);
 				JsonValue jsonValue = jsonReader.parse(recvString);
 				if (jsonValue.get("rpc") != null) {
 					jsonValue = jsonValue.get("rpc");
