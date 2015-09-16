@@ -310,7 +310,8 @@ public class UdpServer {
 		final int bytesLength = 65515;
 		byte[] bytes1 = new byte[bytesLength];
 		byte[] recvBuf = new byte[bytesLength];
-
+		UdpMessage recvMessageBuf =new UdpMessage();
+		//UdpMessage responseMessage;
 		@Override
 		public void run() {
 			while (true) {
@@ -340,46 +341,51 @@ public class UdpServer {
 					System.out.println("data too long");
 
 				} else {
-					UdpMessage message = new UdpMessage(recvPacket);
-					recvDataLength += message.getData().length;
+					recvMessageBuf.setData(null);
+					recvMessageBuf.initUdpMessageByDatagramPacket(recvPacket);
+					//UdpMessage recvMessageBuf = new UdpMessage(recvPacket);
+					//recvDataLength += recvMessageBuf.getData().length;
 					/*
 					 * String recvString=new String(message.getData());
 					 * JsonValue jsonValue; JsonReader jsonReader = new
 					 * JsonReader(); jsonValue = jsonReader.parse(recvString);
 					 */
-					// System.out.println("Udp recive:" + message.toString());
+					
+					 System.out.println("Udp recive:" + recvMessageBuf.toString());
 
-					session = findSession(message.getSessionId());
+					session = findSession(recvMessageBuf.getSessionId());
 					if (session == null) {
-						// System.out.println("add session");
-						session = createSession(message.getSessionId(),
+						 System.out.println("add session");
+						session = createSession(recvMessageBuf.getSessionId(),
 								new InetSocketAddress(recvPacket.getAddress(), recvPacket.getPort()));
 						// System.out.println(session.toString());
 
 					}
-
+					System.out.println("Upd lastR:"+session.getLastresponseMessage().toString());
 					UdpMessage responseMessage = new UdpMessage();
 					responseMessage.setSessionId(session.getId());
-					switch (message.getType()) {
+					switch (recvMessageBuf.getType()) {
 					case 0:
-						removeSession(message.getSessionId());
+						removeSession(recvMessageBuf.getSessionId());
 					case 1:
 
 						responseMessage.setLength(4);
 						responseMessage.setData(JavaDataConverter.intToBytes(1));
-						if (message.getSequenceId() == session.getLastresponseMessage().getSequenceId() + 1) {
-							session.getRecvMessageQueue().add(message);
-							session.setLastresponseMessage(message);
-							udpMessageListener.disposeUdpMessage(session, message);
+						if (recvMessageBuf.getSequenceId() == session.getLastresponseMessage().getSequenceId() + 1) {
+							session.getRecvMessageQueue().add(recvMessageBuf);
+							session.getLastresponseMessage().setSequenceId(recvMessageBuf.getSequenceId());
+							
+							System.out.println("udp sendDisposeMessage");
+							udpMessageListener.disposeUdpMessage(session, recvMessageBuf);
 							type1Count++;
-							responseMessage.setSequenceId(message.getSequenceId());
+							responseMessage.setSequenceId(recvMessageBuf.getSequenceId());
 							responseMessage.setType((byte) 2);
 
 							// session.setLastSendMessage(responseMessage);
 							session.getSendThread().sendUdpMessage(responseMessage);
 							// System.out.println("session
 							// size:"+sessionMap.size());
-						} else if (message.getSequenceId() == session.getLastresponseMessage().getSequenceId()) {
+						} else if (recvMessageBuf.getSequenceId() == session.getLastresponseMessage().getSequenceId()) {
 							// System.out.println("lastrecv:" +
 							// session.getLastresponseMessage());
 							responseMessage.setSequenceId(session.lastRecvMessage.getSequenceId());
@@ -391,7 +397,7 @@ public class UdpServer {
 						break;
 					case 2:
 						if (session != null && session.currentSendUdpMessage(null) != null) {
-							if (message.getSequenceId() == session.currentSendUdpMessage(null).sequenceId) {
+							if (recvMessageBuf.getSequenceId() == session.currentSendUdpMessage(null).sequenceId) {
 								// System.out.println("发送成功");
 								session.setLastSendMessage(session.currentSendUdpMessage(null));
 
@@ -403,7 +409,7 @@ public class UdpServer {
 					case 3:
 						// System.out.println("消息SequenceId不对");
 						if (session != null && session.currentSendUdpMessage(null) != null) {
-							if (message.getSequenceId() == session.currentSendUdpMessage(null).getSequenceId()) {
+							if (recvMessageBuf.getSequenceId() == session.currentSendUdpMessage(null).getSequenceId()) {
 								// System.out.println("发送成功");
 								session.setLastSendMessage(session.currentSendUdpMessage(null));
 

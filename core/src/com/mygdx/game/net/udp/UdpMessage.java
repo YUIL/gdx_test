@@ -62,7 +62,10 @@ public class UdpMessage {
 		this.setLength(JavaDataConverter.bytesToInt(JavaDataConverter
 				.subByte(recvPacket.getData(), 4, offset)));
 		offset+=4;
-		this.initDateFromUdpbytes(JavaDataConverter.subByte(recvPacket.getData(),this.length,offset));
+		//if(this.length>0){
+			//System.out.println("offset:"+offset);
+			this.initDateFromUdpbytes(JavaDataConverter.subByte(recvPacket.getData(),this.length,offset));
+		//}
 	}
 
 	public long getSessionId() {
@@ -106,12 +109,15 @@ public class UdpMessage {
 	}
 
 	public void initDateFromUdpbytes(byte[] data) {
+		//System.out.println("initdate:"+this.toString());
+		//System.out.println("data.length:"+data.length);
+
 		this.data = new byte[this.length];
-		System.arraycopy(data, 20, this.data, 0, this.length);
+		System.arraycopy(data, 0, this.data, 0, this.length);
 	}
 
 	public byte[] toBytes() {
-		byte[] dest = new byte[20 + data.length];
+		byte[] dest = new byte[17 + data.length];
 		System.arraycopy(JavaDataConverter.longToBytes(sessionId), 0, dest, 0,8);		
 		System.arraycopy(JavaDataConverter.intToBytes(sequenceId), 0, dest, 8,4);
 		System.arraycopy(JavaDataConverter.intToBytes(type), 0, dest, 12, 1);

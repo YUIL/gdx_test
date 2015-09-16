@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.mygdx.game.net.udp.UdpMessage;
 
 public class Test {
 	static String str="{name:asd}";
@@ -44,7 +45,7 @@ public class Test {
 			}
 			
 		}*/
-		 //创建一个可重用固定线程数的线程池 
+		/* //创建一个可重用固定线程数的线程池 
         ExecutorService pool = Executors.newFixedThreadPool(2); 
         //创建实现了Runnable接口对象，Thread对象当然也实现了Runnable接口 
         Thread t1 = new MyThread(); 
@@ -59,7 +60,9 @@ public class Test {
         pool.execute(t4); 
         pool.execute(t5); 
         //关闭线程池 
-        pool.shutdown(); 
+        pool.shutdown(); */
+		//UdpMessage message=new UdpMessage();
+		
 	}
 	static class MyThread extends Thread{ 
         @Override 
