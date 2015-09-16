@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.mygdx.game.entity.GameObjectB2D;
+import com.mygdx.game.entity.B2DGameObject;
 import com.mygdx.game.entity.GameObjectCreation;
 import com.mygdx.game.entity.GameWorldB2D;
 import com.mygdx.game.net.udp.Session;
@@ -70,7 +70,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 					}
 					
 					for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
-						GameObjectB2D gameObject=gameWorld.getGameObjectArray().get(i);
+						B2DGameObject gameObject=gameWorld.getGameObjectArray().get(i);
 						if (gameObject.getBody().getPosition().y<-50) {
 							gameWorld.getGameObjectRemoveQueue().add(gameObject);
 							needBoard=true;
@@ -144,7 +144,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 					if (jsonValue.get("af") != null) {
 						jsonValue = jsonValue.get("af");
 						String name = jsonValue.getString("n");
-						GameObjectB2D gameObject = gameWorld.findGameObject(name);
+						B2DGameObject gameObject = gameWorld.findGameObject(name);
 						if (gameObject != null) {
 							float forceX = jsonValue.getFloat("fx");
 							float forceY = jsonValue.getFloat("fy");
@@ -186,7 +186,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 						float density = jsonValue.getFloat("d");
 						float lx = jsonValue.get("l").getFloat("x");
 						float ly = jsonValue.get("l").getFloat("y");
-						GameObjectB2D gameObject = gameWorld.findGameObject(name);
+						B2DGameObject gameObject = gameWorld.findGameObject(name);
 						if (gameObject != null) {
 
 						} else {
@@ -197,7 +197,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 					} else if (jsonValue.get("rgo") != null) {
 						jsonValue = jsonValue.get("rgo");
 						String name = jsonValue.getString("n");
-						GameObjectB2D gameObject = gameWorld.findGameObject(name);
+						B2DGameObject gameObject = gameWorld.findGameObject(name);
 						if (gameObject != null) {
 							gameWorld.removeGameObject(name);
 							boardCast(recvString);
@@ -206,7 +206,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 						
 						jsonValue=jsonValue.get("ggo"); 
 						String name=jsonValue.getString("n"); 
-						GameObjectB2D gameObject=gameWorld.findGameObject(name);
+						B2DGameObject gameObject=gameWorld.findGameObject(name);
 						if(gameObject!=null) { 
 							//boardCast("{ggo:"+gameObject.toJson()+"}");
 							udpServer.send(("{ggo:"+gameObject.toJson()+"}").getBytes(), session);

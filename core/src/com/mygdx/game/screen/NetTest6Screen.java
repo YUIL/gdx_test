@@ -18,7 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.mygdx.game.entity.GameObjectB2D;
+import com.mygdx.game.entity.B2DGameObject;
 import com.mygdx.game.entity.GameObjectCreation;
 import com.mygdx.game.entity.GameObjectUpdate;
 import com.mygdx.game.entity.GameWorldB2D;
@@ -97,7 +97,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 		//debugRenderer.render(gameWorld.getBox2dWorld(), camera.combined);
 		batch.begin();
 		for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
-			GameObjectB2D gameObject = gameWorld.getGameObjectArray().get(i);
+			B2DGameObject gameObject = gameWorld.getGameObjectArray().get(i);
 			// gameObject.setPosition(new
 			// Vector3(gameObject.getPosition().x+gameObject.getInertiaForce().x*delta,
 			// gameObject.getPosition().y+gameObject.getInertiaForce().y*delta,
@@ -157,7 +157,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 			lPressAction();
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.T)){
-			GameObjectB2D gameObject=gameWorld.findGameObject(gameObjectName);
+			B2DGameObject gameObject=gameWorld.findGameObject(gameObjectName);
 			camera.position.x=gameObject.getPosition().x;
 			camera.position.y=gameObject.getPosition().y;
 		}
@@ -282,13 +282,13 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 						if (!disposing) {
 							gameWorld.update(updateInterval / 1000f);
 						}
-						GameObjectB2D gameObject=gameWorld.findGameObject(gameObjectName);
+						B2DGameObject gameObject=gameWorld.findGameObject(gameObjectName);
 						if(gameObject!=null){
 							camera.position.x=gameObject.getPosition().x;
 							camera.position.y=gameObject.getPosition().y;
 						}
 						for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
-							GameObjectB2D gameObject2=gameWorld.getGameObjectArray().get(i);
+							B2DGameObject gameObject2=gameWorld.getGameObjectArray().get(i);
 							if(gameObject2.getPosition().y<-50){
 								sendMessage("{ggo:{n:"+gameObject2.getName()+"}}");
 							}
@@ -376,7 +376,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	}
 
 	private void aJustPressAction() {
-		GameObjectB2D gameObject = gameWorld.findGameObject(gameObjectName);
+		B2DGameObject gameObject = gameWorld.findGameObject(gameObjectName);
 		if (gameObject != null) {
 			sendMoveMessage("{rpc:{af:{n:" + gameObjectName + ",fx:-1000,fy:0}}}");
 			//sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:-1000,fy:0}}}");
@@ -393,7 +393,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	}
 
 	private void dJustPressAction() {
-		GameObjectB2D gameObject = gameWorld.findGameObject(gameObjectName);
+		B2DGameObject gameObject = gameWorld.findGameObject(gameObjectName);
 		if (gameObject != null) {
 			//sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:1000,fy:0}}}");
 			sendMoveMessage("{rpc:{af:{n:" + gameObjectName + ",fx:1000,fy:0}}}");
@@ -410,7 +410,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	}
 
 	private void wJustPressAction() {
-		GameObjectB2D gameObject = gameWorld.findGameObject(gameObjectName);
+		B2DGameObject gameObject = gameWorld.findGameObject(gameObjectName);
 		if (gameObject != null) {
 			//sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:0,fy:6000}}}");
 			sendMoveMessage("{rpc:{af:{n:" + gameObjectName + ",fx:0,fy:6000}}}");
@@ -432,7 +432,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 			 if(jsonValue.get("af")!=null){
 				 jsonValue = jsonValue.get("af");
 				 String name=jsonValue.getString("n");
-				 GameObjectB2D gameObject=gameWorld.findGameObject(name);
+				 B2DGameObject gameObject=gameWorld.findGameObject(name);
 				 if (gameObject!=null){
 					 float forceX=jsonValue.getFloat("fx");
 					 if(gameObject.getSpeed()<gameObject.getMaxSpeed()){
@@ -561,7 +561,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 			if(jsonValue.get("af")!=null){
 				jsonValue = jsonValue.get("af");
 				String name=jsonValue.getString("n");
-				GameObjectB2D gameObject=gameWorld.findGameObject(name);
+				B2DGameObject gameObject=gameWorld.findGameObject(name);
 				if (gameObject!=null){
 					/*float forceX=jsonValue.getFloat("fx");
 					float forceY=jsonValue.getFloat("fy");
@@ -585,7 +585,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 					float density=jsonValue.get(i).getFloat("d");
 					float lx=jsonValue.get(i).get("l").getFloat("x");
 					float ly=jsonValue.get(i).get("l").getFloat("y");
-					GameObjectB2D gameObject=gameWorld.findGameObject(name);
+					B2DGameObject gameObject=gameWorld.findGameObject(name);
 					if (gameObject!=null) {
 						//System.out.println("update gameObject");
 						gameObject.getGameObjectCreationQueue().add(new GameObjectUpdate(x, y, angle, angularVelocity, width, height, density, lx, ly));
@@ -598,7 +598,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 				jsonValue=jsonValue.get("ago");
 				String name=jsonValue.getString("n");
 				
-				GameObjectB2D gameObject=gameWorld.findGameObject(name);
+				B2DGameObject gameObject=gameWorld.findGameObject(name);
 				if (gameObject!=null) {
 					
 				}else {
@@ -616,7 +616,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 			}else if(jsonValue.get("rgo") != null) {
 				jsonValue=jsonValue.get("rgo");
 				String name=jsonValue.getString("n");
-				GameObjectB2D gameObject=gameWorld.findGameObject(name);
+				B2DGameObject gameObject=gameWorld.findGameObject(name);
 				if (gameObject!=null) {
 					gameWorld.removeGameObject(name);
 				}
@@ -632,7 +632,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 				float density=jsonValue.getFloat("d");
 				float lx=jsonValue.get("l").getFloat("x");
 				float ly=jsonValue.get("l").getFloat("y");
-				GameObjectB2D gameObject=gameWorld.findGameObject(name);
+				B2DGameObject gameObject=gameWorld.findGameObject(name);
 				if (gameObject!=null) {
 					gameObject.getGameObjectCreationQueue().add(new GameObjectUpdate(x, y, angle, angularVelocity, width, height, density, lx, ly));
 				}else{

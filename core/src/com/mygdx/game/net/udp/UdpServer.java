@@ -344,7 +344,7 @@ public class UdpServer {
 				} else {
 					recvMessageBuf.setData(null);
 					recvMessageBuf.initUdpMessageByDatagramPacket(recvPacket);
-					System.out.println("udp recv:"+recvMessageBuf.toString());
+					//System.out.println("udp recv:"+recvMessageBuf.toString());
 					//UdpMessage recvMessageBuf = new UdpMessage(recvPacket);
 					//recvDataLength += recvMessageBuf.getData().length;
 					/*

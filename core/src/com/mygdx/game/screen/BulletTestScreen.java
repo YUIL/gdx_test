@@ -33,6 +33,12 @@ import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
 import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btDispatcher;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
+import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
+import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
+import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody.btRigidBodyConstructionInfo;
+import com.badlogic.gdx.physics.bullet.linearmath.btDefaultMotionState;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Disposable;
@@ -45,7 +51,7 @@ public class BulletTestScreen extends TestScreen {
 	final static short OBJECT_FLAG = 1 << 9;
 	final static short ALL_FLAG = -1;
 
-	class MyContactListener extends ContactListener {
+	/*class MyContactListener extends ContactListener {
 		@Override
 		public boolean onContactAdded(int userValue0, int partId0, int index0,
 				int userValue1, int partId1, int index1) {
@@ -55,7 +61,7 @@ public class BulletTestScreen extends TestScreen {
 				instances.get(userValue1).moving = false;
 			return true;
 		}
-	}
+	}*/
 
 	static class GameObject extends ModelInstance implements Disposable {
 		public final btCollisionObject body;
@@ -105,10 +111,17 @@ public class BulletTestScreen extends TestScreen {
 
 	btCollisionConfiguration collisionConfig;
 	btDispatcher dispatcher;
-	MyContactListener contactListener;
 	btBroadphaseInterface broadphase;
-	btCollisionWorld collisionWorld;
-
+	btConstraintSolver solver;
+	btDiscreteDynamicsWorld collisionWorld;
+	Vector3 gravity = new Vector3(0, -9.81f, 0);
+	Vector3 tempVector = new Vector3();
+	
+	Array<btDefaultMotionState> motionStates = new Array<btDefaultMotionState>();
+	Array<btRigidBodyConstructionInfo> bodyInfos = new Array<btRigidBodyConstructionInfo>();
+	Array<btCollisionShape> shapes = new Array<btCollisionShape>();
+	Array<btRigidBody> bodies = new Array<btRigidBody>();
+	//MyContactListener contactListener;
 	public BulletTestScreen(Game game) {
 		super(game);
 		Bullet.init();
@@ -177,9 +190,11 @@ public class BulletTestScreen extends TestScreen {
 		collisionConfig = new btDefaultCollisionConfiguration();
 		dispatcher = new btCollisionDispatcher(collisionConfig);
 		broadphase = new btDbvtBroadphase();
-		collisionWorld = new btCollisionWorld(dispatcher, broadphase,
+		solver = new btSequentialImpulseConstraintSolver();
+		collisionWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase,solver,
 				collisionConfig);
-		contactListener = new MyContactListener();
+		collisionWorld.setGravity(gravity);
+		//contactListener = new MyContactListener();
 
 		instances = new Array<GameObject>();
 		GameObject object = constructors.get("ground").construct();
@@ -207,12 +222,12 @@ public class BulletTestScreen extends TestScreen {
 	public void render(float delta) {
 		delta = Math.min(1f / 30f, Gdx.graphics.getDeltaTime());
 
-		for (GameObject obj : instances) {
+		/*for (GameObject obj : instances) {
 			if (obj.moving) {
 				obj.transform.trn(0f, -delta, 0f);
 				obj.body.setWorldTransform(obj.transform);
 			}
-		}
+		}*/
 
 		collisionWorld.performDiscreteCollisionDetection();
 
@@ -248,7 +263,7 @@ public class BulletTestScreen extends TestScreen {
 		dispatcher.dispose();
 		collisionConfig.dispose();
 
-		contactListener.dispose();
+		//contactListener.dispose();
 
 		modelBatch.dispose();
 		model.dispose();

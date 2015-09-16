@@ -1,7 +1,7 @@
 package com.mygdx.game.entity;
 
 public class GameObjectUpdate {
-	public volatile GameObjectB2D gameObject;
+	public volatile B2DGameObject gameObject;
 	public float x;
 	public float y;
 	public float angle;

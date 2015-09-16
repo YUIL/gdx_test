@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Shape.Type;
 
-public class GameObjectB2D {
+public class B2DGameObject {
 	String name;
 	Body body;
 	int maxSpeed=100;
@@ -17,11 +17,11 @@ public class GameObjectB2D {
 
 	
 
-	public GameObjectB2D(String name) {
+	public B2DGameObject(String name) {
 		this.name = name;
 	}
 
-	public GameObjectB2D(String name, Body body) {
+	public B2DGameObject(String name, Body body) {
 		this.name = name;
 		this.body = body;
 	}

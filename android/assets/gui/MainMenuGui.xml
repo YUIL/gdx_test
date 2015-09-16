@@ -145,4 +145,10 @@
 		<y>0</y>
 		<skin name="default"></skin>
 	</actor>
+	
+	<actor id="6" type="textButton" name="BtTest1" text="BtTest1">
+		<x>700</x>
+		<y>0</y>
+		<skin name="default"></skin>
+	</actor>
 </stage>

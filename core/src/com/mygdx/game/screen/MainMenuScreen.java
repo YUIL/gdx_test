@@ -317,6 +317,22 @@ public class MainMenuScreen extends TestScreen2D {
 				return true;
 			}
 		});
+		stage.getRoot().findActor("BtTest1")
+		.addListener(new InputListener() {
+			public void touchUp(InputEvent event, float x, float y,
+								int pointer, int button) {
+				System.out.println("1");
+				game.setScreen(new BtTest1Screen(game));
+				return;
+			}
+
+			public boolean touchDown(InputEvent event, float x,
+									 float y, int pointer, int button) {
+				return true;
+			}
+		});
 	}
 
+	
+	
 }
