@@ -2,7 +2,7 @@ package com.mygdx.game.entity.message;
 
 
 
-public class GameMessage{
+public abstract class GameMessage{
 
 	
 	public int type;
@@ -12,6 +12,6 @@ public class GameMessage{
 		return "GameMessage [type=" + type + "]";
 	}
 	
-	
+	public abstract byte[] toBytes();
 
 }

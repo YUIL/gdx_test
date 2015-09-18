@@ -124,9 +124,23 @@ public class Test {
 		System.out.println(bao.toByteArray().length);
 		fan(new ByteArrayInputStream(bao.toByteArray()));// 调用下面的 反序列化 代码
 */	
+		/*Class1 c1=new Class1();
+		testfun(c1);
+		System.out.println(c1.s);*/
+		
+		float f=2/3f;
+		String s=""+f;
+		System.out.println(Float.SIZE);
 	
 	}
+	
+	public static void testfun(Object c1){
+		((Class1)c1).s="ASd";
+	}
 
+	public static class Class1{
+		public String s;
+	}
 	public static void fan(InputStream in)// 反序列的过程
 	{
 		ObjectInputStream oin = null;// 局部变量必须要初始化

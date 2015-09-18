@@ -3,9 +3,8 @@ package com.mygdx.game.entity.message;
 import com.mygdx.game.entity.message.information.B2dBoxBaseInformation;
 import com.mygdx.game.util.JavaDataConverter;
 
-public class GameMessage_c2s_ago extends GameMessage {
+public class GameMessage_s2c_ago extends GameMessage {
 	public B2dBoxBaseInformation b2dBoxBaseInformation;
-
 	@Override
 	public byte[] toBytes() {
 		// TODO Auto-generated method stub
@@ -17,5 +16,4 @@ public class GameMessage_c2s_ago extends GameMessage {
 		System.arraycopy(src, 0, dest, offset, B2dBoxBaseInformation.informationLength);
 		return dest;
 	}
-	
 }
