@@ -138,9 +138,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 
 		@Override
 		public void run() {
-			System.out.println(udpMessage.length);
-			if (udpMessage.length>GameMessageType.length) {
-				
+			if (udpMessage.length>GameMessageType.length) {	
 				int type = ByteUtil.bytesToInt(ByteUtil.subByte(udpMessage.getData(), GameMessageType.length, 0));
 				//System.out.println("type:"+type);
 				byte[] src = ByteUtil.subByte(udpMessage.getData(), udpMessage.getData().length -GameMessageType.length, GameMessageType.length);
