@@ -36,7 +36,7 @@ import com.mygdx.game.net.udp.UdpMessageListener;
 import com.mygdx.game.net.udp.UdpServer;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
-import com.mygdx.game.util.JavaDataConverter;
+import com.mygdx.game.util.ByteUtil;
 
 public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	OrthographicCamera camera = new OrthographicCamera(
@@ -582,17 +582,17 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 
 	@Override
 	public void disposeUdpMessage(Session session, UdpMessage udpMessage) {
-		if (udpMessage.length>4) {
+		if (udpMessage.length>GameMessageType.length) {
 			System.out.println("disposing");
 			//disposing=true;
 			if(session==null)this.session=session;
-			int type = JavaDataConverter.bytesToInt(JavaDataConverter.subByte(udpMessage.getData(), 4, 0));
+			int type = ByteUtil.bytesToInt(ByteUtil.subByte(udpMessage.getData(), GameMessageType.length, 0));
 			System.out.println("type:"+type);
-			byte[] src = JavaDataConverter.subByte(udpMessage.getData(), udpMessage.getData().length - 4, 4);
+			byte[] src = ByteUtil.subByte(udpMessage.getData(), udpMessage.getData().length - GameMessageType.length, GameMessageType.length);
 			long id;
 			B2DGameObject gameObject;
 			switch (type) {
-			case GameMessageType.s2c_gago:
+			case GameMessageType.s2c_b2d_get_all_gameobject:
 				GameMessage_s2c_gago gameMessage_s2c_gago=new GameMessage_s2c_gago(src);
 				for (int i = 0; i < gameMessage_s2c_gago.b2dBoxBaseInformationArray.size; i++) {
 					B2dBoxBaseInformation info=gameMessage_s2c_gago.b2dBoxBaseInformationArray.get(i);
@@ -605,14 +605,14 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 					}
 				}
 				break;
-			case GameMessageType.s2c_rgo:
+			case GameMessageType.s2c_b2d_remove_gameobject:
 				GameMessage_s2c_rgo gameMessage_s2c_rgo=new GameMessage_s2c_rgo(src);
 				gameObject=gameWorld.findGameObject(gameMessage_s2c_rgo.gameObjectId);
 				if(gameObject!=null){
 					gameWorld.getGameObjectRemoveQueue().add(gameObject);
 				}
 				break;
-			case GameMessageType.s2c_ggo:
+			case GameMessageType.s2c_b2d_get_gameobject:
 				GameMessage_s2c_ggo gameMessage_s2c_ggo=new GameMessage_s2c_ggo(src);
 				gameObject=gameWorld.findGameObject(gameMessage_s2c_ggo.b2dBoxBaseInformation.gameObjectId);
 				if(gameObject==null){

@@ -1,6 +1,6 @@
 package com.mygdx.game.entity.message;
 
-import com.mygdx.game.util.JavaDataConverter;
+import com.mygdx.game.util.ByteUtil;
 
 public class GameMessageConverter {
 	int type=0;

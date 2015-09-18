@@ -1,7 +1,7 @@
 package com.mygdx.game.entity.message;
 
 import com.mygdx.game.entity.info.B2dBoxBaseInformation;
-import com.mygdx.game.util.JavaDataConverter;
+import com.mygdx.game.util.ByteUtil;
 
 public class GameMessage_c2s_rgo extends GameMessage {
 	public long gameObjectId;
@@ -9,26 +9,26 @@ public class GameMessage_c2s_rgo extends GameMessage {
 	
 	
 	public GameMessage_c2s_rgo() {
-		this.type=GameMessageType.c2s_rgo;
+		this.type=GameMessageType.c2s_b2d_remove_gameobject;
 	}
 	public GameMessage_c2s_rgo(byte[] src) {
-		this.type=GameMessageType.c2s_rgo;
+		this.type=GameMessageType.c2s_b2d_remove_gameobject;
 		this.initFromBytes(src);
 	}
 	@Override
 	public byte[] toBytes() {
 		int offset=0;
 		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+4];
-		byte[] src=JavaDataConverter.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src=JavaDataConverter.longToBytes(this.gameObjectId);
+		byte[] src=ByteUtil.intToBytes(this.type);
+		System.arraycopy(src, 0, dest, offset, GameMessageType.length);offset+=GameMessageType.length;
+		src=ByteUtil.longToBytes(this.gameObjectId);
 		System.arraycopy(src, 0, dest, offset, 8);
 		return dest;
 	}
 	@Override
 	public void initFromBytes(byte[] src) {
 		// TODO Auto-generated method stub
-		this.gameObjectId=JavaDataConverter.bytesToLong(JavaDataConverter.subByte(src, 8, 0));
+		this.gameObjectId=ByteUtil.bytesToLong(ByteUtil.subByte(src, 8, 0));
 
 	}
 }

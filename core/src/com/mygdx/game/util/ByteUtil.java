@@ -4,7 +4,7 @@ package com.mygdx.game.util;
  * @author dj-004
  * @changedby dj-004
  */
-public class JavaDataConverter {
+public class ByteUtil {
 	/**
 	 * @param src	{byte[]:{"length":4}} 
 	 * @return	{int}
@@ -100,6 +100,16 @@ public class JavaDataConverter {
 	    l |= ((long) b[3] << 24);                  
 	    return Float.intBitsToFloat(l);                    
 	}  
-	
+	public static byte[] shortToBytes(short s) {  
+		byte [] dest=new byte[2];
+		dest[1] = (byte) (s >> 8);  
+		dest[0] = (byte) (s >> 0);  
+		return dest;
+    }  
+  
+   
+    public static short bytesToShort(byte[] src) {  
+        return (short) (((src[1] << 8) | src[ 0] & 0xff));  
+    }  
 	
 }

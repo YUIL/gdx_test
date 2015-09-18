@@ -22,7 +22,7 @@ import com.mygdx.game.net.udp.UdpMessage;
 import com.mygdx.game.net.udp.UdpServer;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
-import com.mygdx.game.util.JavaDataConverter;
+import com.mygdx.game.util.ByteUtil;
 
 public class NetTest3Screen extends TestScreen {
 	String guiXmlPath;
@@ -138,7 +138,7 @@ public class NetTest3Screen extends TestScreen {
                                 .getRoot().findActor("type"))).getText()));
 						message.setLength(Integer.parseInt(((TextArea) (stage
                                 .getRoot().findActor("length"))).getText()));
-						message.setData(JavaDataConverter.intToBytes(Integer
+						message.setData(ByteUtil.intToBytes(Integer
                                 .parseInt(((TextArea) (stage.getRoot()
                                         .findActor("data"))).getText())));
 

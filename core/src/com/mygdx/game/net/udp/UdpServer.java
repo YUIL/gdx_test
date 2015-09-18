@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.util.JavaDataConverter;
+import com.mygdx.game.util.ByteUtil;
 
 public class UdpServer {
 
@@ -122,8 +122,6 @@ public class UdpServer {
 		UdpMessage responseMessage = new UdpMessage();
 		Session session;
 		responseMessage.setType((byte) 0);
-		responseMessage.setLength(4);
-		responseMessage.setData(JavaDataConverter.intToBytes(1));
 		if (sessionArray.size > 0) {
 
 			try {
@@ -338,7 +336,7 @@ public class UdpServer {
 					break;
 				}
 
-				if (JavaDataConverter.bytesToInt(JavaDataConverter.subByte(recvPacket.getData(), 4, 13)) > 65515) {
+				if (ByteUtil.bytesToInt(ByteUtil.subByte(recvPacket.getData(), 4, 13)) > 65515) {
 					System.out.println("data too long");
 
 				} else {

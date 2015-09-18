@@ -7,7 +7,7 @@ import java.util.Random;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpMessage;
 import com.mygdx.game.net.udp.UdpServer;
-import com.mygdx.game.util.JavaDataConverter;
+import com.mygdx.game.util.ByteUtil;
 
 public class UdpTest {
 
@@ -23,7 +23,7 @@ public class UdpTest {
 		message.setSequenceId(0);
 		message.setType((byte)1);
 		message.setLength(4);
-		message.setData(JavaDataConverter.intToBytes(1));
+		message.setData(ByteUtil.intToBytes(1));
 		session.currentSendUdpMessage(message);
 		server.sessionArray.add(session);
 		

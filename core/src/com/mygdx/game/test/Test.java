@@ -21,7 +21,7 @@ import com.mygdx.game.entity.message.GameMessage;
 import com.mygdx.game.entity.message.GameMessageType;
 import com.mygdx.game.net.udp.UdpMessage;
 import com.mygdx.game.test.Test.PhoneNumber;
-import com.mygdx.game.util.JavaDataConverter;
+import com.mygdx.game.util.ByteUtil;
 import com.sun.org.apache.xml.internal.utils.SerializableLocatorImpl;
 
 public class Test {
@@ -128,10 +128,6 @@ public class Test {
 		testfun(c1);
 		System.out.println(c1.s);*/
 		
-		float f=2/3f;
-		String s=""+f;
-		System.out.println(Float.SIZE);
-	
 	}
 	
 	public static void testfun(Object c1){

@@ -3,7 +3,7 @@ package com.mygdx.game.net;
 import java.net.DatagramPacket;
 import java.util.Arrays;
 
-import com.mygdx.game.util.JavaDataConverter;
+import com.mygdx.game.util.ByteUtil;
 
 public class UdpMessage {
 	public int sequenceId;
@@ -20,20 +20,20 @@ public class UdpMessage {
 
 	public void initUdpMessageByDatagramPacket(UdpMessage message,
 			DatagramPacket recvPacket) {
-		message.setSequenceId(JavaDataConverter.bytesToInt(JavaDataConverter
+		message.setSequenceId(ByteUtil.bytesToInt(ByteUtil
 				.subByte(recvPacket.getData(), 4, 0)));
-		message.setType(JavaDataConverter.bytesToInt(JavaDataConverter.subByte(
+		message.setType(ByteUtil.bytesToInt(ByteUtil.subByte(
 				recvPacket.getData(), 4, 4)));
-		message.setLength(JavaDataConverter.bytesToInt(JavaDataConverter
+		message.setLength(ByteUtil.bytesToInt(ByteUtil
 				.subByte(recvPacket.getData(), 4, 8)));
 		message.initDateFromUdpbytes(recvPacket.getData());
 	}
 	public void initUdpMessageByDatagramPacket(DatagramPacket recvPacket) {
-		this.setSequenceId(JavaDataConverter.bytesToInt(JavaDataConverter
+		this.setSequenceId(ByteUtil.bytesToInt(ByteUtil
 				.subByte(recvPacket.getData(), 4, 0)));
-		this.setType(JavaDataConverter.bytesToInt(JavaDataConverter.subByte(
+		this.setType(ByteUtil.bytesToInt(ByteUtil.subByte(
 				recvPacket.getData(), 4, 4)));
-		this.setLength(JavaDataConverter.bytesToInt(JavaDataConverter
+		this.setLength(ByteUtil.bytesToInt(ByteUtil
 				.subByte(recvPacket.getData(), 4, 8)));
 		this.initDateFromUdpbytes(recvPacket.getData());
 	}
@@ -83,9 +83,9 @@ public class UdpMessage {
 
 	public byte[] toBytes() {
 		byte[] dest = new byte[12 + data.length];
-		System.arraycopy(JavaDataConverter.intToBytes(sequenceId), 0, dest, 0,4);
-		System.arraycopy(JavaDataConverter.intToBytes(type), 0, dest, 4, 4);
-		System.arraycopy(JavaDataConverter.intToBytes(length), 0, dest, 8, 4);
+		System.arraycopy(ByteUtil.intToBytes(sequenceId), 0, dest, 0,4);
+		System.arraycopy(ByteUtil.intToBytes(type), 0, dest, 4, 4);
+		System.arraycopy(ByteUtil.intToBytes(length), 0, dest, 8, 4);
 		System.arraycopy(data, 0, dest, 12, data.length);
 		return dest;
 	}

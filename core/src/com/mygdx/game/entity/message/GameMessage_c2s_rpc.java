@@ -1,7 +1,7 @@
 package com.mygdx.game.entity.message;
 
 import com.mygdx.game.entity.info.B2dBoxBaseInformation;
-import com.mygdx.game.util.JavaDataConverter;
+import com.mygdx.game.util.ByteUtil;
 
 public class GameMessage_c2s_rpc extends GameMessage{
 	public long gameObjectId;
@@ -9,23 +9,23 @@ public class GameMessage_c2s_rpc extends GameMessage{
 	public float forceY;
 	
 	public GameMessage_c2s_rpc() {
-		this.type=GameMessageType.c2s_rpc;
+		this.type=GameMessageType.c2s_b2d_apply_force;
 	}
 	public GameMessage_c2s_rpc(byte[] src) {
-		this.type=GameMessageType.c2s_rpc;
+		this.type=GameMessageType.c2s_b2d_apply_force;
 		this.initFromBytes(src);
 	}
 	@Override
 	public byte[] toBytes() {
 		int offset=0;
 		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+4];
-		byte[] src=JavaDataConverter.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src=JavaDataConverter.longToBytes(this.gameObjectId);
+		byte[] src=ByteUtil.intToBytes(this.type);
+		System.arraycopy(src, 0, dest, offset, GameMessageType.length);offset+=GameMessageType.length;
+		src=ByteUtil.longToBytes(this.gameObjectId);
 		System.arraycopy(src, 0, dest, offset, 8);offset+=8;
-		src=JavaDataConverter.floatToBytes(forceX);
+		src=ByteUtil.floatToBytes(forceX);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src=JavaDataConverter.floatToBytes(forceY);
+		src=ByteUtil.floatToBytes(forceY);
 		System.arraycopy(src, 0, dest, offset, 4);
 		return dest;
 	}
@@ -35,9 +35,9 @@ public class GameMessage_c2s_rpc extends GameMessage{
 	public void initFromBytes(byte[] src) {
 		// TODO Auto-generated method stub
 		int offset=0;
-		this.gameObjectId=JavaDataConverter.bytesToLong(JavaDataConverter.subByte(src, 8, offset));offset+=8;
-		this.forceX=JavaDataConverter.bytesToFloat(JavaDataConverter.subByte(src, 4, offset));offset+=4;
-		this.forceY=JavaDataConverter.bytesToFloat(JavaDataConverter.subByte(src, 4, offset));
+		this.gameObjectId=ByteUtil.bytesToLong(ByteUtil.subByte(src, 8, offset));offset+=8;
+		this.forceX=ByteUtil.bytesToFloat(ByteUtil.subByte(src, 4, offset));offset+=4;
+		this.forceY=ByteUtil.bytesToFloat(ByteUtil.subByte(src, 4, offset));
 	}
 
 }
