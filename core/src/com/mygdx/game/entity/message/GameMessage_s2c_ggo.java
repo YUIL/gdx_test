@@ -38,7 +38,7 @@ public class GameMessage_s2c_ggo extends GameMessage {
 		int offset=0;
 		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+4];
 		byte[] src=JavaDataConverter.intToBytes(GameMessageType.s2c_ggo);
-		System.arraycopy(src, 0, dest, offset, 4);
+		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
 		src=B2dBoxBaseInformation.getBytesFromB2dGameObject(obj);
 		System.arraycopy(src, 0, dest, offset, B2dBoxBaseInformation.informationLength);
 		return dest;

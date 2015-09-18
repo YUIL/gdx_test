@@ -346,7 +346,7 @@ public class UdpServer {
 					recvMessageBuf.initUdpMessageByDatagramPacket(recvPacket);
 					//System.out.println("udp recv:"+recvMessageBuf.toString());
 					//UdpMessage recvMessageBuf = new UdpMessage(recvPacket);
-					//recvDataLength += recvMessageBuf.getData().length;
+					recvDataLength += recvMessageBuf.getData().length;
 					/*
 					 * String recvString=new String(message.getData());
 					 * JsonValue jsonValue; JsonReader jsonReader = new

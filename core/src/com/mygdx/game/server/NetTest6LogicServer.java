@@ -139,7 +139,6 @@ public class NetTest6LogicServer implements UdpMessageListener {
 		@Override
 		public void run() {
 			if (udpMessage.length>4) {
-				System.out.println("processMessage");
 				int type = JavaDataConverter.bytesToInt(JavaDataConverter.subByte(udpMessage.getData(), 4, 0));
 				System.out.println("type:"+type);
 				byte[] src = JavaDataConverter.subByte(udpMessage.getData(), udpMessage.getData().length - 4, 4);
@@ -147,10 +146,8 @@ public class NetTest6LogicServer implements UdpMessageListener {
 				B2DGameObject gameObject;
 				switch (type) {
 				case GameMessageType.c2s_rpc:
-					System.out.println("c2s_rpc");
 					GameMessage_c2s_rpc gameMessage_c2s_rpc = new GameMessage_c2s_rpc(src);
 					id = gameMessage_c2s_rpc.gameObjectId;
-					System.out.println("id:"+id);
 					gameObject = gameWorld.findGameObject(id);
 					if (gameObject != null) {
 						float forceX = gameMessage_c2s_rpc.forceX;
@@ -161,7 +158,6 @@ public class NetTest6LogicServer implements UdpMessageListener {
 										&& gameObject.getBody().getLinearVelocity().y > -1) {
 									gameObject.applyForce(forceX, forceY);
 									// boardCast(recvString);
-									System.out.println("boardCastNum++");
 									boardCastNum++;
 								}
 							} else {
@@ -169,7 +165,6 @@ public class NetTest6LogicServer implements UdpMessageListener {
 										|| forceX < 0 && gameObject.getBody().getLinearVelocity().x > -10) {
 									gameObject.applyForce(forceX, forceY);
 									// boardCast(recvString);
-									System.out.println("boardCastNum++");
 									boardCastNum++;
 								}
 							}
@@ -202,7 +197,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 						gameWorld.getGameObjectRemoveQueue().add(gameObject);
 						GameMessage_s2c_rgo gameMessage_s2c_rgo=new GameMessage_s2c_rgo();
 						gameMessage_s2c_rgo.gameObjectId=gameObject.getId();
-						udpServer.send(gameMessage_s2c_rgo.toBytes(), session);
+						boardCast(gameMessage_s2c_rgo.toBytes());
 					}					
 					break;
 				case GameMessageType.c2s_ggo:
