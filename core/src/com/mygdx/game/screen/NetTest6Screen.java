@@ -17,11 +17,15 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.game.entity.B2DGameObject;
-import com.mygdx.game.entity.GameObjectCreation;
-import com.mygdx.game.entity.GameObjectUpdate;
 import com.mygdx.game.entity.GameWorldB2D;
+import com.mygdx.game.entity.info.B2dBoxBaseInformation;
+import com.mygdx.game.entity.message.GameMessageType;
+import com.mygdx.game.entity.message.GameMessage_c2s_ago;
+import com.mygdx.game.entity.message.GameMessage_c2s_ggo;
+import com.mygdx.game.entity.message.GameMessage_c2s_rpc;
+import com.mygdx.game.entity.message.GameMessage_s2c_gago;
+import com.mygdx.game.entity.message.GameMessage_s2c_rgo;
 import com.mygdx.game.input.ActorInputListenner;
 import com.mygdx.game.input.KeyboardStatus;
 import com.mygdx.game.net.udp.Session;
@@ -30,6 +34,7 @@ import com.mygdx.game.net.udp.UdpMessageListener;
 import com.mygdx.game.net.udp.UdpServer;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
+import com.mygdx.game.util.JavaDataConverter;
 
 public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	OrthographicCamera camera = new OrthographicCamera(
@@ -45,7 +50,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	private Box2DDebugRenderer debugRenderer;
 	JsonReader jsonReader = new JsonReader();
 	KeyboardStatus keyboardStatus = new KeyboardStatus();
-	String gameObjectName = null;
+	long gameObjectId=-1;
 	long lastAutoSendTime = 0;
 	int autoSendIterval = 5000;
 	Thread screenLogicThread;
@@ -157,7 +162,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 			lPressAction();
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.T)){
-			B2DGameObject gameObject=gameWorld.findGameObject(gameObjectName);
+			B2DGameObject gameObject=gameWorld.findGameObject(gameObjectId);
 			camera.position.x=gameObject.getPosition().x;
 			camera.position.y=gameObject.getPosition().y;
 		}
@@ -251,22 +256,30 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 		if (str == null) {
 			System.err.println("message==null");
 		} else {
+			sendMessage(str.getBytes());
+		}
+		return false;
+
+	}
+	
+	public boolean sendMessage(byte[] bytes) {
+		
 			// disposeSendMessage(str);
-			if (udpServer == null) {
+		if (udpServer == null) {
 				System.err.println("updServer==null");
-			} else {
-				if (session == null) {
-					System.err.println("session==null");
-					
-					session=udpServer.createSession(new Random().nextLong(), new InetSocketAddress(
-							((TextArea) (stage.getRoot().findActor("remoteIp")))
-							.getText(), Integer
-							.parseInt(((TextArea) (stage.getRoot()
-									.findActor("remotePort")))
-									.getText())));
-				}
-				return udpServer.send(str.getBytes(), session);
+		} else {
+			if (session == null) {
+				System.err.println("session==null");
+				
+				session=udpServer.createSession(new Random().nextLong(), new InetSocketAddress(
+						((TextArea) (stage.getRoot().findActor("remoteIp")))
+						.getText(), Integer
+						.parseInt(((TextArea) (stage.getRoot()
+								.findActor("remotePort")))
+								.getText())));
 			}
+			return udpServer.send(bytes, session);
+		
 		}
 		return false;
 
@@ -282,7 +295,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 						if (!disposing) {
 							gameWorld.update(updateInterval / 1000f);
 						}
-						B2DGameObject gameObject=gameWorld.findGameObject(gameObjectName);
+						B2DGameObject gameObject=gameWorld.findGameObject(gameObjectId);
 						if(gameObject!=null){
 							camera.position.x=gameObject.getPosition().x;
 							camera.position.y=gameObject.getPosition().y;
@@ -290,7 +303,9 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 						for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
 							B2DGameObject gameObject2=gameWorld.getGameObjectArray().get(i);
 							if(gameObject2.getPosition().y<-50){
-								sendMessage("{ggo:{n:"+gameObject2.getName()+"}}");
+								GameMessage_c2s_ggo gameMessage_c2s_ggo=new GameMessage_c2s_ggo();
+								gameMessage_c2s_ggo.gameObjectId=gameObject2.getId();
+								sendMessage(gameMessage_c2s_ggo.toBytes());
 							}
 						}
 						
@@ -346,39 +361,45 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 
 	private void zPressAction() {
 		float x=new Random().nextFloat()*20;
-		
-		sendMessage("{"+ 
-						"ago:{n:" + gameObjectName + 
-							",t:{p:{x:"+x+",y:30},a:0}"+ 
-							",av:0"+
-							",s:{w:"+ 2 + ",h:"+ 2 + "}"+ 
-							",d:1"+
-							",l:{x:0,y:0} "+
-						"}"+ 
-					"}");
+		GameMessage_c2s_ago gameMessage_c2s_ago=new GameMessage_c2s_ago();
+		gameMessage_c2s_ago.b2dBoxBaseInformation.gameObjectId=gameObjectId;
+		gameMessage_c2s_ago.b2dBoxBaseInformation.x=x;
+		gameMessage_c2s_ago.b2dBoxBaseInformation.y=30;
+		gameMessage_c2s_ago.b2dBoxBaseInformation.angle=0;
+		gameMessage_c2s_ago.b2dBoxBaseInformation.angularVelocity=0;
+		gameMessage_c2s_ago.b2dBoxBaseInformation.width=2;
+		gameMessage_c2s_ago.b2dBoxBaseInformation.height=2;
+		gameMessage_c2s_ago.b2dBoxBaseInformation.density=1;
+		gameMessage_c2s_ago.b2dBoxBaseInformation.lx=0;
+		gameMessage_c2s_ago.b2dBoxBaseInformation.ly=0;
+		sendMessage(gameMessage_c2s_ago.toBytes());
 
 	}
 
 	private void xPressAction() {
-		if (gameWorld.findGameObject(gameObjectName) != null)
-			sendMessage("{rgo:{n:" + gameObjectName + "}}");
+		if (gameWorld.findGameObject(gameObjectId) != null){}
+			//sendMessage("{rgo:{n:" + gameObjectName + "}}");
 
 	}
 
 	private void cPressAction() {
-		if (gameWorld.findGameObject(gameObjectName) != null)
-			sendMessage("{cgo:{n:" + gameObjectName + ",set:{i:{x:0,y:0}}}}");
+		if (gameWorld.findGameObject(gameObjectId) != null){}
+			//sendMessage("{cgo:{n:" + gameObjectName + ",set:{i:{x:0,y:0}}}}");
 
 	}
 
 	private void gPressAction() {
-		sendMessage("{ggo:{n:" + gameObjectName + "}}");
+		//sendMessage("{ggo:{n:" + gameObjectName + "}}");
 	}
 
 	private void aJustPressAction() {
-		B2DGameObject gameObject = gameWorld.findGameObject(gameObjectName);
+		B2DGameObject gameObject = gameWorld.findGameObject(gameObjectId);
 		if (gameObject != null) {
-			sendMoveMessage("{rpc:{af:{n:" + gameObjectName + ",fx:-1000,fy:0}}}");
+			GameMessage_c2s_rpc gameMessage_c2s_rpc=new GameMessage_c2s_rpc();
+			gameMessage_c2s_rpc.gameObjectId=gameObjectId;
+			gameMessage_c2s_rpc.forceX=-1000;
+			gameMessage_c2s_rpc.forceY=0;
+			sendMoveMessage(gameMessage_c2s_rpc);
 			//sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:-1000,fy:0}}}");
 		}
 	}
@@ -393,10 +414,13 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	}
 
 	private void dJustPressAction() {
-		B2DGameObject gameObject = gameWorld.findGameObject(gameObjectName);
+		B2DGameObject gameObject = gameWorld.findGameObject(gameObjectId);
 		if (gameObject != null) {
-			//sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:1000,fy:0}}}");
-			sendMoveMessage("{rpc:{af:{n:" + gameObjectName + ",fx:1000,fy:0}}}");
+			GameMessage_c2s_rpc gameMessage_c2s_rpc=new GameMessage_c2s_rpc();
+			gameMessage_c2s_rpc.gameObjectId=gameObjectId;
+			gameMessage_c2s_rpc.forceX=1000;
+			gameMessage_c2s_rpc.forceY=0;
+			sendMoveMessage(gameMessage_c2s_rpc);
 		}
 	}
 
@@ -410,10 +434,13 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	}
 
 	private void wJustPressAction() {
-		B2DGameObject gameObject = gameWorld.findGameObject(gameObjectName);
+		B2DGameObject gameObject = gameWorld.findGameObject(gameObjectId);
 		if (gameObject != null) {
-			//sendMessage("{rpc:{af:{n:" + gameObjectName + ",fx:0,fy:6000}}}");
-			sendMoveMessage("{rpc:{af:{n:" + gameObjectName + ",fx:0,fy:6000}}}");
+			GameMessage_c2s_rpc gameMessage_c2s_rpc=new GameMessage_c2s_rpc();
+			gameMessage_c2s_rpc.gameObjectId=gameObjectId;
+			gameMessage_c2s_rpc.forceX=0;
+			gameMessage_c2s_rpc.forceY=6000;
+			sendMoveMessage(gameMessage_c2s_rpc);
 		}
 	}
 
@@ -425,24 +452,20 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 		}*/
 	}
 	
-	public void sendMoveMessage(String str){
-		JsonValue jsonValue = jsonReader.parse(str);
-		 if (jsonValue.get("rpc") != null) {
-			 jsonValue = jsonValue.get("rpc");
-			 if(jsonValue.get("af")!=null){
-				 jsonValue = jsonValue.get("af");
-				 String name=jsonValue.getString("n");
-				 B2DGameObject gameObject=gameWorld.findGameObject(name);
+	public void sendMoveMessage(GameMessage_c2s_rpc gameMessage_c2s_rpc){
+		
+		 
+				 B2DGameObject gameObject=gameWorld.findGameObject(gameMessage_c2s_rpc.gameObjectId);
 				 if (gameObject!=null){
-					 float forceX=jsonValue.getFloat("fx");
+					 float forceX=gameMessage_c2s_rpc.forceX;
 					 if(gameObject.getSpeed()<gameObject.getMaxSpeed()){
 						 if(forceX==0){
 							 if(gameObject.getBody().getLinearVelocity().y<1&&gameObject.getBody().getLinearVelocity().y>-1){
-								sendMessage(str);
+								sendMessage(gameMessage_c2s_rpc.toBytes());
 							 }
 						 }else{
 							 if (forceX>0&&gameObject.getBody().getLinearVelocity().x<10||forceX<0&&gameObject.getBody().getLinearVelocity().x>-10) {
-								 sendMessage(str);
+								 sendMessage(gameMessage_c2s_rpc.toBytes());
 							}
 						 }
 						
@@ -450,9 +473,9 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 					 }
 				 }
 					
-			 }	
 			 
-		 }
+			 
+		 
 	}
 
 	public void inputProcess() {
@@ -511,8 +534,8 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 				
 				stage.unfocus( stage.getRoot().findActor(
 						"userName"));
-				gameObjectName = ((TextArea) stage.getRoot().findActor(
-						"userName")).getText();
+				gameObjectId =Long.parseLong(((TextArea) stage.getRoot().findActor(
+						"userName")).getText());
 
 				zPressAction();
 			}
@@ -528,8 +551,8 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 
 			public void touchUp(InputEvent event, float x, float y,
 					int pointer, int button) {
-				gameObjectName = ((TextArea) stage.getRoot().findActor(
-						"userName")).getText();
+				gameObjectId =Long.parseLong(((TextArea) stage.getRoot().findActor(
+						"userName")).getText());
 
 				gPressAction();
 			}
@@ -539,9 +562,8 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 
 			public void touchUp(InputEvent event, float x, float y,
 					int pointer, int button) {
-				gameObjectName = ((TextArea) stage.getRoot().findActor(
-						"userName")).getText();
-
+				gameObjectId =Long.parseLong(((TextArea) stage.getRoot().findActor(
+						"userName")).getText());
 				wJustPressAction();
 			}
 		});
@@ -549,12 +571,39 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	}
 
 	@Override
-	public void disposeUdpMessage(Session session, UdpMessage message) {
-		// TODO Auto-generated method stub
+	public void disposeUdpMessage(Session session, UdpMessage udpMessage) {
 		disposing=true;
 		if(session==null)this.session=session;
-		System.out.println(recvString);
-		recvString=new String(message.getData());
+		int type = JavaDataConverter.bytesToInt(JavaDataConverter.subByte(udpMessage.getData(), 4, 0));
+		byte[] src = JavaDataConverter.subByte(udpMessage.getData(), udpMessage.getData().length - 4, 4);
+		long id;
+		B2DGameObject gameObject;
+		switch (type) {
+		case GameMessageType.s2c_gago:
+			GameMessage_s2c_gago gameMessage_s2c_gago=new GameMessage_s2c_gago(src);
+			for (int i = 0; i < gameMessage_s2c_gago.b2dBoxBaseInformationArray.size; i++) {
+				B2dBoxBaseInformation info=gameMessage_s2c_gago.b2dBoxBaseInformationArray.get(i);
+				System.out.println(info.toString());
+				gameObject=gameWorld.findGameObject(info.gameObjectId);
+				if (gameObject!=null) {
+					gameObject.getGameObjectUpdateQueue().add(info);
+				}else {
+					gameWorld.getGameObjectCreationQueue().add(info);
+				}
+			}
+			break;
+		case GameMessageType.s2c_rgo:
+			GameMessage_s2c_rgo gameMessage_s2c_rgo=new GameMessage_s2c_rgo(src);
+			gameObject=gameWorld.findGameObject(gameMessage_s2c_rgo.gameObjectId);
+			if(gameObject!=null){
+				gameWorld.getGameObjectRemoveQueue().add(gameObject);
+			}
+			break;
+		}
+		// TODO Auto-generated method stub
+		
+		/*
+		recvString=new String(udpMessage.getData());
 		JsonValue jsonValue = jsonReader.parse(recvString);
 		if (jsonValue.get("rpc") != null) {
 			jsonValue = jsonValue.get("rpc");
@@ -563,9 +612,9 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 				String name=jsonValue.getString("n");
 				B2DGameObject gameObject=gameWorld.findGameObject(name);
 				if (gameObject!=null){
-					/*float forceX=jsonValue.getFloat("fx");
+					float forceX=jsonValue.getFloat("fx");
 					float forceY=jsonValue.getFloat("fy");
-					gameObject.applyForce(forceX, forceY);*/
+					gameObject.applyForce(forceX, forceY);
 					sendMessage("{gago:}");
 				}
 				
@@ -639,7 +688,8 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 					gameWorld.getGameObjectCreationQueue().add(new GameObjectCreation(name, x, y, angle, angularVelocity, width, height, density, lx, ly));
 				}
 			}
-			disposing=false;
-		}
+			
+		}*/
+		disposing=false;
 	}
 }

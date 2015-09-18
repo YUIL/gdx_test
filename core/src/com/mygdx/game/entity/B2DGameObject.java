@@ -7,24 +7,36 @@ import java.util.Queue;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Shape.Type;
+import com.mygdx.game.entity.info.B2dBoxBaseInformation;
+import com.mygdx.game.entity.info.B2dUpdateInformation;
 
 public class B2DGameObject {
-	String name;
+	//String name;
+	long id;
 	Body body;
 	int maxSpeed=100;
 	float width, height;
-	Queue<GameObjectUpdate> gameObjectCreationQueue=new LinkedList<GameObjectUpdate>();
+	Queue<B2dBoxBaseInformation> gameObjectUpdateQueue=new LinkedList<B2dBoxBaseInformation>();
 
 	
+	
+	public B2DGameObject(long id) {
+		this.id = id;
+	}
 
-	public B2DGameObject(String name) {
+	public B2DGameObject(long id, Body body) {
+		this.id = id;
+		this.body = body;
+	}
+
+/*	public B2DGameObject(String name) {
 		this.name = name;
 	}
 
 	public B2DGameObject(String name, Body body) {
 		this.name = name;
 		this.body = body;
-	}
+	}*/
 	
 	
 	public void applyForce(float forceX,float forceY){
@@ -60,24 +72,34 @@ public class B2DGameObject {
 		this.body.setTransform(position, angle);
 	}
 
-	public String toJson() {
+	/*public String toJson() {
 
 		return "{n:" + name + ",t:{p:{x:" + body.getPosition().x + ",y:" + body.getPosition().y + "},a:"
 				+ body.getAngle() + "},av:"+body.getAngularVelocity()+",s:{w:" + width + ",h:" + height + "},d:" + getDensity() + ",l:{x:"
 				+ body.getLinearVelocity().x + ",y:" + body.getLinearVelocity().y + "}}";
 		
-	}
+	}*/
 
-	public String getName() {
+	/*public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
+	}*/
 
+
+	
 	public float getWidth() {
 		return width;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public void setWidth(float width) {
@@ -100,13 +122,13 @@ public class B2DGameObject {
 		this.body = body;
 	}
 	
-	public Queue<GameObjectUpdate> getGameObjectCreationQueue() {
-		return gameObjectCreationQueue;
+	public Queue<B2dBoxBaseInformation> getGameObjectUpdateQueue() {
+		return gameObjectUpdateQueue;
 	}
-
+/*
 	public void setGameObjectCreationQueue(Queue<GameObjectUpdate> gameObjectCreationQueue) {
 		this.gameObjectCreationQueue = gameObjectCreationQueue;
-	}
+	}*/
 
 	public synchronized void update(float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
 		
@@ -119,7 +141,7 @@ public class B2DGameObject {
 		
 	}
 	
-public synchronized void update(GameObjectUpdate gameObjectUpdate){
+public synchronized void update(B2dBoxBaseInformation gameObjectUpdate){
 		
 		update(gameObjectUpdate.x, gameObjectUpdate.y, gameObjectUpdate.angle, gameObjectUpdate.angularVelocity, gameObjectUpdate.width, gameObjectUpdate.height, gameObjectUpdate.density, gameObjectUpdate.lx, gameObjectUpdate.ly);
 		

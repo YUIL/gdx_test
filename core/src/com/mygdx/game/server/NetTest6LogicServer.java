@@ -6,20 +6,23 @@ import java.util.concurrent.Executors;
 
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.game.entity.B2DGameObject;
-import com.mygdx.game.entity.GameObjectCreation;
 import com.mygdx.game.entity.GameWorldB2D;
-import com.mygdx.game.entity.message.GameMessage;
+import com.mygdx.game.entity.info.B2dBoxBaseInformation;
 import com.mygdx.game.entity.message.GameMessageConverter;
 import com.mygdx.game.entity.message.GameMessageType;
+import com.mygdx.game.entity.message.GameMessage_c2s_ago;
+import com.mygdx.game.entity.message.GameMessage_c2s_ggo;
+import com.mygdx.game.entity.message.GameMessage_c2s_rgo;
 import com.mygdx.game.entity.message.GameMessage_c2s_rpc;
+import com.mygdx.game.entity.message.GameMessage_s2c_gago;
+import com.mygdx.game.entity.message.GameMessage_s2c_ggo;
+import com.mygdx.game.entity.message.GameMessage_s2c_rgo;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpMessage;
 import com.mygdx.game.net.udp.UdpMessageListener;
 import com.mygdx.game.net.udp.UdpServer;
 import com.mygdx.game.util.JavaDataConverter;
-import com.sun.xml.internal.ws.api.pipe.NextAction;
 
 public class NetTest6LogicServer implements UdpMessageListener {
 
@@ -39,11 +42,11 @@ public class NetTest6LogicServer implements UdpMessageListener {
 	MessageProcessor messageProcessor;
 	ExecutorService threadPool = Executors.newSingleThreadExecutor();
 	volatile Thread gameWorldThread;
-	
-	volatile int autoAddIterval=10000;
-	volatile long nextAutoAddTime=0;
-	volatile int autoNum=0;
-	
+
+	volatile int autoAddIterval = 10000;
+	volatile long nextAutoAddTime = 0;
+	volatile int autoNum = 0;
+
 	public class GameWorldLogic implements Runnable {
 
 		public GameWorldLogic() {
@@ -52,38 +55,35 @@ public class NetTest6LogicServer implements UdpMessageListener {
 
 		int updateInterval = 10;
 		long nextUpdateTime = 0;
-		
-		
 
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			nextAutoAddTime=System.currentTimeMillis();
+			nextAutoAddTime = System.currentTimeMillis();
 			nextUpdateTime = System.currentTimeMillis();
-			boolean needBoard=false;
-			//nextAutoBoardCastTime = System.currentTimeMillis();
+			boolean needBoard = false;
+			// nextAutoBoardCastTime = System.currentTimeMillis();
 			while (!stoped) {
 				if (System.currentTimeMillis() > nextUpdateTime) {
 					nextUpdateTime += updateInterval;
-					if (gameWorld.getGameObjectArray().size<3) {
-						if (System.currentTimeMillis()>nextAutoAddTime) {
-							nextAutoAddTime+=autoAddIterval;
-							gameWorld.addBoxGameObject(GameObjectCreation.random(String.valueOf(autoNum)));
+					/*if (gameWorld.getGameObjectArray().size < 3) {
+						if (System.currentTimeMillis() > nextAutoAddTime) {
+							nextAutoAddTime += autoAddIterval;
+							gameWorld.addBoxGameObject(GameObjectCreation.random(autoNum));
 							autoNum++;
-							needBoard=true;
+							needBoard = true;
 						}
-					}
-					
+					}*/
+
 					for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
-						B2DGameObject gameObject=gameWorld.getGameObjectArray().get(i);
-						if (gameObject.getBody().getPosition().y<-50) {
+						B2DGameObject gameObject = gameWorld.getGameObjectArray().get(i);
+						if (gameObject.getBody().getPosition().y < -50) {
 							gameWorld.getGameObjectRemoveQueue().add(gameObject);
-							needBoard=true;
+							needBoard = true;
 						}
 					}
 					gameWorld.update(updateInterval / 1000f);
-					
-					
+
 					if (needBoard) {
 						boardCastNum++;
 					}
@@ -94,9 +94,8 @@ public class NetTest6LogicServer implements UdpMessageListener {
 					 * boardCast("{gago:"+str+"}"); }
 					 */
 					if (boardCastNum > boardCastCound) {
-						String str = gameWorld.gameObjectArrayToString();
+						boardCast(GameMessage_s2c_gago.getBytesFromB2dGameObjecArray(gameWorld.getGameObjectArray()));
 						boardCastCound++;
-						boardCast("{gago:" + str + "}");
 					}
 
 				} else {
@@ -107,7 +106,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 						e.printStackTrace();
 					}
 				}
-				needBoard =false;
+				needBoard = false;
 			}
 			System.out.println("worldLogic stoped");
 		}
@@ -115,8 +114,8 @@ public class NetTest6LogicServer implements UdpMessageListener {
 	}
 
 	public class MessageProcessor implements Runnable {
-		
-		GameMessageConverter gameMessageConverter=new GameMessageConverter();
+
+		GameMessageConverter gameMessageConverter = new GameMessageConverter();
 		Session session;
 
 		public Session getSession() {
@@ -139,106 +138,156 @@ public class NetTest6LogicServer implements UdpMessageListener {
 
 		@Override
 		public void run() {
-			
-			int type=JavaDataConverter.bytesToInt(JavaDataConverter.subByte(udpMessage.getData(), 4, 0));
-			byte[] src=JavaDataConverter.subByte(udpMessage.getData(), udpMessage.getData().length-4, 4);
-			switch (type) {
-			case GameMessageType.c2s_rpc:
-				GameMessage_c2s_rpc gameMessage_c2s_rpc=new GameMessage_c2s_rpc();
-				gameMessage_c2s_rpc.initFromBytes(src);
-				break;
-
-			default:
-				break;
-			}
-			
-			// TODO Auto-generated method stub
-			/*System.out.print("disposeMessage:");
-			System.out.println(message.toString());*/
-			
-			String recvString = new String(udpMessage.getData());
-			if (!recvString.equals("")) {
-				JsonValue jsonValue = jsonReader.parse(recvString);
-				if (jsonValue.get("rpc") != null) {
-					jsonValue = jsonValue.get("rpc");
-					if (jsonValue.get("af") != null) {
-						jsonValue = jsonValue.get("af");
-						String name = jsonValue.getString("n");
-						B2DGameObject gameObject = gameWorld.findGameObject(name);
-						if (gameObject != null) {
-							float forceX = jsonValue.getFloat("fx");
-							float forceY = jsonValue.getFloat("fy");
-							if (gameObject.getSpeed() < gameObject.getMaxSpeed()) {
-								if (forceX == 0) {
-									if (gameObject.getBody().getLinearVelocity().y < 1
-											&& gameObject.getBody().getLinearVelocity().y > -1) {
-										gameObject.applyForce(forceX, forceY);
-										// boardCast(recvString);
-										boardCastNum++;
-									}
-								} else {
-									if (forceX > 0 && gameObject.getBody().getLinearVelocity().x < 10
-											|| forceX < 0 && gameObject.getBody().getLinearVelocity().x > -10) {
-										gameObject.applyForce(forceX, forceY);
-										// boardCast(recvString);
-										boardCastNum++;
-									}
+			if (udpMessage.length>4) {
+				System.out.println("processMessage");
+				int type = JavaDataConverter.bytesToInt(JavaDataConverter.subByte(udpMessage.getData(), 4, 0));
+				System.out.println("type:"+type);
+				byte[] src = JavaDataConverter.subByte(udpMessage.getData(), udpMessage.getData().length - 4, 4);
+				long id;
+				B2DGameObject gameObject;
+				switch (type) {
+				case GameMessageType.c2s_rpc:
+					System.out.println("c2s_rpc");
+					GameMessage_c2s_rpc gameMessage_c2s_rpc = new GameMessage_c2s_rpc(src);
+					id = gameMessage_c2s_rpc.gameObjectId;
+					System.out.println("id:"+id);
+					gameObject = gameWorld.findGameObject(id);
+					if (gameObject != null) {
+						float forceX = gameMessage_c2s_rpc.forceX;
+						float forceY = gameMessage_c2s_rpc.forceY;
+						if (gameObject.getSpeed() < gameObject.getMaxSpeed()) {
+							if (forceX == 0) {
+								if (gameObject.getBody().getLinearVelocity().y < 1
+										&& gameObject.getBody().getLinearVelocity().y > -1) {
+									gameObject.applyForce(forceX, forceY);
+									// boardCast(recvString);
+									System.out.println("boardCastNum++");
+									boardCastNum++;
 								}
-
+							} else {
+								if (forceX > 0 && gameObject.getBody().getLinearVelocity().x < 10
+										|| forceX < 0 && gameObject.getBody().getLinearVelocity().x > -10) {
+									gameObject.applyForce(forceX, forceY);
+									// boardCast(recvString);
+									System.out.println("boardCastNum++");
+									boardCastNum++;
+								}
 							}
-						}
 
+						}
 					}
-
-				} else {
-					if (jsonValue.get("gago") != null) {
-						String str = gameWorld.gameObjectArrayToString();
-						boardCast("{gago:" + str + "}");
-					} else if (jsonValue.get("ago") != null) {
-						jsonValue = jsonValue.get("ago");
-						String name = jsonValue.getString("n");
-						float x = jsonValue.get("t").get("p").getFloat("x");
-						float y = jsonValue.get("t").get("p").getFloat("y");
-						float angle = jsonValue.get("t").getFloat("a");
-						float angularVelocity = jsonValue.getFloat("av");
-						float width = jsonValue.get("s").getFloat("w");
-						float height = jsonValue.get("s").getFloat("h");
-						float density = jsonValue.getFloat("d");
-						float lx = jsonValue.get("l").getFloat("x");
-						float ly = jsonValue.get("l").getFloat("y");
-						B2DGameObject gameObject = gameWorld.findGameObject(name);
-						if (gameObject != null) {
-
-						} else {
-							gameWorld.getGameObjectCreationQueue().add(new GameObjectCreation(name, x, y, angle,
-									angularVelocity, width, height, density, lx, ly));
-							boardCast(recvString);
-						}
-					} else if (jsonValue.get("rgo") != null) {
-						jsonValue = jsonValue.get("rgo");
-						String name = jsonValue.getString("n");
-						B2DGameObject gameObject = gameWorld.findGameObject(name);
-						if (gameObject != null) {
-							gameWorld.removeGameObject(name);
-							boardCast(recvString);
-						}
-					} else if (jsonValue.get("ggo") != null) {
+					break;
+				case GameMessageType.c2s_ago:
+					GameMessage_c2s_ago gameMessage_c2s_ago = new GameMessage_c2s_ago(src);
+					id = gameMessage_c2s_ago.b2dBoxBaseInformation.gameObjectId;
+					gameObject = gameWorld.findGameObject(id);
+					if (gameObject != null) {
 						
-						jsonValue=jsonValue.get("ggo"); 
-						String name=jsonValue.getString("n"); 
-						B2DGameObject gameObject=gameWorld.findGameObject(name);
-						if(gameObject!=null) { 
-							//boardCast("{ggo:"+gameObject.toJson()+"}");
-							udpServer.send(("{ggo:"+gameObject.toJson()+"}").getBytes(), session);
-						} else{
-							udpServer.send(("{rgo:{n:"+name+"}}").getBytes(), session);
-						}	
-					} else if (jsonValue.get("stopServer") != null) {
-						//udpServer.stop();
-						stoped=true;
+					}else{
+						//System.out.println("create Box, id:"+gameMessage_c2s_ago.b2dBoxBaseInformation.gameObjectId);
+						gameWorld.getGameObjectCreationQueue().add(gameMessage_c2s_ago.b2dBoxBaseInformation);
+						boardCastNum++;
+						/*GameMessage_s2c_ago gameMessage_s2c_ago=new GameMessage_s2c_ago();
+						gameMessage_s2c_ago.b2dBoxBaseInformation=gameMessage_c2s_ago.b2dBoxBaseInformation;
+						udpServer.send(gameMessage_s2c_ago.toBytes(), session);*/
 					}
+					break;
+				case GameMessageType.c2s_gago:
+					udpServer.send(GameMessage_s2c_gago.getBytesFromB2dGameObjecArray(gameWorld.getGameObjectArray()), session);
+					break;
+				case GameMessageType.c2s_rgo:
+					GameMessage_c2s_rgo gameMessage_c2s_rgo=new GameMessage_c2s_rgo(src);
+					gameObject=gameWorld.findGameObject(gameMessage_c2s_rgo.gameObjectId);
+					if(gameObject!=null){
+						gameWorld.getGameObjectRemoveQueue().add(gameObject);
+						GameMessage_s2c_rgo gameMessage_s2c_rgo=new GameMessage_s2c_rgo();
+						gameMessage_s2c_rgo.gameObjectId=gameObject.getId();
+						udpServer.send(gameMessage_s2c_rgo.toBytes(), session);
+					}					
+					break;
+				case GameMessageType.c2s_ggo:
+					GameMessage_c2s_ggo gameMessage_c2s_ggo=new GameMessage_c2s_ggo(src);
+					gameObject=gameWorld.findGameObject(gameMessage_c2s_ggo.gameObjectId);
+					if(gameObject!=null){
+						udpServer.send(GameMessage_s2c_ggo.getBytesFromB2dGameObject(gameObject), session);
+						
+					}else{
+						GameMessage_s2c_rgo gameMessage_s2c_rgo=new GameMessage_s2c_rgo();
+						gameMessage_s2c_rgo.gameObjectId=gameMessage_c2s_ggo.gameObjectId;
+						udpServer.send(gameMessage_s2c_rgo.toBytes(), session);
+					}
+					break;
+				default:
+					break;
 				}
 			}
+			
+
+			// TODO Auto-generated method stub
+			/*
+			 * System.out.print("disposeMessage:");
+			 * System.out.println(message.toString());
+			 */
+
+			/*
+			 * String recvString = new String(udpMessage.getData()); if
+			 * (!recvString.equals("")) { JsonValue jsonValue =
+			 * jsonReader.parse(recvString); if (jsonValue.get("rpc") != null) {
+			 * jsonValue = jsonValue.get("rpc"); if (jsonValue.get("af") !=
+			 * null) { jsonValue = jsonValue.get("af"); String name =
+			 * jsonValue.getString("n"); B2DGameObject gameObject =
+			 * gameWorld.findGameObject(name); if (gameObject != null) { float
+			 * forceX = jsonValue.getFloat("fx"); float forceY =
+			 * jsonValue.getFloat("fy"); if (gameObject.getSpeed() <
+			 * gameObject.getMaxSpeed()) { if (forceX == 0) { if
+			 * (gameObject.getBody().getLinearVelocity().y < 1 &&
+			 * gameObject.getBody().getLinearVelocity().y > -1) {
+			 * gameObject.applyForce(forceX, forceY); // boardCast(recvString);
+			 * boardCastNum++; } } else { if (forceX > 0 &&
+			 * gameObject.getBody().getLinearVelocity().x < 10 || forceX < 0 &&
+			 * gameObject.getBody().getLinearVelocity().x > -10) {
+			 * gameObject.applyForce(forceX, forceY); // boardCast(recvString);
+			 * boardCastNum++; } }
+			 * 
+			 * } }
+			 * 
+			 * }
+			 * 
+			 * } else { if (jsonValue.get("gago") != null) { String str =
+			 * gameWorld.gameObjectArrayToString(); boardCast("{gago:" + str +
+			 * "}"); } else if (jsonValue.get("ago") != null) { jsonValue =
+			 * jsonValue.get("ago"); String name = jsonValue.getString("n");
+			 * float x = jsonValue.get("t").get("p").getFloat("x"); float y =
+			 * jsonValue.get("t").get("p").getFloat("y"); float angle =
+			 * jsonValue.get("t").getFloat("a"); float angularVelocity =
+			 * jsonValue.getFloat("av"); float width =
+			 * jsonValue.get("s").getFloat("w"); float height =
+			 * jsonValue.get("s").getFloat("h"); float density =
+			 * jsonValue.getFloat("d"); float lx =
+			 * jsonValue.get("l").getFloat("x"); float ly =
+			 * jsonValue.get("l").getFloat("y"); B2DGameObject gameObject =
+			 * gameWorld.findGameObject(name); if (gameObject != null) {
+			 * 
+			 * } else { gameWorld.getGameObjectCreationQueue().add(new
+			 * GameObjectCreation(name, x, y, angle, angularVelocity, width,
+			 * height, density, lx, ly)); boardCast(recvString); } } else if
+			 * (jsonValue.get("rgo") != null) { jsonValue =
+			 * jsonValue.get("rgo"); String name = jsonValue.getString("n");
+			 * B2DGameObject gameObject = gameWorld.findGameObject(name); if
+			 * (gameObject != null) { gameWorld.removeGameObject(name);
+			 * boardCast(recvString); } } else if (jsonValue.get("ggo") != null)
+			 * {
+			 * 
+			 * jsonValue=jsonValue.get("ggo"); String
+			 * name=jsonValue.getString("n"); B2DGameObject
+			 * gameObject=gameWorld.findGameObject(name); if(gameObject!=null) {
+			 * //boardCast("{ggo:"+gameObject.toJson()+"}");
+			 * udpServer.send(("{ggo:"+gameObject.toJson()+"}").getBytes(),
+			 * session); } else{
+			 * udpServer.send(("{rgo:{n:"+name+"}}").getBytes(), session); } }
+			 * else if (jsonValue.get("stopServer") != null) {
+			 * //udpServer.stop(); stoped=true; } } }
+			 */
 
 		}
 
@@ -269,6 +318,14 @@ public class NetTest6LogicServer implements UdpMessageListener {
 		Box2D.init();
 		gameWorld = new GameWorldB2D();
 	}
+	
+	public synchronized void boardCast(byte[] bytes) {
+		Session session;
+		for (int i = 0; i < udpServer.sessionArray.size; i++) {
+			session = udpServer.sessionArray.get(i);
+			udpServer.send(bytes, session);
+		}
+	}
 
 	public synchronized void boardCast(String str) {
 
@@ -283,11 +340,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 		 * }
 		 */
 		// System.out.println("send:"+str);
-		Session session;
-		for (int i = 0; i < udpServer.sessionArray.size; i++) {
-			session = udpServer.sessionArray.get(i);
-			udpServer.send(str.getBytes(), session);
-		}
+		boardCast(str.getBytes());
 	}
 
 	/*

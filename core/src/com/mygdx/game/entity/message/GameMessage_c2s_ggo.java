@@ -1,6 +1,7 @@
 package com.mygdx.game.entity.message;
 
-import com.mygdx.game.entity.message.information.B2dBoxBaseInformation;
+import com.mygdx.game.entity.B2DGameObject;
+import com.mygdx.game.entity.info.B2dBoxBaseInformation;
 import com.mygdx.game.util.JavaDataConverter;
 
 public class GameMessage_c2s_ggo extends GameMessage {
@@ -10,11 +11,15 @@ public class GameMessage_c2s_ggo extends GameMessage {
 	public GameMessage_c2s_ggo() {
 		this.type=GameMessageType.c2s_ggo;
 	}
+	public GameMessage_c2s_ggo(byte [] src) {
+		this.type=GameMessageType.c2s_ggo;
+		this.initFromBytes(src);
+	}
 	@Override
 	public byte[] toBytes() {
 		int offset=0;
 		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+4];
-		byte[] src=JavaDataConverter.intToBytes(GameMessageType.c2s_ago);
+		byte[] src=JavaDataConverter.intToBytes(this.type);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
 		src=JavaDataConverter.longToBytes(this.gameObjectId);
 		System.arraycopy(src, 0, dest, offset, 8);
@@ -27,4 +32,5 @@ public class GameMessage_c2s_ggo extends GameMessage {
 		this.gameObjectId=JavaDataConverter.bytesToLong(JavaDataConverter.subByte(src, 8, 0));
 
 	}
+	
 }

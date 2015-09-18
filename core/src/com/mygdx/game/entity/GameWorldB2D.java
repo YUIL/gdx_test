@@ -2,13 +2,13 @@ package com.mygdx.game.entity;
 
 
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -18,16 +18,16 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.mygdx.game.entity.info.B2dBoxBaseInformation;
 
 public class GameWorldB2D {
 	private World box2dWorld;
 //	public boolean lock=false;
 	//private ArrayList<Body> boxes = new ArrayList<Body>();
-	Queue<GameObjectCreation> gameObjectCreationQueue=new LinkedList<GameObjectCreation>();
+	Queue<B2dBoxBaseInformation> gameObjectCreationQueue=new LinkedList<B2dBoxBaseInformation>();
 	Queue<B2DGameObject> gameObjectRemoveQueue=new LinkedList<B2DGameObject>();
 	Array<B2DGameObject> gameObjectArray=new Array<B2DGameObject>();
-	B2DGameObject ground=new B2DGameObject("ground");
+	B2DGameObject ground=new B2DGameObject(0);
 	
 	
 	
@@ -37,10 +37,10 @@ public class GameWorldB2D {
 	public void setGameObjectRemoveQueue(Queue<B2DGameObject> gameObjectRemoveQueue) {
 		this.gameObjectRemoveQueue = gameObjectRemoveQueue;
 	}
-	public Queue<GameObjectCreation> getGameObjectCreationQueue() {
+	public Queue<B2dBoxBaseInformation> getGameObjectCreationQueue() {
 		return gameObjectCreationQueue;
 	}
-	public void setGameObjectCreationQueue(Queue<GameObjectCreation> gameObjectCreationQueue) {
+	public void setGameObjectCreationQueue(Queue<B2dBoxBaseInformation> gameObjectCreationQueue) {
 		this.gameObjectCreationQueue = gameObjectCreationQueue;
 	}
 	public GameWorldB2D() {
@@ -53,13 +53,13 @@ public class GameWorldB2D {
 			removeGameObject(gameObject);
 		}
 		for (int i = 0; i < gameObjectCreationQueue.size(); i++) {
-			GameObjectCreation gameObjectCreation=gameObjectCreationQueue.poll();
+			B2dBoxBaseInformation gameObjectCreation=gameObjectCreationQueue.poll();
 			addBoxGameObject(gameObjectCreation);
 		}
 		for (int i = 0; i < gameObjectArray.size; i++) {
 			B2DGameObject gameObject=gameObjectArray.get(i);
-			if (gameObject.getGameObjectCreationQueue().size()>0) {
-				gameObject.update(gameObject.getGameObjectCreationQueue().poll());
+			if (gameObject.getGameObjectUpdateQueue().size()>0) {
+				gameObject.update(gameObject.getGameObjectUpdateQueue().poll());
 			}
 		}
 		box2dWorld.step(delta, 8, 3);
@@ -69,7 +69,25 @@ public class GameWorldB2D {
 		gameObject.update(x, y, angle, angularVelocity, width, height, density, lx, ly);
 
 	}
-	public B2DGameObject findGameObject(String name){
+	public B2DGameObject findGameObject(long id){
+		for (int i = 0; i < gameObjectArray.size; i++) {
+			B2DGameObject gameObject=gameObjectArray.get(i);
+			if (gameObject.id==id) {
+				return gameObject;
+			}
+		}
+		return null;
+	}
+	
+	public boolean removeGameObject(long id){
+		B2DGameObject gameObject=findGameObject(id);
+		if (gameObject!=null){
+			removeGameObject(gameObject);
+			return true;
+		}
+		return false;
+	}
+/*	public B2DGameObject findGameObject(String name){
 		for (int i = 0; i < gameObjectArray.size; i++) {
 			B2DGameObject gameObject=gameObjectArray.get(i);
 			if (gameObject.name.equals(name)) {
@@ -86,7 +104,7 @@ public class GameWorldB2D {
 			return true;
 		}
 		return false;
-	}
+	}*/
 	
 	public void removeGameObject(B2DGameObject gameObject){
 		if (gameObjectArray.contains(gameObject, true)) {
@@ -96,20 +114,20 @@ public class GameWorldB2D {
 		
 	}
 	
-	public B2DGameObject addBoxGameObject(String name,float x,float y,float width,float height,float density){
-		return addBoxGameObject(name, x, y, 0,0,width, height, density,0,0);
+	public B2DGameObject addBoxGameObject(long id,float x,float y,float width,float height,float density){
+		return addBoxGameObject(id, x, y, 0,0,width, height, density,0,0);
 	}
-	public B2DGameObject addBoxGameObject(GameObjectCreation creation){
-		return addBoxGameObject(creation.name, 
+	public B2DGameObject addBoxGameObject(B2dBoxBaseInformation creation){
+		return addBoxGameObject(creation.gameObjectId, 
 				creation.x, creation.y, creation.angle, creation.angularVelocity, creation.width, creation.height, creation.density, creation.lx, creation.ly);
 	}
-	public B2DGameObject addBoxGameObject(String name,float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
-		B2DGameObject gameObject=createBoxGameObject(name, x, y, angle,angularVelocity,width, height, density,lx,ly);
+	public B2DGameObject addBoxGameObject(long id,float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
+		B2DGameObject gameObject=createBoxGameObject(id, x, y, angle,angularVelocity,width, height, density,lx,ly);
 		gameObjectArray.add(gameObject);
 		return gameObject;
 	}
 	
-	public B2DGameObject createBoxGameObject(String name,float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
+	public B2DGameObject createBoxGameObject(long id,float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
 		PolygonShape boxPoly = new PolygonShape();
 		boxPoly.setAsBox(width/2, height/2);
 		
@@ -122,7 +140,7 @@ public class GameWorldB2D {
 
 		boxBody.createFixture(boxPoly, density);
 		
-		B2DGameObject gameObject=createGameObject(name, boxBody);
+		B2DGameObject gameObject=createGameObject(id, boxBody);
 		gameObject.width=width;
 		gameObject.height=height;
 		boxBody.setLinearVelocity(lx, ly);
@@ -139,9 +157,13 @@ public class GameWorldB2D {
 	public void setGameObjectArray(Array<B2DGameObject> gameObjectArray) {
 		this.gameObjectArray = gameObjectArray;
 	}
-	public B2DGameObject createGameObject(String name,Body body){
-		return new B2DGameObject(name, body);
+	
+	public B2DGameObject createGameObject(long id,Body body){
+		return new B2DGameObject(id, body);
 	}
+/*	public B2DGameObject createGameObject(String name,Body body){
+		return new B2DGameObject(name, body);
+	}*/
 	
 	private void createGround(){
 		PolygonShape groundPoly = new PolygonShape();
@@ -216,11 +238,13 @@ public class GameWorldB2D {
 		});
 	}
 	
-	public String gameObjectArrayToString(){
-		return gameObjectArrayToString(gameObjectArray);
-	}
 	
-	public String gameObjectArrayToString(Array<B2DGameObject> array){
+	
+/*	public String gameObjectArrayToString(){
+		return gameObjectArrayToString(gameObjectArray);
+	}*/
+	
+	/*public String gameObjectArrayToString(Array<B2DGameObject> array){
 		StringBuffer stringBuffer=new StringBuffer();
 		stringBuffer.append("[");
 		if (array.size>0){
@@ -232,5 +256,5 @@ public class GameWorldB2D {
 		}
 		stringBuffer.append("]");
 		return new String(stringBuffer);
-	}
+	}*/
 }
