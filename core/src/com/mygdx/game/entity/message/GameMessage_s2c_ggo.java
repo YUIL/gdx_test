@@ -6,6 +6,11 @@ import com.mygdx.game.util.JavaDataConverter;
 public class GameMessage_s2c_ggo extends GameMessage {
 	public B2dBoxBaseInformation b2dBoxBaseInformation;
 
+	
+	
+	public GameMessage_s2c_ggo() {
+		this.type=GameMessageType.s2c_ggo;
+	}
 	@Override
 	public byte[] toBytes() {
 		int offset=0;
@@ -15,6 +20,13 @@ public class GameMessage_s2c_ggo extends GameMessage {
 		src=b2dBoxBaseInformation.toBytes();
 		System.arraycopy(src, 0, dest, offset, B2dBoxBaseInformation.informationLength);
 		return dest;
+	}
+
+	@Override
+	public void initFromBytes(byte[] src) {
+		// TODO Auto-generated method stub
+		this.b2dBoxBaseInformation.initFromBytes(src);
+
 	}
 	
 	

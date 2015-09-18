@@ -4,7 +4,7 @@ import com.mygdx.game.util.JavaDataConverter;
 
 public class GameMessageConverter {
 	int type=0;
-	public void getGameMessageFromBytes(byte[] src,GameMessage message){
+	/*public void getGameMessageFromBytes(byte[] src,GameMessage message){
 		int offset=0;
 		type=JavaDataConverter.bytesToInt(JavaDataConverter.subByte(src, 4, offset));offset+=4;
 		message.type=type;
@@ -53,7 +53,7 @@ public class GameMessageConverter {
 		default:
 			break;
 		}
-	}
+	}*/
 	
 	/*public static byte[] getBytesFromGameMessage(GameMessage message){
 		switch (message.type) {

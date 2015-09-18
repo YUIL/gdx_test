@@ -20,11 +20,12 @@ public class B2dBoxBaseInformation {
 	public B2dBoxBaseInformation(){
 		
 	}
-	public B2dBoxBaseInformation(byte[] src,int offset){
-		this.initFromBytes(src, offset);
+	public B2dBoxBaseInformation(byte[] src){
+		this.initFromBytes(src);
 	}
 	
-	public void initFromBytes(byte[] src,int offset){
+	public void initFromBytes(byte[] src){
+		int offset=0;
 		gameObjectId=JavaDataConverter.bytesToLong(JavaDataConverter.subByte(src, 8, offset));offset+=8;
 		x=JavaDataConverter.bytesToFloat(JavaDataConverter.subByte(src, 4, offset));offset+=4;
 		y=JavaDataConverter.bytesToFloat(JavaDataConverter.subByte(src, 4, offset));offset+=4;

@@ -10,10 +10,15 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.mygdx.game.entity.B2DGameObject;
 import com.mygdx.game.entity.GameObjectCreation;
 import com.mygdx.game.entity.GameWorldB2D;
+import com.mygdx.game.entity.message.GameMessage;
+import com.mygdx.game.entity.message.GameMessageConverter;
+import com.mygdx.game.entity.message.GameMessageType;
+import com.mygdx.game.entity.message.GameMessage_c2s_rpc;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpMessage;
 import com.mygdx.game.net.udp.UdpMessageListener;
 import com.mygdx.game.net.udp.UdpServer;
+import com.mygdx.game.util.JavaDataConverter;
 import com.sun.xml.internal.ws.api.pipe.NextAction;
 
 public class NetTest6LogicServer implements UdpMessageListener {
@@ -110,7 +115,8 @@ public class NetTest6LogicServer implements UdpMessageListener {
 	}
 
 	public class MessageProcessor implements Runnable {
-
+		
+		GameMessageConverter gameMessageConverter=new GameMessageConverter();
 		Session session;
 
 		public Session getSession() {
@@ -122,21 +128,35 @@ public class NetTest6LogicServer implements UdpMessageListener {
 		}
 
 		public UdpMessage getMessage() {
-			return message;
+			return udpMessage;
 		}
 
 		public void setMessage(UdpMessage message) {
-			this.message = message;
+			this.udpMessage = message;
 		}
 
-		UdpMessage message;
+		UdpMessage udpMessage;
 
 		@Override
 		public void run() {
+			
+			int type=JavaDataConverter.bytesToInt(JavaDataConverter.subByte(udpMessage.getData(), 4, 0));
+			byte[] src=JavaDataConverter.subByte(udpMessage.getData(), udpMessage.getData().length-4, 4);
+			switch (type) {
+			case GameMessageType.c2s_rpc:
+				GameMessage_c2s_rpc gameMessage_c2s_rpc=new GameMessage_c2s_rpc();
+				gameMessage_c2s_rpc.initFromBytes(src);
+				break;
+
+			default:
+				break;
+			}
+			
 			// TODO Auto-generated method stub
 			/*System.out.print("disposeMessage:");
 			System.out.println(message.toString());*/
-			String recvString = new String(message.getData());
+			
+			String recvString = new String(udpMessage.getData());
 			if (!recvString.equals("")) {
 				JsonValue jsonValue = jsonReader.parse(recvString);
 				if (jsonValue.get("rpc") != null) {
