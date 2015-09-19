@@ -38,7 +38,7 @@
         <skin name="default"></skin>
     </actor>
     
-    <actor id="1" type="textArea" name="userName" text="yuil">
+    <actor id="1" type="textArea" name="userName" text="1">
         <x>500</x>
         <y>400</y>
         <skin name="default"></skin>
