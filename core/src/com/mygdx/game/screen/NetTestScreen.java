@@ -18,15 +18,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.mygdx.game.input.ActorInputListenner;
 import com.mygdx.game.input.InputProcessor;
-import com.mygdx.game.net.Client;
-import com.mygdx.game.net.Server;
 import com.mygdx.game.net.UdpMessage;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
 import com.mygdx.game.util.ByteUtil;
 
 public class NetTestScreen extends TestScreen {
-	String guiXmlPath;
+
+	public NetTestScreen(Game game) {
+		super(game);
+		// TODO Auto-generated constructor stub
+	}
+/*	String guiXmlPath;
 	Stage stage;
 	Skin skin;
 	SpriteBatch batch;
@@ -84,9 +87,9 @@ public class NetTestScreen extends TestScreen {
 					message.setData(ByteUtil.intToBytes(Integer
 							.parseInt(((TextArea) (stage.getRoot()
 									.findActor("data"))).getText())));
-					/*String str="asdpupoiupoiupiupoi;klj;km,nmbm,jhgdrtbgcnbvfkghfkhglujghkj,hjguytkjtdtrefydjhgftyfjhvghjftfjhgfjdftydcjhgfhgfytfhgvcdhcghjfcjgxhjfgchgcfghxgfhcjfgkchgfjhgcghcjhgfjhfgvhgchjtgcyhcghclkajfs;zixujvnalkfjl;aksjdlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllkajflk";
+					String str="asdpupoiupoiupiupoi;klj;km,nmbm,jhgdrtbgcnbvfkghfkhglujghkj,hjguytkjtdtrefydjhgftyfjhvghjftfjhgfjdftydcjhgfhgfytfhgvcdhcghjfcjgxhjfgchgcfghxgfhcjfgkchgfjhgcghcjhgfjhfgvhgchjtgcyhcghclkajfs;zixujvnalkfjl;aksjdlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllkajflk";
 					message.setLength(str.length());
-					message.setData(str.getBytes());*/
+					message.setData(str.getBytes());
 					//server.SendUdpMessage(client.getSocketAddress(), message);
 					// server.send(9091, 9092, message);
 
@@ -204,5 +207,5 @@ public class NetTestScreen extends TestScreen {
 		
 		server.stop();
 	}
-
+*/
 }

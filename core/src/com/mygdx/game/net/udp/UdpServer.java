@@ -43,8 +43,10 @@ public class UdpServer {
 
 	volatile long recvCount = 0;
 	volatile long sendCount = 0;
+	volatile long resendCount = 0;
 	volatile long recvDataLength = 0;
 	volatile long sendDataLength = 0;
+	volatile long resendDataLength = 0;
 
 	public synchronized Session findSession(long sessionId) {
 
@@ -211,8 +213,10 @@ public class UdpServer {
 		//	System.out.print("  |  currentSendMessageNum:" + currentSendMessageNum);
 			System.out.print("  |  recvCount:" + recvCount);
 			System.out.print("  |  sendCount:" + sendCount);
+			System.out.print("  |  resendCount:" + resendCount);
 			System.out.print("  |  recvDataLength:" + recvDataLength);
 			System.out.print("  |  sendDataLength:" + sendDataLength);
+			System.out.print("  |  resendDataLength:" + resendDataLength);
 			System.out.print("}");
 			System.out.println();
 		}
@@ -237,6 +241,12 @@ public class UdpServer {
 							} else {
 								if (System.currentTimeMillis() - session.lastSendTime > session.getTimeOut()
 										* session.timeOutMultiple) {
+									sendCount++;
+									sendDataLength+=session.currentSendUdpMessage(null).getLength();
+									if(session.timeOutMultiple>0){
+										resendCount++;
+										resendDataLength+=session.currentSendUdpMessage(null).getLength();
+									}
 									session.timeOutMultiple += 1;
 									// System.out.println("send");
 									sendUdpMessage(session, session.currentSendUdpMessage(null));
@@ -280,10 +290,7 @@ public class UdpServer {
 
 		public synchronized void sendUdpMessage(DatagramSocket sendSocket, SocketAddress address, UdpMessage message) {
 			// System.out.println("Udp send, message:"+message.toString());
-			sendCount++;
-			if (message.getData()!=null) {
-				sendDataLength += message.getData().length;
-			}
+			
 			try {
 				byte[] temp = message.toBytes();
 				DatagramPacket sendPacket = new DatagramPacket(temp, temp.length, address);

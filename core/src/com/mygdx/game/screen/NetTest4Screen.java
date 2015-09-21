@@ -20,7 +20,6 @@ import com.mygdx.game.entity.GameObject;
 import com.mygdx.game.entity.GameWorld;
 import com.mygdx.game.input.ActorInputListenner;
 import com.mygdx.game.input.KeyboardStatus;
-import com.mygdx.game.net.Player;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpServer;
 import com.mygdx.game.stage.StageManager;
@@ -31,6 +30,11 @@ import com.mygdx.game.util.GameManager;
  */
 public class NetTest4Screen extends TestScreen2D {
 
+	public NetTest4Screen(Game game) {
+		super(game);
+		// TODO Auto-generated constructor stub
+	}
+/*
 	volatile Label console;
 	String recvString = null;
 	volatile UdpServer udpServer;
@@ -76,7 +80,7 @@ public class NetTest4Screen extends TestScreen2D {
 							}
 							if (session != null) {
 								
-								/*while (!session.getRecvMessageQueue().isEmpty()) {
+								while (!session.getRecvMessageQueue().isEmpty()) {
 									recvString = new String(session.getRecvMessageQueue().poll().getData());
 									if (recvString!=null){
 										disposeMessage();
@@ -84,7 +88,7 @@ public class NetTest4Screen extends TestScreen2D {
 									
 									
 
-								}*/
+								}
 							} else {
 								if (udpServer.sessionArray.size!=0) {
 									for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator.hasNext();) {
@@ -224,12 +228,12 @@ public class NetTest4Screen extends TestScreen2D {
 	@Override
 	public void render(float delta) {
 		super.render(delta);
-		/*if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
 			aPressAction();
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
 			dPressAction();
-		}*/
+		}
 		if (Gdx.input.isKeyJustPressed(Input.Keys.Z)) {
 			zPressAction();
 		}
@@ -241,12 +245,12 @@ public class NetTest4Screen extends TestScreen2D {
 		}
 		
 		
-		/*if(aButtonPress){
+		if(aButtonPress){
 			aPressAction();
 		}
 		if (dButtonPress){
 			dPressAction();
-		}*/
+		}
 		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
 			//aPressAction();
 			if (!keyboardStatus.isaJustPress()) {
@@ -269,7 +273,7 @@ public class NetTest4Screen extends TestScreen2D {
 			keyboardStatus.setdJustPress(!keyboardStatus.isdJustPress());
 		}
 		
-/*
+
 		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
 			sendMessage("{time:" + System.currentTimeMillis() + "}");
 		}
@@ -316,20 +320,20 @@ public class NetTest4Screen extends TestScreen2D {
 		if (Gdx.input.isKeyPressed(Input.Keys.L)) {
 			// cam.zoom += (0.2*delta);
 			// If the Q Key is pressed, subtract 0.02 from the Camera's Zoom
-		}*/
+		}
 
-/*		if (selfPlayer.isMove()) {
+		if (selfPlayer.isMove()) {
 			selfPlayer.getRectangle().setX(selfPlayer.getRectangle().getX() + speed * delta);
 
 		}
 		if (remotePlayer.isMove()) {
 			remotePlayer.getRectangle().setX(remotePlayer.getRectangle().getX() + speed * delta);
-		}*/
+		}
 
-		/*
+		
 		batch.draw(texture, selfPlayer.getRectangle().getX(), selfPlayer.getRectangle().getY());
 		batch.draw(texture, remotePlayer.getRectangle().getX(), remotePlayer.getRectangle().getY());
-*/		
+		
 		batch.begin();
 		for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
 			GameObject gameObject=gameWorld.getGameObjectArray().get(i);
@@ -362,7 +366,7 @@ public class NetTest4Screen extends TestScreen2D {
 		return false;
 		
 	}
-/*
+
 	public void netMessageProcess() {
 		try {
 			if (server != null) {
@@ -402,7 +406,7 @@ public class NetTest4Screen extends TestScreen2D {
 		}
 
 	}
-*/
+
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
@@ -522,5 +526,5 @@ public class NetTest4Screen extends TestScreen2D {
 				session=null;
 			}
 		});
-	}
+	}*/
 }

@@ -15,14 +15,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.mygdx.game.input.ActorInputListenner;
 import com.mygdx.game.input.InputProcessor;
-import com.mygdx.game.net.Client;
-import com.mygdx.game.net.Server;
 import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
 
 
 public class NetTest2Screen extends TestScreen {
 
+	public NetTest2Screen(Game game) {
+		super(game);
+		// TODO Auto-generated constructor stub
+	}
+/*
 	String guiXmlPath;
 	Stage stage;
 	Skin skin;
@@ -70,8 +73,8 @@ public class NetTest2Screen extends TestScreen {
 				String password=((TextArea)(stage.getRoot().findActor("password"))).getText();
 				boolean temp=(server.clientMap.get("server").send(("{'login':{'userName':'"+userName+"','password':'"+password+"'}}").getBytes()));
 				System.out.println(temp);
-				/*byte[] b="{'login':{'userName':'123','password':'123'}}".getBytes();
-				System.out.println(new String(b));*/
+				byte[] b="{'login':{'userName':'123','password':'123'}}".getBytes();
+				System.out.println(new String(b));
 				
 			}
 		});
@@ -124,6 +127,6 @@ public class NetTest2Screen extends TestScreen {
 		stage.dispose();
 		skin.dispose();
 		server.stop();
-	}
+	}*/
 
 }
