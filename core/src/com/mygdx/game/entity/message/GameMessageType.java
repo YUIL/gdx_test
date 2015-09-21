@@ -1,17 +1,19 @@
 package com.mygdx.game.entity.message;
 
-public class GameMessageType {
-	public static final int length=2;
+public enum GameMessageType {
+	c2s_b2d_apply_force,
+	c2s_b2d_add_gameobject,
+	c2s_b2d_remove_gameobject,
+	c2s_b2d_get_gameobject,
+	c2s_b2d_get_all_gameobject,
 	
-	public static final short c2s_b2d_apply_force=1;
-	public static final short c2s_b2d_add_gameobject=2;
-	public static final short c2s_b2d_remove_gameobject=3;
-	public static final short c2s_b2d_get_gameobject=4;
-	public static final short c2s_b2d_get_all_gameobject=5;
 	
-	public static final short s2c_b2d_apply_force=6;
-	public static final short s2c_b2d_add_gameobject=7;
-	public static final short s2c_b2d_remove_gameobject=8;
-	public static final short s2c_b2d_get_gameobject=9;
-	public static final short s2c_b2d_get_all_gameobject=10;
+	
+	s2c_b2d_apply_force,
+	s2c_b2d_add_gameobject,
+	s2c_b2d_remove_gameobject,
+	s2c_b2d_get_gameobject,
+	s2c_b2d_get_all_gameobject;
+	
+	
 }

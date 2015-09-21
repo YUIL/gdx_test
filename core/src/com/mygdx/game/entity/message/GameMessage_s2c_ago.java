@@ -8,19 +8,19 @@ public class GameMessage_s2c_ago extends GameMessage {
 	
 	
 	public GameMessage_s2c_ago() {
-		this.type=GameMessageType.s2c_b2d_add_gameobject;
+		this.type=GameMessageType.s2c_b2d_add_gameobject.ordinal();
 	}
 	public GameMessage_s2c_ago(byte[] src) {
-		this.type=GameMessageType.s2c_b2d_add_gameobject;
+		this.type=GameMessageType.s2c_b2d_add_gameobject.ordinal();
 		this.initFromBytes(src);
 	}
 	@Override
 	public byte[] toBytes() {
 		// TODO Auto-generated method stub
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+GameMessageType.length];
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+GameMessage.typeLength];
 		byte[] src=ByteUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, GameMessageType.length);offset+=GameMessageType.length;
+		System.arraycopy(src, 0, dest, offset, GameMessage.typeLength);offset+=GameMessage.typeLength;
 		src=b2dBoxBaseInformation.toBytes();
 		System.arraycopy(src, 0, dest, offset, B2dBoxBaseInformation.informationLength);
 		return dest;

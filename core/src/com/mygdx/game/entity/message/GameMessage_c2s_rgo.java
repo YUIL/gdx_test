@@ -9,10 +9,10 @@ public class GameMessage_c2s_rgo extends GameMessage {
 	
 	
 	public GameMessage_c2s_rgo() {
-		this.type=GameMessageType.c2s_b2d_remove_gameobject;
+		this.type=GameMessageType.c2s_b2d_remove_gameobject.ordinal();
 	}
 	public GameMessage_c2s_rgo(byte[] src) {
-		this.type=GameMessageType.c2s_b2d_remove_gameobject;
+		this.type=GameMessageType.c2s_b2d_remove_gameobject.ordinal();
 		this.initFromBytes(src);
 	}
 	@Override
@@ -20,7 +20,7 @@ public class GameMessage_c2s_rgo extends GameMessage {
 		int offset=0;
 		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+4];
 		byte[] src=ByteUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, GameMessageType.length);offset+=GameMessageType.length;
+		System.arraycopy(src, 0, dest, offset, GameMessage.typeLength);offset+=GameMessage.typeLength;
 		src=ByteUtil.longToBytes(this.gameObjectId);
 		System.arraycopy(src, 0, dest, offset, 8);
 		return dest;

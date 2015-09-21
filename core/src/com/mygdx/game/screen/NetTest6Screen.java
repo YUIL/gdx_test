@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.mygdx.game.entity.B2DGameObject;
 import com.mygdx.game.entity.GameWorldB2D;
 import com.mygdx.game.entity.info.B2dBoxBaseInformation;
+import com.mygdx.game.entity.message.GameMessage;
 import com.mygdx.game.entity.message.GameMessageType;
 import com.mygdx.game.entity.message.GameMessage_c2s_ago;
 import com.mygdx.game.entity.message.GameMessage_c2s_ggo;
@@ -582,17 +583,17 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 
 	@Override
 	public void disposeUdpMessage(Session session, UdpMessage udpMessage) {
-		if (udpMessage.length>GameMessageType.length) {
+		if (udpMessage.length>GameMessage.typeLength) {
 			System.out.println("disposing");
 			//disposing=true;
 			if(session==null)this.session=session;
-			int type = ByteUtil.bytesToInt(ByteUtil.subByte(udpMessage.getData(), GameMessageType.length, 0));
-			System.out.println("type:"+type);
-			byte[] src = ByteUtil.subByte(udpMessage.getData(), udpMessage.getData().length - GameMessageType.length, GameMessageType.length);
+			int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(udpMessage.getData(), GameMessage.typeLength, 0));
+			System.out.println("type:"+typeOrdinal);
+			byte[] src = ByteUtil.subByte(udpMessage.getData(), udpMessage.getData().length - GameMessage.typeLength, GameMessage.typeLength);
 			long id;
 			B2DGameObject gameObject;
-			switch (type) {
-			case GameMessageType.s2c_b2d_get_all_gameobject:
+			switch (GameMessageType.values()[typeOrdinal]) {
+			case s2c_b2d_get_all_gameobject:
 				GameMessage_s2c_gago gameMessage_s2c_gago=new GameMessage_s2c_gago(src);
 				for (int i = 0; i < gameMessage_s2c_gago.b2dBoxBaseInformationArray.size; i++) {
 					B2dBoxBaseInformation info=gameMessage_s2c_gago.b2dBoxBaseInformationArray.get(i);
@@ -605,14 +606,14 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 					}
 				}
 				break;
-			case GameMessageType.s2c_b2d_remove_gameobject:
+			case s2c_b2d_remove_gameobject:
 				GameMessage_s2c_rgo gameMessage_s2c_rgo=new GameMessage_s2c_rgo(src);
 				gameObject=gameWorld.findGameObject(gameMessage_s2c_rgo.gameObjectId);
 				if(gameObject!=null){
 					gameWorld.getGameObjectRemoveQueue().add(gameObject);
 				}
 				break;
-			case GameMessageType.s2c_b2d_get_gameobject:
+			case s2c_b2d_get_gameobject:
 				GameMessage_s2c_ggo gameMessage_s2c_ggo=new GameMessage_s2c_ggo(src);
 				gameObject=gameWorld.findGameObject(gameMessage_s2c_ggo.b2dBoxBaseInformation.gameObjectId);
 				if(gameObject==null){
@@ -621,6 +622,8 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 				}else{
 					gameObject.getGameObjectUpdateQueue().add(gameMessage_s2c_ggo.b2dBoxBaseInformation);
 				}
+				break;
+			default:
 				break;
 			}
 		}

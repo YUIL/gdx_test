@@ -9,18 +9,18 @@ public class GameMessage_c2s_ggo extends GameMessage {
 
 	
 	public GameMessage_c2s_ggo() {
-		this.type=GameMessageType.c2s_b2d_get_gameobject;
+		this.type=GameMessageType.c2s_b2d_get_gameobject.ordinal();
 	}
 	public GameMessage_c2s_ggo(byte [] src) {
-		this.type=GameMessageType.c2s_b2d_get_gameobject;
+		this.type=GameMessageType.c2s_b2d_get_gameobject.ordinal();
 		this.initFromBytes(src);
 	}
 	@Override
 	public byte[] toBytes() {
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+GameMessageType.length];
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+GameMessage.typeLength];
 		byte[] src=ByteUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, GameMessageType.length);offset+=GameMessageType.length;
+		System.arraycopy(src, 0, dest, offset, GameMessage.typeLength);offset+=GameMessage.typeLength;
 		src=ByteUtil.longToBytes(this.gameObjectId);
 		System.arraycopy(src, 0, dest, offset, 8);
 		return dest;

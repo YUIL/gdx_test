@@ -127,7 +127,7 @@ public class Test {
 		/*Class1 c1=new Class1();
 		testfun(c1);
 		System.out.println(c1.s);*/
-		
+		System.out.println(State.getStateByIndex(1));
 	}
 	
 	public static void testfun(Object c1){

@@ -9,10 +9,10 @@ public class GameMessage_s2c_gago extends GameMessage {
 	public Array<B2dBoxBaseInformation> b2dBoxBaseInformationArray=new Array<B2dBoxBaseInformation>();
 	
 	public GameMessage_s2c_gago() {
-		this.type=GameMessageType.s2c_b2d_get_all_gameobject;
+		this.type=GameMessageType.s2c_b2d_get_all_gameobject.ordinal();
 	}
 	public GameMessage_s2c_gago(byte[] src) {
-		this.type=GameMessageType.s2c_b2d_get_all_gameobject;
+		this.type=GameMessageType.s2c_b2d_get_all_gameobject.ordinal();
 		this.initFromBytes(src);
 	}
 	
@@ -25,9 +25,9 @@ public class GameMessage_s2c_gago extends GameMessage {
 	
 	public byte[] toBytes(){
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*b2dBoxBaseInformationArray.size+GameMessageType.length];
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*b2dBoxBaseInformationArray.size+GameMessage.typeLength];
 		byte[] src=ByteUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, GameMessageType.length);offset+=GameMessageType.length;
+		System.arraycopy(src, 0, dest, offset, GameMessage.typeLength);offset+=GameMessage.typeLength;
 		
 		for (int i = 0; i < b2dBoxBaseInformationArray.size; i++) {
 			src=b2dBoxBaseInformationArray.get(i).toBytes();
@@ -44,9 +44,9 @@ public class GameMessage_s2c_gago extends GameMessage {
 	
 	public static byte[] getBytesFromB2dGameObjecArray(Array<B2DGameObject> array){
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*array.size+GameMessageType.length];
-		byte[] src=ByteUtil.intToBytes(GameMessageType.s2c_b2d_get_all_gameobject);
-		System.arraycopy(src, 0, dest, offset, GameMessageType.length);offset+=GameMessageType.length;
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*array.size+GameMessage.typeLength];
+		byte[] src=ByteUtil.intToBytes(GameMessageType.s2c_b2d_get_all_gameobject.ordinal());
+		System.arraycopy(src, 0, dest, offset, GameMessage.typeLength);offset+=GameMessage.typeLength;
 		
 		for (int i = 0; i < array.size; i++) {
 			src=B2dBoxBaseInformation.getBytesFromB2dGameObject(array.get(i));
