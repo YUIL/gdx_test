@@ -6,20 +6,20 @@ public class GameMessage_c2s_gago extends GameMessage{
 
 	
 	public GameMessage_c2s_gago(){
-		this.type=GameMessageType.c2s_b2d_get_all_gameobject.ordinal();
+		this.type=GameMessageType.C2S_B2D_GET_ALL_GAMEOBJECT.ordinal();
 	}
 	
 	public GameMessage_c2s_gago(byte[] src){
-		this.type=GameMessageType.c2s_b2d_get_all_gameobject.ordinal();
+		this.type=GameMessageType.C2S_B2D_GET_ALL_GAMEOBJECT.ordinal();
 		this.initFromBytes(src);
 	}
 	@Override
 	public byte[] toBytes() {
 		// TODO Auto-generated method stub
 		int offset=0;
-		byte[] dest=new byte[GameMessage.typeLength];
+		byte[] dest=new byte[GameMessage.TYPE_BYTE_LENGTH];
 		byte[] src=ByteUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, GameMessage.typeLength);
+		System.arraycopy(src, 0, dest, offset, GameMessage.TYPE_BYTE_LENGTH);
 		return dest;
 	}
 

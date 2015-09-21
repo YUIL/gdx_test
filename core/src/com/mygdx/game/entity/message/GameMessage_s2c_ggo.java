@@ -10,10 +10,10 @@ public class GameMessage_s2c_ggo extends GameMessage {
 	
 	
 	public GameMessage_s2c_ggo() {
-		this.type=GameMessageType.s2c_b2d_get_gameobject.ordinal();
+		this.type=GameMessageType.S2C_B2D_GET_GAMEOBJECT.ordinal();
 	}
 	public GameMessage_s2c_ggo(byte[] src) {
-		this.type=GameMessageType.s2c_b2d_get_gameobject.ordinal();
+		this.type=GameMessageType.S2C_B2D_GET_GAMEOBJECT.ordinal();
 		this.initFromBytes(src);
 	}
 	@Override
@@ -36,9 +36,9 @@ public class GameMessage_s2c_ggo extends GameMessage {
 	public static byte[] getBytesFromB2dGameObject(B2DGameObject obj){
 		
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+GameMessage.typeLength];
-		byte[] src=ByteUtil.intToBytes(GameMessageType.s2c_b2d_get_gameobject.ordinal());
-		System.arraycopy(src, 0, dest, offset, GameMessage.typeLength);offset+=GameMessage.typeLength;
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+GameMessage.TYPE_BYTE_LENGTH];
+		byte[] src=ByteUtil.intToBytes(GameMessageType.S2C_B2D_GET_GAMEOBJECT.ordinal());
+		System.arraycopy(src, 0, dest, offset, GameMessage.TYPE_BYTE_LENGTH);offset+=GameMessage.TYPE_BYTE_LENGTH;
 		src=B2dBoxBaseInformation.getBytesFromB2dGameObject(obj);
 		System.arraycopy(src, 0, dest, offset, B2dBoxBaseInformation.informationLength);
 		return dest;

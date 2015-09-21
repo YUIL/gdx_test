@@ -1,12 +1,9 @@
 package com.mygdx.game.entity.message;
 
-
-
 public abstract class GameMessage{
 
-	public static final int typeLength=2;
+	public static final int TYPE_BYTE_LENGTH=1;
 	public int type;
-	
 	
 
 	@Override

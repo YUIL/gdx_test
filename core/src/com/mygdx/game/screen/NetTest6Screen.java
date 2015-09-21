@@ -583,17 +583,17 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 
 	@Override
 	public void disposeUdpMessage(Session session, UdpMessage udpMessage) {
-		if (udpMessage.length>GameMessage.typeLength) {
+		if (udpMessage.length>GameMessage.TYPE_BYTE_LENGTH) {
 			System.out.println("disposing");
 			//disposing=true;
 			if(session==null)this.session=session;
-			int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(udpMessage.getData(), GameMessage.typeLength, 0));
+			int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(udpMessage.getData(), GameMessage.TYPE_BYTE_LENGTH, 0));
 			System.out.println("type:"+typeOrdinal);
-			byte[] src = ByteUtil.subByte(udpMessage.getData(), udpMessage.getData().length - GameMessage.typeLength, GameMessage.typeLength);
+			byte[] src = ByteUtil.subByte(udpMessage.getData(), udpMessage.getData().length - GameMessage.TYPE_BYTE_LENGTH, GameMessage.TYPE_BYTE_LENGTH);
 			long id;
 			B2DGameObject gameObject;
 			switch (GameMessageType.values()[typeOrdinal]) {
-			case s2c_b2d_get_all_gameobject:
+			case S2C_B2D_GET_ALL_GAMEOBJECT:
 				GameMessage_s2c_gago gameMessage_s2c_gago=new GameMessage_s2c_gago(src);
 				for (int i = 0; i < gameMessage_s2c_gago.b2dBoxBaseInformationArray.size; i++) {
 					B2dBoxBaseInformation info=gameMessage_s2c_gago.b2dBoxBaseInformationArray.get(i);
@@ -606,14 +606,14 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 					}
 				}
 				break;
-			case s2c_b2d_remove_gameobject:
+			case S2C_B2D_REMOVE_GAMEOBJECT:
 				GameMessage_s2c_rgo gameMessage_s2c_rgo=new GameMessage_s2c_rgo(src);
 				gameObject=gameWorld.findGameObject(gameMessage_s2c_rgo.gameObjectId);
 				if(gameObject!=null){
 					gameWorld.getGameObjectRemoveQueue().add(gameObject);
 				}
 				break;
-			case s2c_b2d_get_gameobject:
+			case S2C_B2D_GET_GAMEOBJECT:
 				GameMessage_s2c_ggo gameMessage_s2c_ggo=new GameMessage_s2c_ggo(src);
 				gameObject=gameWorld.findGameObject(gameMessage_s2c_ggo.b2dBoxBaseInformation.gameObjectId);
 				if(gameObject==null){

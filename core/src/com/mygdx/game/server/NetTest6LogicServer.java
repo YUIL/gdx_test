@@ -137,14 +137,14 @@ public class NetTest6LogicServer implements UdpMessageListener {
 
 		@Override
 		public void run() {
-			if (udpMessage.length>GameMessage.typeLength) {	
-				int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(udpMessage.getData(), GameMessage.typeLength, 0));
+			if (udpMessage.length>GameMessage.TYPE_BYTE_LENGTH) {	
+				int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(udpMessage.getData(), GameMessage.TYPE_BYTE_LENGTH, 0));
 				//System.out.println("type:"+type);
-				byte[] src = ByteUtil.subByte(udpMessage.getData(), udpMessage.getData().length -GameMessage.typeLength, GameMessage.typeLength);
+				byte[] src = ByteUtil.subByte(udpMessage.getData(), udpMessage.getData().length -GameMessage.TYPE_BYTE_LENGTH, GameMessage.TYPE_BYTE_LENGTH);
 				long id;
 				B2DGameObject gameObject;
 				switch (GameMessageType.values()[typeOrdinal]) {
-				case c2s_b2d_apply_force:
+				case C2S_B2D_APPLY_FORCE:
 					GameMessage_c2s_rpc gameMessage_c2s_rpc = new GameMessage_c2s_rpc(src);
 					id = gameMessage_c2s_rpc.gameObjectId;
 					gameObject = gameWorld.findGameObject(id);
@@ -171,7 +171,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 						}
 					}
 					break;
-				case c2s_b2d_add_gameobject:
+				case C2S_B2D_ADD_GAMEOBJECT:
 					GameMessage_c2s_ago gameMessage_c2s_ago = new GameMessage_c2s_ago(src);
 					id = gameMessage_c2s_ago.b2dBoxBaseInformation.gameObjectId;
 					gameObject = gameWorld.findGameObject(id);
@@ -186,10 +186,10 @@ public class NetTest6LogicServer implements UdpMessageListener {
 						udpServer.send(gameMessage_s2c_ago.toBytes(), session);*/
 					}
 					break;
-				case c2s_b2d_get_all_gameobject:
+				case C2S_B2D_GET_ALL_GAMEOBJECT:
 					udpServer.send(GameMessage_s2c_gago.getBytesFromB2dGameObjecArray(gameWorld.getGameObjectArray()), session);
 					break;
-				case c2s_b2d_remove_gameobject:
+				case C2S_B2D_REMOVE_GAMEOBJECT:
 					GameMessage_c2s_rgo gameMessage_c2s_rgo=new GameMessage_c2s_rgo(src);
 					gameObject=gameWorld.findGameObject(gameMessage_c2s_rgo.gameObjectId);
 					if(gameObject!=null){
@@ -199,7 +199,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 						boardCast(gameMessage_s2c_rgo.toBytes());
 					}					
 					break;
-				case c2s_b2d_get_gameobject:
+				case C2S_B2D_GET_GAMEOBJECT:
 					GameMessage_c2s_ggo gameMessage_c2s_ggo=new GameMessage_c2s_ggo(src);
 					gameObject=gameWorld.findGameObject(gameMessage_c2s_ggo.gameObjectId);
 					if(gameObject!=null){
@@ -304,7 +304,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 
 	public NetTest6LogicServer(int port) {
 		try {
-			udpServer = new UdpServer(port);
+			udpServer = new UdpServer(port,20);
 		} catch (BindException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

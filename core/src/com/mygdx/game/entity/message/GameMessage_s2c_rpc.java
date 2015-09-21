@@ -6,7 +6,7 @@ public class GameMessage_s2c_rpc extends GameMessage {
 	
 	
 	public GameMessage_s2c_rpc() {
-		this.type=GameMessageType.s2c_b2d_apply_force.ordinal();
+		this.type=GameMessageType.S2C_B2D_APPLY_FORCE.ordinal();
 	}
 	@Override
 	public byte[] toBytes() {
