@@ -377,7 +377,7 @@ public class UdpServer {
 							//session.getRecvMessageQueue().add(recvMessageBuf);
 							session.lastRecvSequenceId=recvMessageBuf.getSequenceId();
 							
-							udpMessageListener.disposeUdpMessage(session, recvMessageBuf);
+							udpMessageListener.disposeUdpMessage(session, recvMessageBuf.getData());
 							responseMessage.setSequenceId(recvMessageBuf.getSequenceId());
 							responseMessage.setType((byte) 2);
 

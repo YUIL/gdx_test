@@ -123,7 +123,7 @@
 		<y>50</y>
 		<skin name="default"></skin>
 	</actor>
-	<actor id="6" type="textButton" name="NetTest5" text="NetTest5">
+	<actor id="6" type="textButton" name="NetTest7" text="NetTest7">
 		<x>400</x>
 		<y>0</y>
 		<skin name="default"></skin>

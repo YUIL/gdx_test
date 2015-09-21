@@ -39,7 +39,7 @@ import com.mygdx.game.stage.StageManager;
 import com.mygdx.game.util.GameManager;
 import com.mygdx.game.util.ByteUtil;
 
-public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
+public class NetTest7Screen extends TestScreen2D implements UdpMessageListener{
 	OrthographicCamera camera = new OrthographicCamera(
 			Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 10);
 	TextureRegion textureRegion = new TextureRegion(new Texture(
@@ -63,7 +63,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	int updateInterval=10;
 	volatile boolean disposing=false;
 
-	public NetTest6Screen(Game game) {
+	public NetTest7Screen(Game game) {
 		super(game);
 		// TODO Auto-generated constructor stub
 		camera.position.set(0, Gdx.graphics.getHeight() /20, 0);
@@ -120,7 +120,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 					position.y - gameObject.getHeight() / 2, 
 					gameObject.getWidth() / 2f, gameObject.getHeight() / 2f, 
 					gameObject.getWidth(), gameObject.getHeight(), 
-					1, 1,
+					Gdx.graphics.getWidth()/800f, Gdx.graphics.getHeight()/480f,
 					angle);
 		}
 		batch.end();
@@ -199,6 +199,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 
 	@Override
 	public void resize(int width, int height) {
+		
 		super.resize(width, height);
 	}
 
@@ -627,97 +628,5 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 				break;
 			}
 		}
-	
-		// TODO Auto-generated method stub
-		
-		/*
-		recvString=new String(udpMessage.getData());
-		JsonValue jsonValue = jsonReader.parse(recvString);
-		if (jsonValue.get("rpc") != null) {
-			jsonValue = jsonValue.get("rpc");
-			if(jsonValue.get("af")!=null){
-				jsonValue = jsonValue.get("af");
-				String name=jsonValue.getString("n");
-				B2DGameObject gameObject=gameWorld.findGameObject(name);
-				if (gameObject!=null){
-					float forceX=jsonValue.getFloat("fx");
-					float forceY=jsonValue.getFloat("fy");
-					gameObject.applyForce(forceX, forceY);
-					sendMessage("{gago:}");
-				}
-				
-			}
-
-		} else {
-			if (jsonValue.get("gago") != null) {
-				jsonValue = jsonValue.get("gago");
-				for (int i = 0; i < jsonValue.size; i++) {
-					String name=jsonValue.get(i).getString("n");
-					float x=jsonValue.get(i).get("t").get("p").getFloat("x");
-					float y=jsonValue.get(i).get("t").get("p").getFloat("y");
-					float angle=jsonValue.get(i).get("t").getFloat("a");
-					float angularVelocity=jsonValue.get(i).getFloat("av");
-					float width=jsonValue.get(i).get("s").getFloat("w");
-					float height=jsonValue.get(i).get("s").getFloat("h");
-					float density=jsonValue.get(i).getFloat("d");
-					float lx=jsonValue.get(i).get("l").getFloat("x");
-					float ly=jsonValue.get(i).get("l").getFloat("y");
-					B2DGameObject gameObject=gameWorld.findGameObject(name);
-					if (gameObject!=null) {
-						//System.out.println("update gameObject");
-						gameObject.getGameObjectCreationQueue().add(new GameObjectUpdate(x, y, angle, angularVelocity, width, height, density, lx, ly));
-					}else {
-						gameObject=gameWorld.addBoxGameObject(name, x, y, angle,angularVelocity, width, height, density, lx, ly);
-						System.out.println(gameObject.toJson());
-					}
-				}
-			}else if(jsonValue.get("ago") != null) {
-				jsonValue=jsonValue.get("ago");
-				String name=jsonValue.getString("n");
-				
-				B2DGameObject gameObject=gameWorld.findGameObject(name);
-				if (gameObject!=null) {
-					
-				}else {
-					float x=jsonValue.get("t").get("p").getFloat("x");
-					float y=jsonValue.get("t").get("p").getFloat("y");
-					float angle=jsonValue.get("t").getFloat("a");
-					float angularVelocity=jsonValue.getFloat("av");
-					float width=jsonValue.get("s").getFloat("w");
-					float height=jsonValue.get("s").getFloat("h");
-					float density=jsonValue.getFloat("d");
-					float lx=jsonValue.get("l").getFloat("x");
-					float ly=jsonValue.get("l").getFloat("y");
-					gameWorld.getGameObjectCreationQueue().add(new GameObjectCreation(name, x, y, angle, angularVelocity, width, height, density, lx, ly));
-				}
-			}else if(jsonValue.get("rgo") != null) {
-				jsonValue=jsonValue.get("rgo");
-				String name=jsonValue.getString("n");
-				B2DGameObject gameObject=gameWorld.findGameObject(name);
-				if (gameObject!=null) {
-					gameWorld.removeGameObject(name);
-				}
-			}else if(jsonValue.get("ggo") != null) {
-				jsonValue=jsonValue.get("ggo");
-				String name=jsonValue.getString("n");
-				float x=jsonValue.get("t").get("p").getFloat("x");
-				float y=jsonValue.get("t").get("p").getFloat("y");
-				float angle=jsonValue.get("t").getFloat("a");
-				float angularVelocity=jsonValue.getFloat("av");
-				float width=jsonValue.get("s").getFloat("w");
-				float height=jsonValue.get("s").getFloat("h");
-				float density=jsonValue.getFloat("d");
-				float lx=jsonValue.get("l").getFloat("x");
-				float ly=jsonValue.get("l").getFloat("y");
-				B2DGameObject gameObject=gameWorld.findGameObject(name);
-				if (gameObject!=null) {
-					gameObject.getGameObjectCreationQueue().add(new GameObjectUpdate(x, y, angle, angularVelocity, width, height, density, lx, ly));
-				}else{
-					gameWorld.getGameObjectCreationQueue().add(new GameObjectCreation(name, x, y, angle, angularVelocity, width, height, density, lx, ly));
-				}
-			}
-			
-		}*/
-		//disposing=false;
 	}
 }

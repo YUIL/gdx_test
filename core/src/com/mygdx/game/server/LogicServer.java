@@ -3,9 +3,6 @@ package com.mygdx.game.server;
 import java.net.BindException;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import java.util.Map;
-
-import sun.misc.GC.LatencyRequest;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonReader;
@@ -65,7 +62,7 @@ public class LogicServer {
 					}
 				}
 				try {
-					Thread.currentThread().sleep(1);
+					Thread.sleep(1);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
