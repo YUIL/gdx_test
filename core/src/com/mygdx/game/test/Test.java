@@ -17,8 +17,8 @@ import java.util.concurrent.Executors;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.mygdx.game.entity.message.GameMessage;
 import com.mygdx.game.entity.message.GameMessageType;
+import com.mygdx.game.net.message.Message;
 import com.mygdx.game.net.udp.UdpMessage;
 import com.mygdx.game.test.Test.PhoneNumber;
 import com.mygdx.game.util.ByteUtil;
@@ -145,9 +145,9 @@ public class Test {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		GameMessage m = null;
+		Message m = null;
 		try {
-			m = (GameMessage) oin.readObject();// 由Object对象向下转型为MyTest对象
+			m = (Message) oin.readObject();// 由Object对象向下转型为MyTest对象
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

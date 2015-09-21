@@ -1,11 +1,13 @@
 package com.mygdx.game.entity.message;
 
-public class GameMessage_s2c_rpc extends GameMessage {
+import com.mygdx.game.net.message.Message;
+
+public class S2C_B2D_APPLY_FORCE extends Message {
 
 	
 	
 	
-	public GameMessage_s2c_rpc() {
+	public S2C_B2D_APPLY_FORCE() {
 		this.type=GameMessageType.S2C_B2D_APPLY_FORCE.ordinal();
 	}
 	@Override

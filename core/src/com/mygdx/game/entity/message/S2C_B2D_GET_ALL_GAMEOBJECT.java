@@ -3,15 +3,16 @@ package com.mygdx.game.entity.message;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.entity.B2DGameObject;
 import com.mygdx.game.entity.info.B2dBoxBaseInformation;
+import com.mygdx.game.net.message.Message;
 import com.mygdx.game.util.ByteUtil;
 
-public class GameMessage_s2c_gago extends GameMessage {
+public class S2C_B2D_GET_ALL_GAMEOBJECT extends Message {
 	public Array<B2dBoxBaseInformation> b2dBoxBaseInformationArray=new Array<B2dBoxBaseInformation>();
 	
-	public GameMessage_s2c_gago() {
+	public S2C_B2D_GET_ALL_GAMEOBJECT() {
 		this.type=GameMessageType.S2C_B2D_GET_ALL_GAMEOBJECT.ordinal();
 	}
-	public GameMessage_s2c_gago(byte[] src) {
+	public S2C_B2D_GET_ALL_GAMEOBJECT(byte[] src) {
 		this.type=GameMessageType.S2C_B2D_GET_ALL_GAMEOBJECT.ordinal();
 		this.initFromBytes(src);
 	}
@@ -25,9 +26,9 @@ public class GameMessage_s2c_gago extends GameMessage {
 	
 	public byte[] toBytes(){
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*b2dBoxBaseInformationArray.size+GameMessage.TYPE_BYTE_LENGTH];
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*b2dBoxBaseInformationArray.size+Message.TYPE_BYTE_LENGTH];
 		byte[] src=ByteUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, GameMessage.TYPE_BYTE_LENGTH);offset+=GameMessage.TYPE_BYTE_LENGTH;
+		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
 		
 		for (int i = 0; i < b2dBoxBaseInformationArray.size; i++) {
 			src=b2dBoxBaseInformationArray.get(i).toBytes();
@@ -44,9 +45,9 @@ public class GameMessage_s2c_gago extends GameMessage {
 	
 	public static byte[] getBytesFromB2dGameObjecArray(Array<B2DGameObject> array){
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*array.size+GameMessage.TYPE_BYTE_LENGTH];
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*array.size+Message.TYPE_BYTE_LENGTH];
 		byte[] src=ByteUtil.intToBytes(GameMessageType.S2C_B2D_GET_ALL_GAMEOBJECT.ordinal());
-		System.arraycopy(src, 0, dest, offset, GameMessage.TYPE_BYTE_LENGTH);offset+=GameMessage.TYPE_BYTE_LENGTH;
+		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
 		
 		for (int i = 0; i < array.size; i++) {
 			src=B2dBoxBaseInformation.getBytesFromB2dGameObject(array.get(i));

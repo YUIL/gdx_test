@@ -1,17 +1,18 @@
 package com.mygdx.game.entity.message;
 
 import com.mygdx.game.entity.info.B2dBoxBaseInformation;
+import com.mygdx.game.net.message.Message;
 import com.mygdx.game.util.ByteUtil;
 
-public class GameMessage_c2s_rpc extends GameMessage{
+public class C2S_B2D_APPLY_FORCE extends Message{
 	public long gameObjectId;
 	public float forceX;
 	public float forceY;
 	
-	public GameMessage_c2s_rpc() {
+	public C2S_B2D_APPLY_FORCE() {
 		this.type=GameMessageType.C2S_B2D_APPLY_FORCE.ordinal();
 	}
-	public GameMessage_c2s_rpc(byte[] src) {
+	public C2S_B2D_APPLY_FORCE(byte[] src) {
 		this.type=GameMessageType.C2S_B2D_APPLY_FORCE.ordinal();
 		this.initFromBytes(src);
 	}
@@ -20,7 +21,7 @@ public class GameMessage_c2s_rpc extends GameMessage{
 		int offset=0;
 		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+4];
 		byte[] src=ByteUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, GameMessage.TYPE_BYTE_LENGTH);offset+=GameMessage.TYPE_BYTE_LENGTH;
+		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
 		src=ByteUtil.longToBytes(this.gameObjectId);
 		System.arraycopy(src, 0, dest, offset, 8);offset+=8;
 		src=ByteUtil.floatToBytes(forceX);

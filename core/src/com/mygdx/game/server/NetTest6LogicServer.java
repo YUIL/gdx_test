@@ -8,15 +8,15 @@ import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.utils.JsonReader;
 import com.mygdx.game.entity.B2DGameObject;
 import com.mygdx.game.entity.GameWorldB2D;
-import com.mygdx.game.entity.message.GameMessage;
 import com.mygdx.game.entity.message.GameMessageType;
-import com.mygdx.game.entity.message.GameMessage_c2s_ago;
-import com.mygdx.game.entity.message.GameMessage_c2s_ggo;
-import com.mygdx.game.entity.message.GameMessage_c2s_rgo;
-import com.mygdx.game.entity.message.GameMessage_c2s_rpc;
-import com.mygdx.game.entity.message.GameMessage_s2c_gago;
-import com.mygdx.game.entity.message.GameMessage_s2c_ggo;
-import com.mygdx.game.entity.message.GameMessage_s2c_rgo;
+import com.mygdx.game.entity.message.C2S_B2D_ADD_GAMEOBJECT;
+import com.mygdx.game.entity.message.C2S_B2D_GET_GAMEOBJECT;
+import com.mygdx.game.entity.message.C2S_B2D_REMOVE_GAMEOBJECT;
+import com.mygdx.game.entity.message.C2S_B2D_APPLY_FORCE;
+import com.mygdx.game.entity.message.S2C_B2D_GET_ALL_GAMEOBJECT;
+import com.mygdx.game.entity.message.S2C_B2D_GET_GAMEOBJECT;
+import com.mygdx.game.entity.message.S2C_B2D_REMOVE_GAMEOBJECT;
+import com.mygdx.game.net.message.Message;
 import com.mygdx.game.net.udp.MessageProcessor;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpMessage;
@@ -93,7 +93,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 					 * boardCast("{gago:"+str+"}"); }
 					 */
 					if (boardCastNum > boardCastCound) {
-						boardCast(GameMessage_s2c_gago.getBytesFromB2dGameObjecArray(gameWorld.getGameObjectArray()));
+						boardCast(S2C_B2D_GET_ALL_GAMEOBJECT.getBytesFromB2dGameObjecArray(gameWorld.getGameObjectArray()));
 						boardCastCound++;
 					}
 
@@ -142,15 +142,15 @@ public class NetTest6LogicServer implements UdpMessageListener {
 		messageProcessor=new MessageProcessor() {
 			@Override
 			public void run() {
-				if (data.length>GameMessage.TYPE_BYTE_LENGTH) {	
-					int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(data, GameMessage.TYPE_BYTE_LENGTH, 0));
+				if (data.length>Message.TYPE_BYTE_LENGTH) {	
+					int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
 					//System.out.println("type:"+type);
-					byte[] src = ByteUtil.subByte(data, data.length -GameMessage.TYPE_BYTE_LENGTH, GameMessage.TYPE_BYTE_LENGTH);
+					byte[] src = ByteUtil.subByte(data, data.length -Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
 					long id;
 					B2DGameObject gameObject;
 					switch (GameMessageType.values()[typeOrdinal]) {
 					case C2S_B2D_APPLY_FORCE:
-						GameMessage_c2s_rpc gameMessage_c2s_rpc = new GameMessage_c2s_rpc(src);
+						C2S_B2D_APPLY_FORCE gameMessage_c2s_rpc = new C2S_B2D_APPLY_FORCE(src);
 						id = gameMessage_c2s_rpc.gameObjectId;
 						gameObject = gameWorld.findGameObject(id);
 						if (gameObject != null) {
@@ -177,7 +177,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 						}
 						break;
 					case C2S_B2D_ADD_GAMEOBJECT:
-						GameMessage_c2s_ago gameMessage_c2s_ago = new GameMessage_c2s_ago(src);
+						C2S_B2D_ADD_GAMEOBJECT gameMessage_c2s_ago = new C2S_B2D_ADD_GAMEOBJECT(src);
 						id = gameMessage_c2s_ago.b2dBoxBaseInformation.gameObjectId;
 						gameObject = gameWorld.findGameObject(id);
 						if (gameObject != null) {
@@ -192,26 +192,26 @@ public class NetTest6LogicServer implements UdpMessageListener {
 						}
 						break;
 					case C2S_B2D_GET_ALL_GAMEOBJECT:
-						udpServer.send(GameMessage_s2c_gago.getBytesFromB2dGameObjecArray(gameWorld.getGameObjectArray()), session);
+						udpServer.send(S2C_B2D_GET_ALL_GAMEOBJECT.getBytesFromB2dGameObjecArray(gameWorld.getGameObjectArray()), session);
 						break;
 					case C2S_B2D_REMOVE_GAMEOBJECT:
-						GameMessage_c2s_rgo gameMessage_c2s_rgo=new GameMessage_c2s_rgo(src);
+						C2S_B2D_REMOVE_GAMEOBJECT gameMessage_c2s_rgo=new C2S_B2D_REMOVE_GAMEOBJECT(src);
 						gameObject=gameWorld.findGameObject(gameMessage_c2s_rgo.gameObjectId);
 						if(gameObject!=null){
 							gameWorld.getGameObjectRemoveQueue().add(gameObject);
-							GameMessage_s2c_rgo gameMessage_s2c_rgo=new GameMessage_s2c_rgo();
+							S2C_B2D_REMOVE_GAMEOBJECT gameMessage_s2c_rgo=new S2C_B2D_REMOVE_GAMEOBJECT();
 							gameMessage_s2c_rgo.gameObjectId=gameObject.getId();
 							boardCast(gameMessage_s2c_rgo.toBytes());
 						}					
 						break;
 					case C2S_B2D_GET_GAMEOBJECT:
-						GameMessage_c2s_ggo gameMessage_c2s_ggo=new GameMessage_c2s_ggo(src);
+						C2S_B2D_GET_GAMEOBJECT gameMessage_c2s_ggo=new C2S_B2D_GET_GAMEOBJECT(src);
 						gameObject=gameWorld.findGameObject(gameMessage_c2s_ggo.gameObjectId);
 						if(gameObject!=null){
-							udpServer.send(GameMessage_s2c_ggo.getBytesFromB2dGameObject(gameObject), session);
+							udpServer.send(S2C_B2D_GET_GAMEOBJECT.getBytesFromB2dGameObject(gameObject), session);
 							
 						}else{
-							GameMessage_s2c_rgo gameMessage_s2c_rgo=new GameMessage_s2c_rgo();
+							S2C_B2D_REMOVE_GAMEOBJECT gameMessage_s2c_rgo=new S2C_B2D_REMOVE_GAMEOBJECT();
 							gameMessage_s2c_rgo.gameObjectId=gameMessage_c2s_ggo.gameObjectId;
 							udpServer.send(gameMessage_s2c_rgo.toBytes(), session);
 						}

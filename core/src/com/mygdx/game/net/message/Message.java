@@ -1,6 +1,6 @@
-package com.mygdx.game.entity.message;
+package com.mygdx.game.net.message;
 
-public abstract class GameMessage{
+public abstract class Message{
 
 	public static final int TYPE_BYTE_LENGTH=1;
 	public int type;
@@ -8,7 +8,7 @@ public abstract class GameMessage{
 
 	@Override
 	public String toString() {
-		return "GameMessage [type=" + type + "]";
+		return "Message [type=" + type + "]";
 	}
 	
 	
