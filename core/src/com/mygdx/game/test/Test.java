@@ -1,28 +1,15 @@
 package com.mygdx.game.test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.SerializablePermission;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
-import com.mygdx.game.entity.message.GameMessageType;
 import com.mygdx.game.net.message.Message;
-import com.mygdx.game.net.udp.UdpMessage;
-import com.mygdx.game.test.Test.PhoneNumber;
-import com.mygdx.game.util.ByteUtil;
-import com.sun.org.apache.xml.internal.utils.SerializableLocatorImpl;
 
 public class Test {
 	static String str = "{name:asd}";
@@ -127,7 +114,9 @@ public class Test {
 		/*Class1 c1=new Class1();
 		testfun(c1);
 		System.out.println(c1.s);*/
-		System.out.println(State.getStateByIndex(1));
+
+		Object[] arr=new String[10];
+		arr[0]=new Integer(1);
 	}
 	
 	public static void testfun(Object c1){
