@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.ShortArray;
 
 public class SortTest {
 	public static void main(String[] args) {
-		int arrLength = 10;
+		int arrLength = 2;
 
 		long startTime;
 		long endTime;
@@ -18,8 +18,8 @@ public class SortTest {
 		}
 		startTime = System.nanoTime();
 		//bubble(src);
-		 quicksort(src, arrLength/2,src.length-arrLength/2);
-		// mergeSort(src,2);
+		// quicksort(src, arrLength/2,src.length-arrLength/2);
+		// mergeSort(src,10);
 		endTime = System.nanoTime();
 		System.out.println("time:" + (endTime - startTime));
 		showArr(src);
@@ -162,4 +162,6 @@ public class SortTest {
 			}
 		}
 	}
+	
+
 }
