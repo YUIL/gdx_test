@@ -27,7 +27,7 @@ public class UiTest2Screen extends TestScreen
         super(game);
         stage=new Stage();
         guiXmlPath="gui/UiTest2Gui.xml";
-        StageManager.guiFactor.setStageFromXml(stage, guiXmlPath);
+        StageManager.guiFactor.setStage(stage, guiXmlPath);
 
         TextButton textButton1=new TextButton("button1",StageManager.defaultSkin);
         TextButton textButton2=new TextButton("button2",StageManager.defaultSkin);

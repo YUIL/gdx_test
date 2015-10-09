@@ -41,7 +41,7 @@ public class NetTest3Screen extends TestScreen {
 		guiXmlPath = "data/NetTest3Gui.xml";
 		skin = StageManager.defaultSkin;
 		stage = new Stage();
-		StageManager.guiFactor.setStageFromXml(stage, guiXmlPath);
+		StageManager.guiFactor.setStage(stage, guiXmlPath);
 
 
 

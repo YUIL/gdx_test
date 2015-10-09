@@ -1,5 +1,6 @@
 package com.mygdx.game.android;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.tencent.tauth.IUiListener;
@@ -52,7 +53,15 @@ public class LoginActivity extends Activity {
 		@Override
 		protected void doComplete(JSONObject values) {
 			Log.d("SDKQQAgentPref", "AuthorSwitch_SDK:" + SystemClock.elapsedRealtime());
-		
+			Intent intent=getIntent();
+			setResult(RESULT_OK,intent);
+			try {
+				intent.putExtra("openId",values.getString("openid"));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			finish();
 		}
 	};
 

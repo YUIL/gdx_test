@@ -67,7 +67,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 		super(game);
 		// TODO Auto-generated constructor stub
 		camera.position.set(0, Gdx.graphics.getHeight() /20, 0);
-		StageManager.guiFactor.setStageFromXml(stage, "gui/NetTest6Gui.xml");
+		StageManager.guiFactor.setStage(stage, "gui/NetTest6Gui.xml");
 		inputProcess();
 		GameManager.setInputProcessor(stage);
 		debugRenderer = new Box2DDebugRenderer();

@@ -46,7 +46,7 @@ public class ViewportTest1Screen extends TestScreen{
 		root.add("Press spacebar to change the viewport:").colspan(2).row();
 		root.add(label).colspan(2);
 		stage.addActor(root);
-		StageManager.guiFactor.setStageFromXml(stage, guiXmlPath);
+		StageManager.guiFactor.setStage(stage, guiXmlPath);
 
 		viewports = getViewports(stage.getCamera());
 		names = getViewportNames();

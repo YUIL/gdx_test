@@ -15,7 +15,7 @@ public class C2S_B2D_ADD_GAMEOBJECT extends Message {
 	}
 	public C2S_B2D_ADD_GAMEOBJECT(byte[] src) {
 		this.type=GameMessageType.C2S_B2D_ADD_GAMEOBJECT.ordinal();
-		this.initFromBytes(src);
+		this.init(src);
 
 	}
 	@Override
@@ -31,7 +31,7 @@ public class C2S_B2D_ADD_GAMEOBJECT extends Message {
 	}
 
 	@Override
-	public void initFromBytes(byte[] src) {
+	public void init(byte[] src) {
 		// TODO Auto-generated method stub
 		this.b2dBoxBaseInformation.initFromBytes(src);
 	}

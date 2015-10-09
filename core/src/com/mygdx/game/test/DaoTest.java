@@ -10,7 +10,7 @@ public class DaoTest {
 		// TODO Auto-generated method stub
 		UserDao userDao=DaoFactory.getInstance().getUserDao();
 		User user=new User();
-		user.setOpen_id("123");
+		user.setOpenId("123");
 		userDao.addUser(user);
 	}
 

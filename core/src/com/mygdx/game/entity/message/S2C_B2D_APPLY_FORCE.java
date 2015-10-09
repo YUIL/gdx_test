@@ -17,7 +17,7 @@ public class S2C_B2D_APPLY_FORCE extends Message {
 	}
 
 	@Override
-	public void initFromBytes(byte[] src) {
+	public void init(byte[] src) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -14,7 +14,7 @@ public class S2C_B2D_GET_ALL_GAMEOBJECT extends Message {
 	}
 	public S2C_B2D_GET_ALL_GAMEOBJECT(byte[] src) {
 		this.type=GameMessageType.S2C_B2D_GET_ALL_GAMEOBJECT.ordinal();
-		this.initFromBytes(src);
+		this.init(src);
 	}
 	
 	public void initB2dBoxBaseInformationArrayFromBytes(byte[] src){
@@ -38,7 +38,7 @@ public class S2C_B2D_GET_ALL_GAMEOBJECT extends Message {
 	}
 
 	@Override
-	public void initFromBytes(byte[] src) {
+	public void init(byte[] src) {
 		// TODO Auto-generated method stub
 		this.initB2dBoxBaseInformationArrayFromBytes(src);
 	}

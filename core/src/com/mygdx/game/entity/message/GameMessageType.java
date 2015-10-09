@@ -1,6 +1,12 @@
 package com.mygdx.game.entity.message;
 
 public enum GameMessageType {
+	
+	C2S_LOGIN,
+	S2C_LOGIN_SUCCESS,
+	
+	
+	
 	C2S_B2D_APPLY_FORCE,
 	C2S_B2D_ADD_GAMEOBJECT,
 	C2S_B2D_REMOVE_GAMEOBJECT,

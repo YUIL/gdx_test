@@ -14,12 +14,12 @@ public class C2S_B2D_APPLY_FORCE extends Message{
 	}
 	public C2S_B2D_APPLY_FORCE(byte[] src) {
 		this.type=GameMessageType.C2S_B2D_APPLY_FORCE.ordinal();
-		this.initFromBytes(src);
+		this.init(src);
 	}
 	@Override
 	public byte[] toBytes() {
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+4];
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+Message.TYPE_BYTE_LENGTH];
 		byte[] src=ByteUtil.intToBytes(this.type);
 		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
 		src=ByteUtil.longToBytes(this.gameObjectId);
@@ -33,7 +33,7 @@ public class C2S_B2D_APPLY_FORCE extends Message{
 
 
 	@Override
-	public void initFromBytes(byte[] src) {
+	public void init(byte[] src) {
 		// TODO Auto-generated method stub
 		int offset=0;
 		this.gameObjectId=ByteUtil.bytesToLong(ByteUtil.subByte(src, 8, offset));offset+=8;

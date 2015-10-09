@@ -20,9 +20,9 @@ import org.apache.commons.dbcp2.BasicDataSourceFactory;
  * 
  */
 public final class JdbcUtils {
-	private static String url = "jdbc:mysql://localhost:3306/yuil";
+	/*private static String url = "jdbc:mysql://localhost:3306/yuil";
 	private static String user = "root";
-	private static String password = "sanguoxx4321";
+	private static String password = "sanguoxx4321";*/
 	private static DataSource myDataSource = null;
 
 	private JdbcUtils() {

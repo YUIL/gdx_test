@@ -58,7 +58,7 @@ public class UiTestScreen extends TestScreen{
 		skin=StageManager.defaultSkin;
 		bf=new BitmapFont();
 		stage=new Stage();
-		StageManager.guiFactor.setStageFromXml(stage,guiXmlPath);
+		StageManager.guiFactor.setStage(stage,guiXmlPath);
 		List list =new List(skin);
 		list.setItems(listEntries);
 		list.getSelection().setMultiple(true);

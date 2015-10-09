@@ -45,6 +45,10 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" >
+            <intent-filter>
+				<action android:name="ACTION_LOGIN" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
         </activity>
           <activity
             android:name="com.tencent.connect.common.AssistActivity"

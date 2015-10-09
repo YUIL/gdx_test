@@ -42,7 +42,7 @@ public class GuiFactory {
         return stage;
     }*/
 
-    public void setStageFromXml(Stage stage, String guiXmlPath) {
+    public void setStage(Stage stage, String guiXmlPath) {
         setStageFromXml(stage, guiXmlPath, StageManager.defaultSkin);
     }
 

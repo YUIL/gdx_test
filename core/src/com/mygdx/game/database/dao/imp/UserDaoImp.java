@@ -22,12 +22,12 @@ public class UserDaoImp implements UserDao{
 			String sql="insert into user (user_id,open_id) values (?,?)";
 			conn=JdbcUtils.getConnection();
 			st=conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-			st.setInt(1, user.getUser_id());
-			st.setString(2, user.getOpen_id());
+			st.setInt(1, user.getUserId());
+			st.setString(2, user.getOpenId());
 			st.executeUpdate();
 			rs=st.getGeneratedKeys();
 			if(rs.next()){
-				user.setUser_id(rs.getInt(1));
+				user.setUserId(rs.getInt(1));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -116,8 +116,8 @@ public class UserDaoImp implements UserDao{
 	public User getUser(ResultSet rs){
 		User user=new User();
 		try {
-			user.setUser_id(rs.getInt("user_id"));
-			user.setOpen_id(rs.getString("open_id"));
+			user.setUserId(rs.getInt("user_id"));
+			user.setOpenId(rs.getString("open_id"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

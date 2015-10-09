@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stage>
+   
+     <actor id="6" type="textButton" name="login" text="login">
+        <x>100</x>
+        <y>100</y>
+        <skin name="default"></skin>
+    </actor>
+        
+</stage>

@@ -12,7 +12,7 @@ public abstract class Message{
 	}
 	
 	
-	public abstract void initFromBytes(byte[] src);
+	public abstract void init(byte[] src);
 	public abstract byte[] toBytes();
 
 }

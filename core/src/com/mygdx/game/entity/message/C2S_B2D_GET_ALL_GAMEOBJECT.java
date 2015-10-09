@@ -12,7 +12,7 @@ public class C2S_B2D_GET_ALL_GAMEOBJECT extends Message{
 	
 	public C2S_B2D_GET_ALL_GAMEOBJECT(byte[] src){
 		this.type=GameMessageType.C2S_B2D_GET_ALL_GAMEOBJECT.ordinal();
-		this.initFromBytes(src);
+		this.init(src);
 	}
 	@Override
 	public byte[] toBytes() {
@@ -25,7 +25,7 @@ public class C2S_B2D_GET_ALL_GAMEOBJECT extends Message{
 	}
 
 	@Override
-	public void initFromBytes(byte[] src) {
+	public void init(byte[] src) {
 		// TODO Auto-generated method stub
 
 	}

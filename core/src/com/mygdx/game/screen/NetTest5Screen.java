@@ -48,7 +48,7 @@ public class NetTest5Screen extends TestScreen2D {
 	public NetTest5Screen(Game game) {
 		super(game);
 		// TODO Auto-generated constructor stub
-		StageManager.guiFactor.setStageFromXml(stage, "gui/NetTest5Gui.xml");
+		StageManager.guiFactor.setStage(stage, "gui/NetTest5Gui.xml");
 		inputProcess();
 		GameManager.setInputProcessor(stage);
 		initScreenLogic();
