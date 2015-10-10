@@ -43,7 +43,7 @@ public class S2C_B2D_GET_ALL_GAMEOBJECT extends Message {
 		this.initB2dBoxBaseInformationArrayFromBytes(src);
 	}
 	
-	public static byte[] getBytesFromB2dGameObjecArray(Array<B2DGameObject> array){
+	public static byte[] getBytes(Array<B2DGameObject> array){
 		int offset=0;
 		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*array.size+Message.TYPE_BYTE_LENGTH];
 		byte[] src=ByteUtil.intToBytes(GameMessageType.S2C_B2D_GET_ALL_GAMEOBJECT.ordinal());

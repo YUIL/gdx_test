@@ -6,7 +6,7 @@ import com.mygdx.game.stage.StageManager;
 public class InputProcessor {
 
 	public static void handleInput(Game game, float delta) {
-		StageManager.showSuperStage(delta);
+		
 		/*if (Gdx.input.isKeyJustPressed(Keys.NUM_0)) {
 			// game.getScreen().dispose();
 			game.setScreen(new MainMenuScreen(game));

@@ -35,5 +35,13 @@ public class GAME_MESSAGE extends Message{
 		System.arraycopy(src, 0, dest, offset, src.length);	
 		return dest;
 	}
-
+	public static byte[] getBytes(byte[] data){
+		int offset=0;
+		byte[] dest=new byte[data.length+Message.TYPE_BYTE_LENGTH];
+		byte[] src=ByteUtil.intToBytes(MessageType.GAME_MESSAGE.ordinal());
+		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
+		src=data;
+		System.arraycopy(src, 0, dest, offset, src.length);	
+		return dest;
+	}
 }

@@ -151,7 +151,7 @@ public class UdpServer {
 	}
 
 	public synchronized boolean send(byte[] data, Session session) {
-		System.out.println("udpserver send");
+		//System.out.println("udpserver send");
 		UdpMessage message = new UdpMessage();
 		message.setSessionId(session.getId());
 		message.setType((byte) 1);

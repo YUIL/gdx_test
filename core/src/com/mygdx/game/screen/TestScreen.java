@@ -50,10 +50,8 @@ public abstract class  TestScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-		// TODO Auto-generated method stub
-		
-	
 		InputProcessor.handleInput(game, delta);
+		//StageManager.showSuperStage(delta);
 	}
 
 	@Override

@@ -34,7 +34,7 @@ public class S2C_B2D_GET_GAMEOBJECT extends Message {
 		this.b2dBoxBaseInformation.initFromBytes(src);
 
 	}
-	public static byte[] getBytesFromB2dGameObject(B2DGameObject obj){
+	public static byte[] getBytes(B2DGameObject obj){
 		
 		int offset=0;
 		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+Message.TYPE_BYTE_LENGTH];

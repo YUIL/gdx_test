@@ -33,7 +33,7 @@ public class ClientSocket implements UdpMessageListener {
 	private boolean initUdpServer(int port) {
 		if (port < 10000) {
 			try {
-				System.out.println("try port:" + port);
+				System.out.println("try start at port:" + port);
 				udpServer = new UdpServer(port);
 				udpServer.setUdpMessageListener(this);
 				return true;

@@ -5,7 +5,7 @@ import com.mygdx.game.net.message.Message;
 import com.mygdx.game.util.ByteUtil;
 
 public class S2C_LOGIN_SUCCESS extends Message{
-	int userId;
+	public int userId;
 	public S2C_LOGIN_SUCCESS(){
 		super();
 		this.type=GameMessageType.S2C_LOGIN_SUCCESS.ordinal();

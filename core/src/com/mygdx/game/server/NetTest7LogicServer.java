@@ -15,6 +15,7 @@ import com.mygdx.game.entity.message.C2S_B2D_APPLY_FORCE;
 import com.mygdx.game.entity.message.S2C_B2D_GET_ALL_GAMEOBJECT;
 import com.mygdx.game.entity.message.S2C_B2D_GET_GAMEOBJECT;
 import com.mygdx.game.entity.message.S2C_B2D_REMOVE_GAMEOBJECT;
+import com.mygdx.game.net.message.GAME_MESSAGE;
 import com.mygdx.game.net.message.Message;
 import com.mygdx.game.net.udp.MessageProcessor;
 import com.mygdx.game.net.udp.Session;
@@ -88,7 +89,7 @@ public class NetTest7LogicServer implements UdpMessageListener {
 					 * boardCast("{gago:"+str+"}"); }
 					 */
 					if (boardCastNum > boardCastCound) {
-						boardCast(S2C_B2D_GET_ALL_GAMEOBJECT.getBytesFromB2dGameObjecArray(gameWorld.getGameObjectArray()));
+						boardCast(S2C_B2D_GET_ALL_GAMEOBJECT.getBytes(gameWorld.getGameObjectArray()));
 						boardCastCound++;
 					}
 
@@ -154,7 +155,8 @@ public class NetTest7LogicServer implements UdpMessageListener {
 						id = gameMessage_c2s_ago.b2dBoxBaseInformation.gameObjectId;
 						gameObject = gameWorld.findGameObject(id);
 						if (gameObject != null) {
-							
+							udpServer.send(GAME_MESSAGE.getBytes(S2C_B2D_GET_GAMEOBJECT.getBytes(gameObject)), session);
+
 						}else{
 							//System.out.println("create Box, id:"+gameMessage_c2s_ago.b2dBoxBaseInformation.gameObjectId);
 							gameWorld.getGameObjectCreationQueue().add(gameMessage_c2s_ago.b2dBoxBaseInformation);
@@ -165,7 +167,7 @@ public class NetTest7LogicServer implements UdpMessageListener {
 						}
 						break;
 					case C2S_B2D_GET_ALL_GAMEOBJECT:
-						udpServer.send(S2C_B2D_GET_ALL_GAMEOBJECT.getBytesFromB2dGameObjecArray(gameWorld.getGameObjectArray()), session);
+						udpServer.send(GAME_MESSAGE.getBytes(S2C_B2D_GET_ALL_GAMEOBJECT.getBytes(gameWorld.getGameObjectArray())), session);
 						break;
 					case C2S_B2D_REMOVE_GAMEOBJECT:
 						C2S_B2D_REMOVE_GAMEOBJECT gameMessage_c2s_rgo=new C2S_B2D_REMOVE_GAMEOBJECT(src);
@@ -181,12 +183,12 @@ public class NetTest7LogicServer implements UdpMessageListener {
 						C2S_B2D_GET_GAMEOBJECT gameMessage_c2s_ggo=new C2S_B2D_GET_GAMEOBJECT(src);
 						gameObject=gameWorld.findGameObject(gameMessage_c2s_ggo.gameObjectId);
 						if(gameObject!=null){
-							udpServer.send(S2C_B2D_GET_GAMEOBJECT.getBytesFromB2dGameObject(gameObject), session);
+							udpServer.send(GAME_MESSAGE.getBytes(S2C_B2D_GET_GAMEOBJECT.getBytes(gameObject)), session);
 							
 						}else{
 							S2C_B2D_REMOVE_GAMEOBJECT gameMessage_s2c_rgo=new S2C_B2D_REMOVE_GAMEOBJECT();
 							gameMessage_s2c_rgo.gameObjectId=gameMessage_c2s_ggo.gameObjectId;
-							udpServer.send(gameMessage_s2c_rgo.toBytes(), session);
+							udpServer.send(GAME_MESSAGE.getBytes(gameMessage_s2c_rgo.toBytes()), session);
 						}
 						break;
 					default:
@@ -201,7 +203,7 @@ public class NetTest7LogicServer implements UdpMessageListener {
 		Session session;
 		for (int i = 0; i < udpServer.sessionArray.size; i++) {
 			session = udpServer.sessionArray.get(i);
-			udpServer.send(bytes, session);
+			udpServer.send(GAME_MESSAGE.getBytes(bytes), session);
 		}
 	}
 

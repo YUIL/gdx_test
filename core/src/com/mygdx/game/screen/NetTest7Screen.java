@@ -13,8 +13,10 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.utils.JsonReader;
+import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.entity.B2DGameObject;
 import com.mygdx.game.entity.GameWorldB2D;
 import com.mygdx.game.entity.info.B2dBoxBaseInformation;
@@ -27,11 +29,13 @@ import com.mygdx.game.entity.message.GameMessageType;
 import com.mygdx.game.entity.message.S2C_B2D_GET_ALL_GAMEOBJECT;
 import com.mygdx.game.entity.message.S2C_B2D_GET_GAMEOBJECT;
 import com.mygdx.game.entity.message.S2C_B2D_REMOVE_GAMEOBJECT;
+import com.mygdx.game.entity.message.S2C_LOGIN_SUCCESS;
 import com.mygdx.game.input.ActorInputListenner;
 import com.mygdx.game.input.KeyboardStatus;
 import com.mygdx.game.net.ClientSocket;
 import com.mygdx.game.net.message.GAME_MESSAGE;
 import com.mygdx.game.net.message.Message;
+import com.mygdx.game.net.message.MessageType;
 import com.mygdx.game.net.message.USER_MESSAGE;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpMessageListener;
@@ -59,8 +63,8 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 	int speed = 50;
 	long nextUpdateTime = 0;
 	int updateInterval = 10;
-	volatile boolean disposing = false;
 
+	
 	public NetTest7Screen(Game game) {
 		super(game);
 		// TODO Auto-generated constructor stub
@@ -70,6 +74,7 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 		GameManager.setInputProcessor(stage);
 		debugRenderer = new Box2DDebugRenderer();
 		initScreenLogic();
+		netStart();
 	}
 
 	@Override
@@ -203,7 +208,10 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 	public void hide() {
 		super.hide();
 		screenLogic.stop();
-		clientSocket.close();
+		if(clientSocket!=null){
+			clientSocket.close();
+		}
+		
 		debugRenderer.dispose();
 		gameWorld.getBox2dWorld().dispose();
 	}
@@ -212,13 +220,28 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 	public void dispose() {
 		super.dispose();
 		screenLogic.stop();
-		clientSocket.close();
+		if(clientSocket!=null){
+			clientSocket.close();
+		}
 		debugRenderer.dispose();
 		gameWorld.getBox2dWorld().dispose();
 	}
 
 	public boolean sendGameMessage(Message message) {
 		boolean temp = clientSocket.sendMessage(new GAME_MESSAGE(message.toBytes()).toBytes());
+		if(temp){
+			System.out.println("send success!");
+		}
+		
+		return temp;
+	}
+	
+	public boolean sendUserMessage(Message message) {
+		boolean temp = clientSocket.sendMessage(new USER_MESSAGE(message.toBytes()).toBytes());
+		if(temp){
+			System.out.println("send success!");
+		}
+		
 		return temp;
 	}
 
@@ -291,7 +314,10 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 		// sendMessage("{gago:}");
 	}
 
-	private void zPressAction() {
+	private synchronized void zPressAction() {
+		if (gameObjectId==-1){
+			return;
+		}
 		float x = new Random().nextFloat() * 20;
 		C2S_B2D_ADD_GAMEOBJECT gameMessage_c2s_ago = new C2S_B2D_ADD_GAMEOBJECT();
 		gameMessage_c2s_ago.b2dBoxBaseInformation.gameObjectId = gameObjectId;
@@ -305,10 +331,13 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 		gameMessage_c2s_ago.b2dBoxBaseInformation.lx = 0;
 		gameMessage_c2s_ago.b2dBoxBaseInformation.ly = 0;
 		sendGameMessage(gameMessage_c2s_ago);
-
+		System.out.println("zpressaction");
 	}
 
 	private void xPressAction() {
+		if (gameObjectId==-1){
+			return;
+		}
 		if (gameWorld.findGameObject(gameObjectId) != null) {
 			C2S_B2D_REMOVE_GAMEOBJECT gameMessage = new C2S_B2D_REMOVE_GAMEOBJECT();
 			gameMessage.gameObjectId = gameObjectId;
@@ -326,7 +355,9 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 	}
 
 	private void gPressAction() {
-		System.out.println("gg");
+		if (gameObjectId==-1){
+			return;
+		}
 		C2S_B2D_GET_GAMEOBJECT gameMessage = new C2S_B2D_GET_GAMEOBJECT();
 		gameMessage.gameObjectId = gameObjectId;
 		sendGameMessage(gameMessage);
@@ -396,6 +427,23 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 		 * + ",add:{i:{x:0,y:200}}}}"); }
 		 */
 	}
+	
+	private void netStart(){
+		if (clientSocket == null) {
+			int port = Integer.parseInt(((TextArea) (stage.getRoot().findActor("localPort"))).getText());
+			clientSocket = new ClientSocket(port,
+					((TextArea) (stage.getRoot().findActor("remoteIp"))).getText(),
+					Integer.parseInt(((TextArea) (stage.getRoot().findActor("remotePort"))).getText()),
+					NetTest7Screen.this);
+
+		}
+	}
+	
+	private void login(){
+		if (gameObjectId==-1&&MyGdxGame.openId!=null&&clientSocket!=null) {
+			sendUserMessage(new C2S_LOGIN(MyGdxGame.openId));
+		}
+	}
 
 	public void sendMoveMessage(C2S_B2D_APPLY_FORCE gameMessage_c2s_rpc) {
 
@@ -423,14 +471,7 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 	public void inputProcess() {
 		stage.getRoot().findActor("start").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				if (clientSocket == null) {
-					int port = Integer.parseInt(((TextArea) (stage.getRoot().findActor("localPort"))).getText());
-					clientSocket = new ClientSocket(port,
-							((TextArea) (stage.getRoot().findActor("remoteIp"))).getText(),
-							Integer.parseInt(((TextArea) (stage.getRoot().findActor("remotePort"))).getText()),
-							NetTest7Screen.this);
-
-				}
+				netStart();
 			}
 		});
 		stage.getRoot().findActor("send").addListener(new ActorInputListenner() {
@@ -464,7 +505,7 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 
 				stage.unfocus(stage.getRoot().findActor("userName"));
-				gameObjectId = Long.parseLong(((TextArea) stage.getRoot().findActor("userName")).getText());
+				//gameObjectId = Long.parseLong(((TextArea) stage.getRoot().findActor("userName")).getText());
 
 				zPressAction();
 			}
@@ -478,7 +519,7 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 		stage.getRoot().findActor("G").addListener(new ActorInputListenner() {
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				gameObjectId = Long.parseLong(((TextArea) stage.getRoot().findActor("userName")).getText());
+				//gameObjectId = Long.parseLong(((TextArea) stage.getRoot().findActor("userName")).getText());
 
 				gPressAction();
 			}
@@ -487,14 +528,14 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 		stage.getRoot().findActor("W").addListener(new ActorInputListenner() {
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				gameObjectId = Long.parseLong(((TextArea) stage.getRoot().findActor("userName")).getText());
+				//gameObjectId = Long.parseLong(((TextArea) stage.getRoot().findActor("userName")).getText());
 				wJustPressAction();
 			}
 		});
 
 		stage.getRoot().findActor("login").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				sendGameMessage(new USER_MESSAGE(new C2S_LOGIN("11111111111111111111111111111111").toBytes()));
+				login();
 			}
 		});
 
@@ -506,6 +547,25 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 		System.out.println("disposing");
 		// disposing=true;
 		// if(session==null)this.session=session;
+		int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
+		//System.out.println("type:" + GameMessageType.values()[typeOrdinal]);
+		byte[] src = ByteUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
+		
+		switch (MessageType.values()[typeOrdinal]) {
+		case GAME_MESSAGE:
+			disposeGameMessage(session, src);
+			break;
+		case USER_MESSAGE:
+			disposeUserMessage(session, src);
+			break;
+		default:
+			break;
+		}
+		
+		
+	}
+
+	public void disposeGameMessage(Session session, byte[] data){
 		int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
 		System.out.println("type:" + GameMessageType.values()[typeOrdinal]);
 		byte[] src = ByteUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
@@ -546,5 +606,22 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 			break;
 		}
 	}
+	public void disposeUserMessage(Session session, byte[] data){
+		int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
+		System.out.println("type:" + GameMessageType.values()[typeOrdinal]);
+		byte[] src = ByteUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
+		
+		switch (GameMessageType.values()[typeOrdinal]) {
+		case S2C_LOGIN_SUCCESS:
+			S2C_LOGIN_SUCCESS message=new S2C_LOGIN_SUCCESS(src);
+			System.out.println(message.userId);
+			gameObjectId=message.userId;
+			((Label)(stage.getRoot().findActor("console"))).setText("login success!!");
+			break;
 
+		default:
+			break;
+		}
+	}
+	
 }

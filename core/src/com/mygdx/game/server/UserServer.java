@@ -9,7 +9,9 @@ import com.mygdx.game.entity.User;
 import com.mygdx.game.entity.UserManager;
 import com.mygdx.game.entity.message.C2S_LOGIN;
 import com.mygdx.game.entity.message.GameMessageType;
+import com.mygdx.game.entity.message.S2C_LOGIN_SUCCESS;
 import com.mygdx.game.net.message.Message;
+import com.mygdx.game.net.message.USER_MESSAGE;
 import com.mygdx.game.net.udp.Session;
 import com.mygdx.game.net.udp.UdpMessageListener;
 import com.mygdx.game.net.udp.UdpServer;
@@ -57,7 +59,9 @@ public class UserServer implements UdpMessageListener{
 		case C2S_LOGIN:
 			System.out.println("login");
 			C2S_LOGIN message = new C2S_LOGIN(src);
-			login(message.openId);
+			User user=login(message.openId);
+			USER_MESSAGE responseMessage=new USER_MESSAGE(new S2C_LOGIN_SUCCESS(ByteUtil.intToBytes(user.getUserId())).toBytes());
+			udpServer.send(responseMessage.toBytes(), session);
 			break;
 		case S2C_B2D_REMOVE_GAMEOBJECT:
 

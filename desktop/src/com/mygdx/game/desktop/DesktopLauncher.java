@@ -12,6 +12,7 @@ public class DesktopLauncher {
 		config.backgroundFPS=5;*/
 		config.width=800;
 		config.height=480;
+		MyGdxGame.openId="11111111111111111111111111111111";
 		new LwjglApplication(new MyGdxGame(), config);
 	}
 }
