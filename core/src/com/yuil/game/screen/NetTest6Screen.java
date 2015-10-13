@@ -281,7 +281,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 								.findActor("remotePort")))
 								.getText())));
 			}
-			return udpServer.send(bytes, session);
+			return udpServer.send(bytes, session,false);
 		
 		}
 		return false;

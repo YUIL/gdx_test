@@ -48,6 +48,7 @@ public class GameWorldB2D {
 		createPhysicsWorld();
 	}
 	public synchronized void update(float delta){
+		
 		for (int i = 0; i < gameObjectRemoveQueue.size(); i++) {
 			B2DGameObject gameObject=gameObjectRemoveQueue.poll();
 			removeGameObject(gameObject);
@@ -56,11 +57,13 @@ public class GameWorldB2D {
 			B2dBoxBaseInformation gameObjectCreation=gameObjectCreationQueue.poll();
 			addBoxGameObject(gameObjectCreation);
 		}
+
 		for (int i = 0; i < gameObjectArray.size; i++) {
 			B2DGameObject gameObject=gameObjectArray.get(i);
 			if (gameObject.getGameObjectUpdateQueue().size()>0) {
 				gameObject.update(gameObject.getGameObjectUpdateQueue().poll());
 			}
+			gameObject.doMotion();
 		}
 		box2dWorld.step(delta, 8, 3);
 	}

@@ -18,7 +18,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.sun.glass.ui.SystemClipboard;
 import com.sun.org.glassfish.gmbal.GmbalException;
 import com.yuil.game.entity.GameObject;
-import com.yuil.game.entity.GameWorld;
+import com.yuil.game.entity.MyGameWorld1;
 import com.yuil.game.input.ActorInputListenner;
 import com.yuil.game.input.KeyboardStatus;
 import com.yuil.game.net.udp.Session;
@@ -32,7 +32,7 @@ public class NetTest5Screen extends TestScreen2D {
 	volatile UdpServer udpServer;
 	volatile Session session;
 	String recvString = null;
-	volatile GameWorld gameWorld=new GameWorld();
+	volatile MyGameWorld1 myGameWorld1=new MyGameWorld1();
 	JsonValue jsonValue;
 	JsonReader jsonReader = new JsonReader();
 	KeyboardStatus keyboardStatus=new KeyboardStatus();
@@ -66,8 +66,8 @@ public class NetTest5Screen extends TestScreen2D {
 		super.render(delta);
 		
 		batch.begin();
-		for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
-			 GameObject gameObject=gameWorld.getGameObjectArray().get(i);
+		for (int i = 0; i < myGameWorld1.getGameObjectArray().size; i++) {
+			 GameObject gameObject=myGameWorld1.getGameObjectArray().get(i);
 			//gameObject.setPosition(new Vector3(gameObject.getPosition().x+gameObject.getInertiaForce().x*delta, gameObject.getPosition().y+gameObject.getInertiaForce().y*delta, 0));
 			batch.draw(texture, gameObject.getPosition().x, gameObject.getPosition().y);
 		}
@@ -175,8 +175,8 @@ public class NetTest5Screen extends TestScreen2D {
 					
 					if (System.currentTimeMillis()>nextUpdateTime) {
 						nextUpdateTime+=updateInterval;
-						gameWorld.update(1/1000f);
-						gameWorld.getBeCollidedGameObjectArray().clear();
+						myGameWorld1.update(1/1000f);
+						myGameWorld1.getBeCollidedGameObjectArray().clear();
 					}
 					try {
 						if (udpServer != null) {
@@ -231,12 +231,12 @@ public class NetTest5Screen extends TestScreen2D {
 			gameObject.setRectangle(gameObject.getPosition().x, gameObject.getPosition().y,
 					jsonValue.get("ago").get("r").get("width").asFloat(),
 					jsonValue.get("ago").get("r").get("height").asFloat());
-			gameWorld.addGameObject(gameObject);
+			myGameWorld1.addGameObject(gameObject);
 		} else if (jsonValue.get("cgo") != null) {
 			jsonValue=jsonValue.get("cgo");
 
 			//System.out.println(System.currentTimeMillis()-lastSendTime);
-			GameObject gameObject=gameWorld.findGameObject(jsonValue.getString("name"));
+			GameObject gameObject=myGameWorld1.findGameObject(jsonValue.getString("name"));
 			if(gameObject!=null){
 				if(jsonValue.get("set")!=null){
 					jsonValue=jsonValue.get("set");
@@ -282,10 +282,10 @@ public class NetTest5Screen extends TestScreen2D {
 				
 			}else{
 				GameObject gameObject;
-				gameObject=gameWorld.findGameObject(jsonValue.get("ggo").getString("name"));
+				gameObject=myGameWorld1.findGameObject(jsonValue.get("ggo").getString("name"));
 				if(gameObject==null){
 					gameObject=new GameObject(jsonValue.get("ggo").getString("name"));
-					gameWorld.addGameObject(gameObject);
+					myGameWorld1.addGameObject(gameObject);
 				}
 				gameObject.setPosition(new Vector3(jsonValue.get("ggo").get("p").getFloat("x"), jsonValue.get("ggo").get("p").getFloat("y"), 0));;
 				gameObject.setRectangle(gameObject.getPosition().x, gameObject.getPosition().y,
@@ -295,9 +295,9 @@ public class NetTest5Screen extends TestScreen2D {
 			}
 			
 		} else if (jsonValue.get("rgo") != null) {
-			GameObject gameObject=gameWorld.findGameObject(jsonValue.get("rgo").getString("name"));
+			GameObject gameObject=myGameWorld1.findGameObject(jsonValue.get("rgo").getString("name"));
 			if(gameObject!=null){
-				gameWorld.getGameObjectArray().removeValue(gameObject, true);
+				myGameWorld1.getGameObjectArray().removeValue(gameObject, true);
 			}
 		}
 	}
@@ -317,7 +317,7 @@ public class NetTest5Screen extends TestScreen2D {
 									Integer.parseInt(((TextArea) (stage.getRoot().findActor("remotePort"))).getText())));
 					udpServer.sessionArray.add(session);
 				}
-				return udpServer.send(str.getBytes(), session);
+				return udpServer.send(str.getBytes(), session,false);
 			}
 		}
 		return false;
@@ -331,12 +331,12 @@ public class NetTest5Screen extends TestScreen2D {
 
 	}
 	private void xPressAction(){
-		if(gameWorld.findGameObject(gameObjectName)!=null)
+		if(myGameWorld1.findGameObject(gameObjectName)!=null)
 			sendMessage("{rgo:{name:"+gameObjectName+"}}");
 	
 	}
 	private void cPressAction(){
-		if(gameWorld.findGameObject(gameObjectName)!=null)
+		if(myGameWorld1.findGameObject(gameObjectName)!=null)
 			sendMessage("{cgo:{name:"+gameObjectName+",set:{i:{x:0,y:0}}}}");
 	
 	}
@@ -345,13 +345,13 @@ public class NetTest5Screen extends TestScreen2D {
 	}
 	
 	private void aJustPressAction(){
-		GameObject gameObject=gameWorld.findGameObject(gameObjectName);
+		GameObject gameObject=myGameWorld1.findGameObject(gameObjectName);
 		if (gameObject!=null) {
 			sendMessage("{cgo:{name:"+gameObjectName+",add:{i:{x:"+(-1*speed)+"}}}}");
 		}
 	}
 	private void aJustUpAction(){
-		GameObject gameObject=gameWorld.findGameObject(gameObjectName);
+		GameObject gameObject=myGameWorld1.findGameObject(gameObjectName);
 		if (gameObject!=null) {
 			//if(gameObject.getInertiaForce().x!=0)
 				sendMessage("{cgo:{name:"+gameObjectName+",add:{i:{x:"+(speed)+"}}}}");
@@ -361,26 +361,26 @@ public class NetTest5Screen extends TestScreen2D {
 	}
 	
 	private void dJustPressAction(){
-		GameObject gameObject=gameWorld.findGameObject(gameObjectName);
+		GameObject gameObject=myGameWorld1.findGameObject(gameObjectName);
 		if (gameObject!=null) {
 			sendMessage("{cgo:{name:"+gameObjectName+",add:{i:{x:"+(speed)+"}}}}");
 		}
 	}
 	private void dJustUpAction(){
-		GameObject gameObject=gameWorld.findGameObject(gameObjectName);
+		GameObject gameObject=myGameWorld1.findGameObject(gameObjectName);
 		if (gameObject!=null) {
 			//if(gameObject.getInertiaForce().x!=0)
 				sendMessage("{cgo:{name:"+gameObjectName+",add:{i:{x:"+(-1*speed)+"}}}}");
 		}
 	}
 	private void wJustPressAction(){
-		GameObject gameObject=gameWorld.findGameObject(gameObjectName);
+		GameObject gameObject=myGameWorld1.findGameObject(gameObjectName);
 		if (gameObject!=null) {
 			sendMessage("{cgo:{name:"+gameObjectName+",add:{i:{x:200,y:0}}}}");
 		}
 	}
 	private void wJustUpAction(){
-		GameObject gameObject=gameWorld.findGameObject(gameObjectName);
+		GameObject gameObject=myGameWorld1.findGameObject(gameObjectName);
 		if (gameObject!=null) {
 			sendMessage("{cgo:{name:"+gameObjectName+",add:{i:{x:0,y:200}}}}");
 		}

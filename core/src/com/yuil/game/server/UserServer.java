@@ -61,7 +61,7 @@ public class UserServer implements UdpMessageListener{
 			C2S_LOGIN message = new C2S_LOGIN(src);
 			User user=login(message.openId);
 			USER_MESSAGE responseMessage=new USER_MESSAGE(new S2C_LOGIN_SUCCESS(ByteUtil.intToBytes(user.getUserId())).toBytes());
-			udpServer.send(responseMessage.toBytes(), session);
+			udpServer.send(responseMessage.toBytes(), session,false);
 			break;
 		case S2C_B2D_REMOVE_GAMEOBJECT:
 

@@ -17,7 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.yuil.game.entity.GameObject;
-import com.yuil.game.entity.GameWorld;
+import com.yuil.game.entity.MyGameWorld1;
 import com.yuil.game.input.ActorInputListenner;
 import com.yuil.game.input.KeyboardStatus;
 import com.yuil.game.net.udp.Session;

@@ -49,17 +49,18 @@ public class ClientSocket implements UdpMessageListener {
 
 	}
 
-	public boolean sendMessage(String str) {
+	public boolean sendMessage(String str,boolean isImmediately) {
 		if (str == null) {
 			System.err.println("message==null");
 		} else {
-			sendMessage(str.getBytes());
+			sendMessage(str.getBytes(),isImmediately);
 		}
 		return false;
 
 	}
 
-	public boolean sendMessage(byte[] bytes) {
+
+	public synchronized boolean sendMessage(byte[] bytes,boolean isImmediately) {
 		if (udpServer == null) {
 			System.err.println("updServer==null");
 			return false;
@@ -69,11 +70,9 @@ public class ClientSocket implements UdpMessageListener {
 				session = udpServer.createSession(new Random().nextLong(), new InetSocketAddress(remoteIp, remotePort));
 				System.out.println("session id:" + session.getId());
 			}
-			return udpServer.send(bytes, session);
+			return udpServer.send(bytes, session,isImmediately);
 		}
-
 	}
-
 	public UdpServer getUdpServer() {
 		return this.udpServer;
 	}

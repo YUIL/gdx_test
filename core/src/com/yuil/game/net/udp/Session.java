@@ -37,7 +37,26 @@ public class Session {
 	public  int lastSendSequenceId;
 	public  int lastRecvSequenceId;
 
+	volatile Queue<UdpMessage> sendMessageBuffer = new LinkedList<UdpMessage>();
+	public volatile int sendMessageBufferSize=5;
+	
 	//volatile Queue<UdpMessage> recvMessageQueue;
+
+	public int getSendMessageBufferSize() {
+		return sendMessageBufferSize;
+	}
+
+	public void setSendMessageBufferSize(int sendMessageBufferSize) {
+		this.sendMessageBufferSize = sendMessageBufferSize;
+	}
+
+	public Queue<UdpMessage> getSendMessageBuffer() {
+		return sendMessageBuffer;
+	}
+
+	public void setSendMessageBuffer(Queue<UdpMessage> sendMessageBuffer) {
+		this.sendMessageBuffer = sendMessageBuffer;
+	}
 
 	public Session(){
 		init(new Random().nextLong());
@@ -98,7 +117,7 @@ public class Session {
 		this.recvMessageQueue = responseMessageQueue;
 	}
 	*/
-	public synchronized UdpMessage currentSendUdpMessage(UdpMessage message){
+/*	public synchronized UdpMessage currentSendUdpMessage(UdpMessage message){
 		if (message==null){
 			return this.currentSendMessage;
 		}else{
@@ -106,7 +125,7 @@ public class Session {
 			return null;
 		}
 		
-	}
+	}*/
 
 	@Override
 	public String toString() {

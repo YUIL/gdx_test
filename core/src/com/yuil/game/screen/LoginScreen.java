@@ -1,15 +1,10 @@
 package com.yuil.game.screen;
 
-import java.net.BindException;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.yuil.game.MyGdxGame;
-import com.yuil.game.database.dao.DaoFactory;
-import com.yuil.game.database.dao.UserDao;
-import com.yuil.game.entity.User;
 import com.yuil.game.input.ActorInputListenner;
-import com.yuil.game.net.udp.UdpServer;
 import com.yuil.game.stage.StageManager;
 import com.yuil.game.util.GameManager;
 
@@ -36,7 +31,8 @@ public class LoginScreen extends TestScreen2D {
 			public void touchUp(InputEvent event, float x, float y,
 					int pointer, int button) {
 				//(MyGdxGame)game).openId;
-				
+				MyGdxGame.openId=((TextArea) stage.getRoot().findActor("userName")).getText();
+				game.setScreen(new NetTest7Screen(game));
 				
 			}
 		});

@@ -15,7 +15,7 @@ public class MyGdxGame extends Game {
 		StageManager.init();
 		StageManager.game = this;
 		//this.setScreen(new MainMenuScreen(this));
-		this.setScreen(new NetTest7Screen(this));
+		this.setScreen(new LoginScreen(this));
 
 	}
 

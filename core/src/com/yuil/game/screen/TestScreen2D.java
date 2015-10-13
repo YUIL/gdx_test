@@ -74,4 +74,12 @@ public class TestScreen2D extends TestScreen {
 		stage.getViewport().update(width, height, true);
 	}
 
+
+	@Override
+	public void dispose() {
+		stage.dispose();
+		batch.dispose();
+		//skin.dispose();
+	}
+	
 }

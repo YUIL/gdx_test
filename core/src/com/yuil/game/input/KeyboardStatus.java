@@ -27,6 +27,9 @@ public class KeyboardStatus {
 	boolean xJustPress;
 	boolean yJustPress;
 	boolean zJustPress;
+	
+	boolean buttonAPressed;
+	boolean buttonDPressed;
 	public boolean isaJustPress() {
 		return aJustPress;
 	}
@@ -183,6 +186,18 @@ public class KeyboardStatus {
 	public void setzJustPress(boolean zJustPress) {
 		this.zJustPress = zJustPress;
 	}
-	
+	public boolean isButtonAPressed() {
+		return buttonAPressed;
+	}
+	public void setButtonAPressed(boolean buttonAPressed) {
+		this.buttonAPressed = buttonAPressed;
+	}
+	public boolean isButtonDPressed() {
+		return buttonDPressed;
+	}
+	public void setButtonDPressed(boolean buttonDPressed) {
+		this.buttonDPressed = buttonDPressed;
+	}
+
 }
 

@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 
-public class GameWorld {
+public class MyGameWorld1 {
 	Array<GameObject> gameObjectArray=new Array<GameObject>();
 	Array<GameObject> beCollidedGameObjectArray=new Array<GameObject>();
 	Vector3 targePosition=new Vector3();
@@ -13,7 +13,7 @@ public class GameWorld {
 	Vector3 gravity=new Vector3(0,-100,0);
 	int horizontal=-200;
 	boolean noGravityCalcuate=false;
-	public GameWorld(){
+	public MyGameWorld1(){
 		
 	}
 	

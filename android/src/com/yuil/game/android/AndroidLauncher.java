@@ -16,9 +16,9 @@ public class AndroidLauncher extends AndroidApplication {
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		Intent i=new  Intent("ACTION_LOGIN");
+	//	Intent i=new  Intent("ACTION_LOGIN");
 		//i.setClass(this, LoginActivity.class);
-		startActivityForResult(i, 1);
+	//	startActivityForResult(i, 1);
 		//setContentView(R.layout.activity_main);
 		// Tencent类是SDK的主要实现类，开发者可通过Tencent类访问腾讯开放的OpenAPI。
 		// 其中APP_ID是分配给第三方应用的appid，类型为String。

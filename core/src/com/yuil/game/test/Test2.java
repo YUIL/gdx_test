@@ -30,7 +30,7 @@ public class Test2 {
 			if(System.currentTimeMillis()-lastSendTime>delay){
 				lastSendTime=System.currentTimeMillis();
 				String str=String.valueOf(System.currentTimeMillis());
-				server.send(str.getBytes(), session);
+				server.send(str.getBytes(), session,false);
 			}
 		}
 	}

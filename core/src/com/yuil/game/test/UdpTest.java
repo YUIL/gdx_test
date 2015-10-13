@@ -24,7 +24,7 @@ public class UdpTest {
 		message.setType((byte)1);
 		message.setLength(4);
 		message.setData(ByteUtil.intToBytes(1));
-		session.currentSendUdpMessage(message);
+	//	session.currentSendUdpMessage(message);
 		server.sessionArray.add(session);
 		
 

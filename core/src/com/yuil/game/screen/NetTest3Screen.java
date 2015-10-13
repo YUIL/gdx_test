@@ -142,7 +142,7 @@ public class NetTest3Screen extends TestScreen {
                                 .parseInt(((TextArea) (stage.getRoot()
                                         .findActor("data"))).getText())));
 
-						udpServer.send(message, session);
+						udpServer.send(message, session,false);
 
 
 

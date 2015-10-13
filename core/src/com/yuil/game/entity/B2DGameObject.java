@@ -1,25 +1,57 @@
 package com.yuil.game.entity;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Shape.Type;
 import com.yuil.game.entity.info.B2dBoxBaseInformation;
-import com.yuil.game.entity.info.B2dUpdateInformation;
 
 public class B2DGameObject {
-	//String name;
+	// String name;
 	long id;
 	Body body;
-	int maxSpeed=100;
+	int maxSpeed = 10;
+	int strength = 100;
 	float width, height;
-	Queue<B2dBoxBaseInformation> gameObjectUpdateQueue=new LinkedList<B2dBoxBaseInformation>();
+	Queue<B2dBoxBaseInformation> gameObjectUpdateQueue = new LinkedList<B2dBoxBaseInformation>();
+	MotionState motionState = new MotionState();
+	
+	public void changeApplyForceState(byte state){
+		motionState.applyForceState=state;
+	}
 
-	
-	
+	public void doMotion() {
+		switch (motionState.applyForceState) {
+		case 1:
+			if (getSpeed() < maxSpeed) {
+				if (getBody().getLinearVelocity().x < 10&&getBody().getLinearVelocity().x > -10) {
+					applyForce(-1 * strength, 0);
+				}
+				
+			}
+
+			break;
+		case 2:
+			if (getSpeed() < maxSpeed) {
+				if (getBody().getLinearVelocity().x < 10&&getBody().getLinearVelocity().x > -10) {
+					applyForce(strength, 0);
+				}
+			
+			}
+
+			break;
+		default:
+
+			break;
+		}
+	}
+
+	public class MotionState {
+		volatile byte applyForceState;
+
+	}
+
 	public B2DGameObject(long id) {
 		this.id = id;
 	}
@@ -29,24 +61,22 @@ public class B2DGameObject {
 		this.body = body;
 	}
 
-/*	public B2DGameObject(String name) {
-		this.name = name;
-	}
+	/*
+	 * public B2DGameObject(String name) { this.name = name; }
+	 * 
+	 * public B2DGameObject(String name, Body body) { this.name = name;
+	 * this.body = body; }
+	 */
 
-	public B2DGameObject(String name, Body body) {
-		this.name = name;
-		this.body = body;
-	}*/
-	
-	
-	public void applyForce(float forceX,float forceY){
+	public void applyForce(float forceX, float forceY) {
 		body.applyForce(forceX, forceY, getPosition().x, getPosition().y, true);
 	}
 
-	public float getSpeed(){
+	public float getSpeed() {
 		return Vector2.len(body.getLinearVelocity().x, body.getLinearVelocity().y);
-		
+
 	}
+
 	public int getMaxSpeed() {
 		return maxSpeed;
 	}
@@ -72,24 +102,24 @@ public class B2DGameObject {
 		this.body.setTransform(position, angle);
 	}
 
-	/*public String toJson() {
+	/*
+	 * public String toJson() {
+	 * 
+	 * return "{n:" + name + ",t:{p:{x:" + body.getPosition().x + ",y:" +
+	 * body.getPosition().y + "},a:" + body.getAngle() +
+	 * "},av:"+body.getAngularVelocity()+",s:{w:" + width + ",h:" + height +
+	 * "},d:" + getDensity() + ",l:{x:" + body.getLinearVelocity().x + ",y:" +
+	 * body.getLinearVelocity().y + "}}";
+	 * 
+	 * }
+	 */
 
-		return "{n:" + name + ",t:{p:{x:" + body.getPosition().x + ",y:" + body.getPosition().y + "},a:"
-				+ body.getAngle() + "},av:"+body.getAngularVelocity()+",s:{w:" + width + ",h:" + height + "},d:" + getDensity() + ",l:{x:"
-				+ body.getLinearVelocity().x + ",y:" + body.getLinearVelocity().y + "}}";
-		
-	}*/
+	/*
+	 * public String getName() { return name; }
+	 * 
+	 * public void setName(String name) { this.name = name; }
+	 */
 
-	/*public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}*/
-
-
-	
 	public float getWidth() {
 		return width;
 	}
@@ -121,29 +151,33 @@ public class B2DGameObject {
 	public void setBody(Body body) {
 		this.body = body;
 	}
-	
+
 	public Queue<B2dBoxBaseInformation> getGameObjectUpdateQueue() {
 		return gameObjectUpdateQueue;
 	}
-/*
-	public void setGameObjectCreationQueue(Queue<GameObjectUpdate> gameObjectCreationQueue) {
-		this.gameObjectCreationQueue = gameObjectCreationQueue;
-	}*/
+	/*
+	 * public void setGameObjectCreationQueue(Queue<GameObjectUpdate>
+	 * gameObjectCreationQueue) { this.gameObjectCreationQueue =
+	 * gameObjectCreationQueue; }
+	 */
 
-	public synchronized void update(float x,float y,float angle,float angularVelocity,float width,float height,float density,float lx,float ly){
-		
+	public synchronized void update(float x, float y, float angle, float angularVelocity, float width, float height,
+			float density, float lx, float ly) {
+
 		this.body.setTransform(x, y, angle);
 		this.body.setAngularVelocity(angularVelocity);
-		this.width=width;
-		this.height=height;
+		this.width = width;
+		this.height = height;
 		this.body.getFixtureList().get(0).setDensity(density);
 		this.body.setLinearVelocity(lx, ly);
-		
+
 	}
-	
-public synchronized void update(B2dBoxBaseInformation gameObjectUpdate){
-		
-		update(gameObjectUpdate.x, gameObjectUpdate.y, gameObjectUpdate.angle, gameObjectUpdate.angularVelocity, gameObjectUpdate.width, gameObjectUpdate.height, gameObjectUpdate.density, gameObjectUpdate.lx, gameObjectUpdate.ly);
-		
+
+	public synchronized void update(B2dBoxBaseInformation gameObjectUpdate) {
+
+		update(gameObjectUpdate.x, gameObjectUpdate.y, gameObjectUpdate.angle, gameObjectUpdate.angularVelocity,
+				gameObjectUpdate.width, gameObjectUpdate.height, gameObjectUpdate.density, gameObjectUpdate.lx,
+				gameObjectUpdate.ly);
+
 	}
 }

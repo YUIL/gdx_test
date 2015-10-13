@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.yuil.game.entity.GameObject;
-import com.yuil.game.entity.GameWorld;
+import com.yuil.game.entity.MyGameWorld1;
 import com.yuil.game.net.udp.Session;
 import com.yuil.game.net.udp.UdpServer;
 
@@ -21,7 +21,7 @@ public class LogicServer {
 	JsonValue jsonValue;
 	JsonReader jsonReader = new JsonReader();
 	boolean stoped = false;
-	volatile GameWorld gameWorld = new GameWorld();
+	volatile MyGameWorld1 myGameWorld1 = new MyGameWorld1();
 
 	public class GameWorldLogic implements Runnable {
 
@@ -41,8 +41,8 @@ public class LogicServer {
 				upDateTime = System.currentTimeMillis();
 				if (upDateTime - lastUpdateTime >= interval) {
 					lastUpdateTime = upDateTime;
-					if (gameWorld.getGameObjectArray().size != 0) {
-						gameWorld.update(interval / 1000);
+					if (myGameWorld1.getGameObjectArray().size != 0) {
+						myGameWorld1.update(interval / 1000);
 
 						// System.out.println("collision
 						// size:"+gameWorld.getBeCollidedGameObjectArray().size);
@@ -57,7 +57,7 @@ public class LogicServer {
 						 * 
 						 * boardCast("{rgo:{name:"+name+"}}"); }
 						 */
-						gameWorld.getBeCollidedGameObjectArray().clear();
+						myGameWorld1.getBeCollidedGameObjectArray().clear();
 
 					}
 				}
@@ -115,7 +115,7 @@ public class LogicServer {
 			for (Iterator<Session> iterator = udpServer.sessionArray.iterator(); iterator
 					.hasNext();) {
 				session = iterator.next();
-				udpServer.send(str.getBytes(), session);
+				udpServer.send(str.getBytes(), session,false);
 			}
 		}
 		
@@ -130,7 +130,7 @@ public class LogicServer {
 		if (jsonValue != null) {
 			if (jsonValue.get("ago") != null) {
 				String name = jsonValue.get("ago").get("name").asString();
-				GameObject gameObject = gameWorld.findGameObject(name);
+				GameObject gameObject = myGameWorld1.findGameObject(name);
 				if (gameObject == null) {
 					gameObject = new GameObject(name);
 					gameObject.setPosition(new Vector3(jsonValue.get("ago").get("p").get("x").asFloat(),
@@ -138,16 +138,16 @@ public class LogicServer {
 					gameObject.setRectangle(gameObject.getPosition().x, gameObject.getPosition().y,
 							jsonValue.get("ago").get("r").get("width").asFloat(),
 							jsonValue.get("ago").get("r").get("height").asFloat());
-					gameWorld.addGameObject(gameObject);
+					myGameWorld1.addGameObject(gameObject);
 					// udpServer.send(recvString.getBytes(), session);
 					boardCast(recvString);
 				} else {
-					udpServer.send(("{ggo:" + gameObject.toJson() + "}").getBytes(), session);
+					udpServer.send(("{ggo:" + gameObject.toJson() + "}").getBytes(), session,false);
 				}
 
 			} else if (jsonValue.get("cgo") != null) {
 				jsonValue = jsonValue.get("cgo");
-				GameObject gameObject = gameWorld.findGameObject(jsonValue.getString("name"));
+				GameObject gameObject = myGameWorld1.findGameObject(jsonValue.getString("name"));
 				if (gameObject != null) {
 					if (jsonValue.get("set") != null) {
 						jsonValue = jsonValue.get("set");
@@ -194,16 +194,16 @@ public class LogicServer {
 				}
 			} else if (jsonValue.get("ggo") != null) {
 				String name = jsonValue.get("ggo").getString("name");
-				GameObject gameObject = gameWorld.findGameObject(name);
+				GameObject gameObject = myGameWorld1.findGameObject(name);
 				if (gameObject != null) {
 					boardCast("{ggo:" + gameObject.toJson() + "}");
 				} else {
 					boardCast("{rgo:{name:" + name + "}}");
 				}
 			} else if (jsonValue.get("rgo") != null) {
-				GameObject gameObject = gameWorld.findGameObject(jsonValue.get("rgo").getString("name"));
+				GameObject gameObject = myGameWorld1.findGameObject(jsonValue.get("rgo").getString("name"));
 				if (gameObject != null) {
-					gameWorld.getGameObjectArray().removeValue(gameObject, true);
+					myGameWorld1.getGameObjectArray().removeValue(gameObject, true);
 					boardCast(recvString);
 
 				}
