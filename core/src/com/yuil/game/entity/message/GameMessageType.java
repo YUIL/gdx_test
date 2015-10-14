@@ -2,6 +2,12 @@ package com.yuil.game.entity.message;
 
 public enum GameMessageType {
 	
+	C2S_TEST,
+	S2C_TEST,
+	
+	
+	
+	
 	C2S_LOGIN,
 	S2C_LOGIN_SUCCESS,
 	

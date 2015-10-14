@@ -26,6 +26,7 @@ import com.yuil.game.entity.message.C2S_B2D_CHANGE_APPLY_FORCE_STATE;
 import com.yuil.game.entity.message.C2S_B2D_GET_GAMEOBJECT;
 import com.yuil.game.entity.message.C2S_B2D_REMOVE_GAMEOBJECT;
 import com.yuil.game.entity.message.C2S_LOGIN;
+import com.yuil.game.entity.message.C2S_TEST;
 import com.yuil.game.entity.message.GameMessageType;
 import com.yuil.game.entity.message.S2C_B2D_CHANGE_APPLY_FORCE_STATE;
 import com.yuil.game.entity.message.S2C_B2D_GET_ALL_GAMEOBJECT;
@@ -93,7 +94,7 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 		// TODO Auto-generated method stub
 		// System.out.println(gameWorld.getGameObjectArray().size);
 		if(gameObjectId==-1){
-			login();
+			//login();
 		}
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.f);
@@ -244,23 +245,22 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 
 	public boolean sendGameMessage(Message message,boolean isImmediately) {
 		sendTime=System.currentTimeMillis();
-		boolean temp = clientSocket.sendMessage(new GAME_MESSAGE(message.toBytes()).toBytes(),isImmediately);
-		if(temp){
+		return sendMessage(new GAME_MESSAGE(message.toBytes()), isImmediately);
+	}
+	
+	public boolean sendUserMessage(Message message,boolean isImmediately) {
+		return sendMessage(new USER_MESSAGE(message.toBytes()), isImmediately);
+	}
+
+	public boolean sendMessage(Message message,boolean isImmediately){
+		boolean temp = clientSocket.sendMessage(message.toBytes(),isImmediately);
+		/*if(temp){
 			System.out.println("send success!");
-		}
+		}*/
 		
 		return temp;
 	}
 	
-	public boolean sendUserMessage(Message message,boolean isImmediately) {
-		boolean temp = clientSocket.sendMessage(new USER_MESSAGE(message.toBytes()).toBytes(),isImmediately);
-		if(temp){
-			System.out.println("send success!");
-		}
-		
-		return temp;
-	}
-
 	private void initScreenLogic() {
 		screenLogic = new ScreenLogic(1) {
 			public void run() {
@@ -325,6 +325,9 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 	private void lPressAction() {
 		System.out.println("l");
 		// sendMessage("{gago:}");
+		//Message message=new C2S_TEST();
+		//sendGameMessage(message, true);
+		login();
 	}
 
 	private synchronized void zPressAction() {
@@ -390,6 +393,7 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 		}
 		*/
 		sendApplyForceStateMessage((byte)1,true);
+		
 	}
 
 	private void aJustUpAction() {
@@ -470,6 +474,7 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 			message.gameObjectId=gameObjectId;
 			message.applyForceState=applyForceState;
 			sendGameMessage(message,isImmediately);
+			//gameObject.changeApplyForceState(message.applyForceState);
 		}
 	}
 	
@@ -576,11 +581,11 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 	@Override
 	public void disposeUdpMessage(Session session, byte[] data) {
 
-		System.out.println("disposing");
+		//System.out.println("disposing");
 		// disposing=true;
 		// if(session==null)this.session=session;
 		int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
-		//System.out.println("type:" + GameMessageType.values()[typeOrdinal]);
+		//System.out.println("type:" + MessageType.values()[typeOrdinal]);
 		byte[] src = ByteUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
 		
 		switch (MessageType.values()[typeOrdinal]) {
@@ -606,7 +611,7 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 		Message responseMessage;
 		switch (GameMessageType.values()[typeOrdinal]) {
 		case S2C_B2D_GET_ALL_GAMEOBJECT:
-			
+			System.out.println("get all!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			S2C_B2D_GET_ALL_GAMEOBJECT gameMessage_s2c_gago = new S2C_B2D_GET_ALL_GAMEOBJECT(src);
 			for (int i = 0; i < gameMessage_s2c_gago.b2dBoxBaseInformationArray.size; i++) {
 				B2dBoxBaseInformation info = gameMessage_s2c_gago.b2dBoxBaseInformationArray.get(i);
@@ -644,6 +649,9 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 			if(gameObject!=null){
 				gameObject.changeApplyForceState(gameMessage_s2c_b2d_change_apply_force_state.applyForceState);
 			}
+			break;
+		case S2C_TEST:
+			System.out.println("test--------------------------------------------------test message");
 			break;
 		default:
 			break;

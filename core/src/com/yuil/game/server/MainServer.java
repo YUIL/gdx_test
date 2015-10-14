@@ -41,7 +41,7 @@ public class MainServer  implements UdpMessageListener{
 		if (data.length<Message.TYPE_BYTE_LENGTH) {
 			return;
 		}
-		System.out.println("data.length:"+data.length);
+		//System.out.println("data.length:"+data.length);
 		int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
 		//System.out.println("type:" + GameMessageType.values()[typeOrdinal]);
 		byte[] src = ByteUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);

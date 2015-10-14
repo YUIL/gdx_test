@@ -9,6 +9,8 @@ import com.yuil.game.net.udp.UdpServer.SendServicer;
 
 
 public class Session {
+	
+	volatile boolean isSending=false;
 	long id;
 	int timeOut=30;
 	int maxResendTimes=10;
@@ -30,24 +32,24 @@ public class Session {
 		this.timeOutMultiple = timeOutMultiple;
 	}
 
-	short timeOutMultiple=0;
+	volatile short timeOutMultiple=0;
 	long lastSendTime;
 	InetSocketAddress contactorAddress;
-	UdpMessage currentSendMessage;
+	volatile UdpMessage currentSendMessage;
 	public  int lastSendSequenceId;
 	public  int lastRecvSequenceId;
 
 	volatile Queue<UdpMessage> sendMessageBuffer = new LinkedList<UdpMessage>();
-	public volatile int sendMessageBufferSize=5;
+	public volatile int sendMessageBufferMaxSize=5;
 	
 	//volatile Queue<UdpMessage> recvMessageQueue;
 
-	public int getSendMessageBufferSize() {
-		return sendMessageBufferSize;
+	public int getSendMessageBufferMaxSize() {
+		return sendMessageBufferMaxSize;
 	}
 
-	public void setSendMessageBufferSize(int sendMessageBufferSize) {
-		this.sendMessageBufferSize = sendMessageBufferSize;
+	public void setSendMessageBufferMaxSize(int sendMessageBufferMaxSize) {
+		this.sendMessageBufferMaxSize = sendMessageBufferMaxSize;
 	}
 
 	public Queue<UdpMessage> getSendMessageBuffer() {
@@ -92,10 +94,10 @@ public class Session {
 	public void setContactorAddress(InetSocketAddress contactorAddress) {
 		this.contactorAddress = contactorAddress;
 	}
-	public UdpMessage getCurrentSendMessage() {
+	public synchronized UdpMessage getCurrentSendMessage() {
 		return currentSendMessage;
 	}
-	public void setCurrentSendMessage(UdpMessage currentSendMessage) {
+	public synchronized void setCurrentSendMessage(UdpMessage currentSendMessage) {
 		this.currentSendMessage = currentSendMessage;
 	}
 /*	public synchronized UdpMessage getLastSendMessage() {
