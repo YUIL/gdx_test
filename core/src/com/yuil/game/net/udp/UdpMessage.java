@@ -3,7 +3,7 @@ package com.yuil.game.net.udp;
 import java.net.DatagramPacket;
 import java.util.Arrays;
 
-import com.yuil.game.util.ByteUtil;
+import com.yuil.game.util.DataUtil;
 
 public class UdpMessage {
 	public long sessionId;
@@ -32,39 +32,39 @@ public class UdpMessage {
 	public void initUdpMessageByDatagramPacket(UdpMessage message,
 			byte[] data) {
 		int offset = 0;
-		message.setSessionId(ByteUtil.bytesToLong(ByteUtil
+		message.setSessionId(DataUtil.bytesToLong(DataUtil
 				.subByte(data, 8, offset)));
 		offset+=8;
-		message.setSequenceId(ByteUtil.bytesToInt(ByteUtil
+		message.setSequenceId(DataUtil.bytesToInt(DataUtil
 				.subByte(data, 4, offset)));
 		offset+=4;
-		message.setType(ByteUtil.subByte(
+		message.setType(DataUtil.subByte(
 				data, 1, offset)[0]);
 		offset+=1;
-		message.setLength(ByteUtil.bytesToInt(ByteUtil
+		message.setLength(DataUtil.bytesToInt(DataUtil
 				.subByte(data, 4, offset)));
 		offset+=4;
-		message.setData(ByteUtil.subByte(data,message.length,offset));
+		message.setData(DataUtil.subByte(data,message.length,offset));
 	}
 
 	public void initUdpMessageByDatagramPacket(DatagramPacket recvPacket) {
 		byte[] data = recvPacket.getData();
 		int offset = 0;
-		this.setSessionId(ByteUtil.bytesToLong(ByteUtil
+		this.setSessionId(DataUtil.bytesToLong(DataUtil
 				.subByte(data, 8, offset)));
 		offset+=8;
-		this.setSequenceId(ByteUtil.bytesToInt(ByteUtil
+		this.setSequenceId(DataUtil.bytesToInt(DataUtil
 				.subByte(recvPacket.getData(), 4, offset)));
 		offset+=4;
-		this.setType(ByteUtil.subByte(
+		this.setType(DataUtil.subByte(
 				recvPacket.getData(), 1, offset)[0]);
 		offset+=1;
-		this.setLength(ByteUtil.bytesToInt(ByteUtil
+		this.setLength(DataUtil.bytesToInt(DataUtil
 				.subByte(recvPacket.getData(), 4, offset)));
 		offset+=4;
 		//if(this.length>0){
 			//System.out.println("offset:"+offset);
-			this.initDateFromUdpbytes(ByteUtil.subByte(recvPacket.getData(),this.length,offset));
+			this.initDateFromUdpbytes(DataUtil.subByte(recvPacket.getData(),this.length,offset));
 		//}
 	}
 
@@ -118,10 +118,10 @@ public class UdpMessage {
 
 	public byte[] toBytes() {
 		byte[] dest = new byte[17 + length];
-		System.arraycopy(ByteUtil.longToBytes(sessionId), 0, dest, 0,8);		
-		System.arraycopy(ByteUtil.intToBytes(sequenceId), 0, dest, 8,4);
-		System.arraycopy(ByteUtil.intToBytes(type), 0, dest, 12, 1);
-		System.arraycopy(ByteUtil.intToBytes(length), 0, dest, 13, 4);
+		System.arraycopy(DataUtil.longToBytes(sessionId), 0, dest, 0,8);		
+		System.arraycopy(DataUtil.intToBytes(sequenceId), 0, dest, 8,4);
+		System.arraycopy(DataUtil.intToBytes(type), 0, dest, 12, 1);
+		System.arraycopy(DataUtil.intToBytes(length), 0, dest, 13, 4);
 		if (data!=null) {
 			System.arraycopy(data, 0, dest, 17, length);
 		}

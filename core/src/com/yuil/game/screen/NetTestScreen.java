@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.yuil.game.input.ActorInputListenner;
 import com.yuil.game.input.InputProcessor;
 import com.yuil.game.stage.StageManager;
-import com.yuil.game.util.ByteUtil;
+import com.yuil.game.util.DataUtil;
 import com.yuil.game.util.GameManager;
 
 public class NetTestScreen extends TestScreen {

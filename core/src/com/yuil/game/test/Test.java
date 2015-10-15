@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.yuil.game.net.message.Message;
+import com.yuil.game.util.DataUtil;
+import com.yuil.game.util.Log;
 
 public class Test {
 	static String str = "{name:asd}";
@@ -115,10 +117,13 @@ public class Test {
 		testfun(c1);
 		System.out.println(c1.s);*/
 
-		Object[] arr=new String[10];
-		arr[0]=new Integer(1);
-	}
+	/*	Object[] arr=new String[10];
+		arr[0]=new Integer(1);*/
+		
+		short b=(short)222;
+		System.out.println(DataUtil.getUnsignedNum(b));
 	
+	}
 	public static void testfun(Object c1){
 		((Class1)c1).s="ASd";
 	}

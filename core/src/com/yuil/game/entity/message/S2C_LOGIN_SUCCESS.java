@@ -2,7 +2,7 @@ package com.yuil.game.entity.message;
 
 import com.yuil.game.entity.info.B2dBoxBaseInformation;
 import com.yuil.game.net.message.Message;
-import com.yuil.game.util.ByteUtil;
+import com.yuil.game.util.DataUtil;
 
 public class S2C_LOGIN_SUCCESS extends Message{
 	public int userId;
@@ -21,16 +21,16 @@ public class S2C_LOGIN_SUCCESS extends Message{
 	public void init(byte[] src) {
 		// TODO Auto-generated method stub
 		//int offset=0;
-		this.userId=ByteUtil.bytesToInt(src);
+		this.userId=DataUtil.bytesToInt(src);
 	}
 
 	@Override
 	public byte[] toBytes() {
 		int offset=0;
 		byte[] dest=new byte[4+Message.TYPE_BYTE_LENGTH];
-		byte[] src=ByteUtil.intToBytes(this.type);
+		byte[] src=DataUtil.intToBytes(this.type);
 		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
-		src=ByteUtil.intToBytes(this.userId);
+		src=DataUtil.intToBytes(this.userId);
 		System.arraycopy(src, 0, dest, offset, 4);	
 		return dest;
 	}

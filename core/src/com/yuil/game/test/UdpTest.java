@@ -7,25 +7,25 @@ import java.util.Random;
 import com.yuil.game.net.udp.Session;
 import com.yuil.game.net.udp.UdpMessage;
 import com.yuil.game.net.udp.UdpServer;
-import com.yuil.game.util.ByteUtil;
+import com.yuil.game.util.DataUtil;
 
 public class UdpTest {
 
 	public static void main(String[] args) throws BindException {
 		// TODO Auto-generated method stub
-		UdpServer server=new UdpServer(9091);
+		UdpServer server=new UdpServer(9092);
 		server.start();
-		Session session=new Session(new Random().nextLong());
-		session.setContactorAddress( new InetSocketAddress("127.0.0.1",9092));
+		UdpServer client=new UdpServer(9091);
+		client.start();
+		Session session=client.createSession(new Random().nextLong(), new InetSocketAddress("127.0.0.1",9092));
+		 
+		byte[] data=new byte[1];
 		
-		UdpMessage message=new UdpMessage();
-		message.setSessionId(session.getId());
-		message.setSequenceId(0);
-		message.setType((byte)1);
-		message.setLength(4);
-		message.setData(ByteUtil.intToBytes(1));
-	//	session.currentSendUdpMessage(message);
-		server.sessionArray.add(session);
+		client.send(data, session, false);
+		client.send(data, session, false);
+		client.send(data, session, false);
+		
+		
 		
 
 	}

@@ -1,7 +1,7 @@
 package com.yuil.game.entity.info;
 
 import com.yuil.game.entity.B2DGameObject;
-import com.yuil.game.util.ByteUtil;
+import com.yuil.game.util.DataUtil;
 
 public class B2dBoxBaseInformation {
 	public long gameObjectId;
@@ -42,16 +42,16 @@ public class B2dBoxBaseInformation {
 	}
 	public void initFromBytes(byte[] src){
 		int offset=0;
-		gameObjectId=ByteUtil.bytesToLong(ByteUtil.subByte(src, 8, offset));offset+=8;
-		x=ByteUtil.bytesToFloat(ByteUtil.subByte(src, 4, offset));offset+=4;
-		y=ByteUtil.bytesToFloat(ByteUtil.subByte(src, 4, offset));offset+=4;
-		angle=ByteUtil.bytesToFloat(ByteUtil.subByte(src, 4, offset));offset+=4;
-		angularVelocity=ByteUtil.bytesToFloat(ByteUtil.subByte(src, 4, offset));offset+=4;
-		width=ByteUtil.bytesToFloat(ByteUtil.subByte(src, 4, offset));offset+=4;
-		height=ByteUtil.bytesToFloat(ByteUtil.subByte(src, 4, offset));offset+=4;
-		density=ByteUtil.bytesToFloat(ByteUtil.subByte(src, 4, offset));offset+=4;
-		lx=ByteUtil.bytesToFloat(ByteUtil.subByte(src, 4, offset));offset+=4;
-		ly=ByteUtil.bytesToFloat(ByteUtil.subByte(src, 4, offset));offset+=4;
+		gameObjectId=DataUtil.bytesToLong(DataUtil.subByte(src, 8, offset));offset+=8;
+		x=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));offset+=4;
+		y=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));offset+=4;
+		angle=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));offset+=4;
+		angularVelocity=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));offset+=4;
+		width=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));offset+=4;
+		height=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));offset+=4;
+		density=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));offset+=4;
+		lx=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));offset+=4;
+		ly=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));offset+=4;
 	}
 	public void initFromObj(B2DGameObject obj){
 		gameObjectId=obj.getId();
@@ -69,50 +69,50 @@ public class B2dBoxBaseInformation {
 	public byte[] toBytes(){
 		int offset=0;
 		byte[] dest=new byte[this.informationLength];
-		byte[] src=ByteUtil.longToBytes(this.gameObjectId);
+		byte[] src=DataUtil.longToBytes(this.gameObjectId);
 		System.arraycopy(src, 0, dest, offset, 8);offset+=8;
-		src = ByteUtil.floatToBytes(this.x);
+		src = DataUtil.floatToBytes(this.x);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(this.y);
+		src = DataUtil.floatToBytes(this.y);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(this.angle);
+		src = DataUtil.floatToBytes(this.angle);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(this.angularVelocity);
+		src = DataUtil.floatToBytes(this.angularVelocity);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(this.width);
+		src = DataUtil.floatToBytes(this.width);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(this.height);
+		src = DataUtil.floatToBytes(this.height);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(this.density);
+		src = DataUtil.floatToBytes(this.density);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(this.lx);
+		src = DataUtil.floatToBytes(this.lx);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(this.ly);
+		src = DataUtil.floatToBytes(this.ly);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
 		return dest;
 	}
 	public static byte[] getBytesFromB2dGameObject(B2DGameObject obj){
 		int offset=0;
 		byte[] dest=new byte[B2dBoxBaseInformation.informationLength];
-		byte[] src=ByteUtil.longToBytes(obj.getId());
+		byte[] src=DataUtil.longToBytes(obj.getId());
 		System.arraycopy(src, 0, dest, offset, 8);offset+=8;
-		src = ByteUtil.floatToBytes(obj.getPosition().x);
+		src = DataUtil.floatToBytes(obj.getPosition().x);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(obj.getPosition().y);
+		src = DataUtil.floatToBytes(obj.getPosition().y);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(obj.getBody().getAngle());
+		src = DataUtil.floatToBytes(obj.getBody().getAngle());
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(obj.getBody().getAngularVelocity());
+		src = DataUtil.floatToBytes(obj.getBody().getAngularVelocity());
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(obj.getWidth());
+		src = DataUtil.floatToBytes(obj.getWidth());
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(obj.getHeight());
+		src = DataUtil.floatToBytes(obj.getHeight());
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(obj.getDensity());
+		src = DataUtil.floatToBytes(obj.getDensity());
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(obj.getBody().getLinearVelocity().x);
+		src = DataUtil.floatToBytes(obj.getBody().getLinearVelocity().x);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
-		src = ByteUtil.floatToBytes(obj.getBody().getLinearVelocity().y);
+		src = DataUtil.floatToBytes(obj.getBody().getLinearVelocity().y);
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
 		return dest;
 	}

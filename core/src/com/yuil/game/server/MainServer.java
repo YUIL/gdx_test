@@ -8,7 +8,7 @@ import com.yuil.game.net.message.MessageType;
 import com.yuil.game.net.udp.Session;
 import com.yuil.game.net.udp.UdpMessageListener;
 import com.yuil.game.net.udp.UdpServer;
-import com.yuil.game.util.ByteUtil;
+import com.yuil.game.util.DataUtil;
 
 public class MainServer  implements UdpMessageListener{
 	volatile UdpServer udpServer;
@@ -42,9 +42,9 @@ public class MainServer  implements UdpMessageListener{
 			return;
 		}
 		//System.out.println("data.length:"+data.length);
-		int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
+		int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
 		//System.out.println("type:" + GameMessageType.values()[typeOrdinal]);
-		byte[] src = ByteUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
+		byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
 		switch (MessageType.values()[typeOrdinal]) {
 		case USER_MESSAGE:
 			userServer.disposeUdpMessage(session, src);

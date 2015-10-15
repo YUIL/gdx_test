@@ -21,7 +21,7 @@ import com.yuil.game.net.udp.Session;
 import com.yuil.game.net.udp.UdpMessage;
 import com.yuil.game.net.udp.UdpServer;
 import com.yuil.game.stage.StageManager;
-import com.yuil.game.util.ByteUtil;
+import com.yuil.game.util.DataUtil;
 import com.yuil.game.util.GameManager;
 
 public class NetTest3Screen extends TestScreen {
@@ -138,7 +138,7 @@ public class NetTest3Screen extends TestScreen {
                                 .getRoot().findActor("type"))).getText()));
 						message.setLength(Integer.parseInt(((TextArea) (stage
                                 .getRoot().findActor("length"))).getText()));
-						message.setData(ByteUtil.intToBytes(Integer
+						message.setData(DataUtil.intToBytes(Integer
                                 .parseInt(((TextArea) (stage.getRoot()
                                         .findActor("data"))).getText())));
 

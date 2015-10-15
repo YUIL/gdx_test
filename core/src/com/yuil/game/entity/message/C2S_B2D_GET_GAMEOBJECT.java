@@ -3,7 +3,7 @@ package com.yuil.game.entity.message;
 import com.yuil.game.entity.B2DGameObject;
 import com.yuil.game.entity.info.B2dBoxBaseInformation;
 import com.yuil.game.net.message.Message;
-import com.yuil.game.util.ByteUtil;
+import com.yuil.game.util.DataUtil;
 
 public class C2S_B2D_GET_GAMEOBJECT extends Message {
 	public long gameObjectId;
@@ -20,9 +20,9 @@ public class C2S_B2D_GET_GAMEOBJECT extends Message {
 	public byte[] toBytes() {
 		int offset=0;
 		byte[] dest=new byte[8+Message.TYPE_BYTE_LENGTH];
-		byte[] src=ByteUtil.intToBytes(this.type);
+		byte[] src=DataUtil.intToBytes(this.type);
 		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
-		src=ByteUtil.longToBytes(this.gameObjectId);
+		src=DataUtil.longToBytes(this.gameObjectId);
 		System.arraycopy(src, 0, dest, offset, 8);
 		return dest;
 	}
@@ -30,7 +30,7 @@ public class C2S_B2D_GET_GAMEOBJECT extends Message {
 	@Override
 	public void init(byte[] src) {
 		// TODO Auto-generated method stub
-		this.gameObjectId=ByteUtil.bytesToLong(ByteUtil.subByte(src, 8, 0));
+		this.gameObjectId=DataUtil.bytesToLong(DataUtil.subByte(src, 8, 0));
 
 	}
 	

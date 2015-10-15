@@ -36,7 +36,7 @@ import com.yuil.game.net.udp.UdpMessage;
 import com.yuil.game.net.udp.UdpMessageListener;
 import com.yuil.game.net.udp.UdpServer;
 import com.yuil.game.stage.StageManager;
-import com.yuil.game.util.ByteUtil;
+import com.yuil.game.util.DataUtil;
 import com.yuil.game.util.GameManager;
 
 public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
@@ -587,9 +587,9 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 			System.out.println("disposing");
 			//disposing=true;
 			if(session==null)this.session=session;
-			int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
+			int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
 			System.out.println("type:"+typeOrdinal);
-			byte[] src = ByteUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
+			byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
 			long id;
 			B2DGameObject gameObject;
 			switch (GameMessageType.values()[typeOrdinal]) {

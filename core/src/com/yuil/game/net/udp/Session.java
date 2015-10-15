@@ -12,8 +12,8 @@ public class Session {
 	
 	volatile boolean isSending=false;
 	long id;
-	int timeOut=30;
-	int maxResendTimes=10;
+	int timeOut=10;
+	int maxResendTimes=20;
 	SendServicer sendThread;
 
 	public SendServicer getSendThread() {
@@ -25,14 +25,14 @@ public class Session {
 	}
 
 	public short getTimeOutMultiple() {
-		return timeOutMultiple;
+		return resendTimes;
 	}
 
 	public void setTimeOutMultiple(short timeOutMultiple) {
-		this.timeOutMultiple = timeOutMultiple;
+		this.resendTimes = timeOutMultiple;
 	}
 
-	volatile short timeOutMultiple=0;
+	volatile short resendTimes=0;
 	long lastSendTime;
 	InetSocketAddress contactorAddress;
 	volatile UdpMessage currentSendMessage;
@@ -94,12 +94,12 @@ public class Session {
 	public void setContactorAddress(InetSocketAddress contactorAddress) {
 		this.contactorAddress = contactorAddress;
 	}
-	public synchronized UdpMessage getCurrentSendMessage() {
+/*	public synchronized UdpMessage getCurrentSendMessage() {
 		return currentSendMessage;
 	}
 	public synchronized void setCurrentSendMessage(UdpMessage currentSendMessage) {
 		this.currentSendMessage = currentSendMessage;
-	}
+	}*/
 /*	public synchronized UdpMessage getLastSendMessage() {
 		return lastSendMessage;
 	}
@@ -132,7 +132,7 @@ public class Session {
 	@Override
 	public String toString() {
 		return "Session [id=" + id + ", timeOut=" + timeOut + ", maxResendTimes=" + maxResendTimes + ", sendThread="
-				+ sendThread + ", timeOutMultiple=" + timeOutMultiple + ", lastSendTime=" + lastSendTime
+				+ sendThread + ", timeOutMultiple=" + resendTimes + ", lastSendTime=" + lastSendTime
 				+ ", contactorAddress=" + contactorAddress + ", currentSendMessage=" + currentSendMessage
 				+ ", lastSendSequenceId=" + lastSendSequenceId + ", lastRecvSequenceId=" + lastRecvSequenceId + "]";
 	}

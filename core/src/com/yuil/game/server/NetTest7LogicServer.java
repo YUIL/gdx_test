@@ -24,7 +24,7 @@ import com.yuil.game.net.udp.MessageProcessor;
 import com.yuil.game.net.udp.Session;
 import com.yuil.game.net.udp.UdpMessageListener;
 import com.yuil.game.net.udp.UdpServer;
-import com.yuil.game.util.ByteUtil;
+import com.yuil.game.util.DataUtil;
 
 public class NetTest7LogicServer implements UdpMessageListener {
 
@@ -119,9 +119,9 @@ public class NetTest7LogicServer implements UdpMessageListener {
 				if (data.length < Message.TYPE_BYTE_LENGTH) {
 					return;
 				}
-				int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
+				int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
 				// System.out.println("type:"+type);
-				byte[] src = ByteUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
+				byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
 				long id;
 				B2DGameObject gameObject;
 				Message responseMessage;

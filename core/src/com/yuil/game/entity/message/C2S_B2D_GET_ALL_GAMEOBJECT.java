@@ -1,7 +1,7 @@
 package com.yuil.game.entity.message;
 
 import com.yuil.game.net.message.Message;
-import com.yuil.game.util.ByteUtil;
+import com.yuil.game.util.DataUtil;
 
 public class C2S_B2D_GET_ALL_GAMEOBJECT extends Message{
 
@@ -19,7 +19,7 @@ public class C2S_B2D_GET_ALL_GAMEOBJECT extends Message{
 		// TODO Auto-generated method stub
 		int offset=0;
 		byte[] dest=new byte[Message.TYPE_BYTE_LENGTH];
-		byte[] src=ByteUtil.intToBytes(this.type);
+		byte[] src=DataUtil.intToBytes(this.type);
 		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);
 		return dest;
 	}

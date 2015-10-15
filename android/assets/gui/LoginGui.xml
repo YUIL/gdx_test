@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stage>
-    <actor id="1" type="textArea" name="userName" text="11111111111111111111111111111111">
+    <actor id="1" type="textArea" name="userName" text="11111111111111111111111111111118">
         <x>100</x>
         <y>200</y>
         <skin name="default"></skin>

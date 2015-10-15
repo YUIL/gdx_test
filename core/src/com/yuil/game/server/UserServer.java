@@ -15,7 +15,7 @@ import com.yuil.game.net.message.USER_MESSAGE;
 import com.yuil.game.net.udp.Session;
 import com.yuil.game.net.udp.UdpMessageListener;
 import com.yuil.game.net.udp.UdpServer;
-import com.yuil.game.util.ByteUtil;
+import com.yuil.game.util.DataUtil;
 
 public class UserServer implements UdpMessageListener{
 	volatile UdpServer udpServer;
@@ -52,15 +52,15 @@ public class UserServer implements UdpMessageListener{
 		}
 		System.out.println("disposing");
 		// disposing=true;
-		int typeOrdinal = ByteUtil.bytesToInt(ByteUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
+		int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
 		System.out.println("type:" + GameMessageType.values()[typeOrdinal]);
-		byte[] src = ByteUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
+		byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
 		switch (GameMessageType.values()[typeOrdinal]) {
 		case C2S_LOGIN:
 			System.out.println("login");
 			C2S_LOGIN message = new C2S_LOGIN(src);
 			User user=login(message.openId);
-			USER_MESSAGE responseMessage=new USER_MESSAGE(new S2C_LOGIN_SUCCESS(ByteUtil.intToBytes(user.getUserId())).toBytes());
+			USER_MESSAGE responseMessage=new USER_MESSAGE(new S2C_LOGIN_SUCCESS(DataUtil.intToBytes(user.getUserId())).toBytes());
 			udpServer.send(responseMessage.toBytes(), session,false);
 			break;
 		case S2C_B2D_REMOVE_GAMEOBJECT:
