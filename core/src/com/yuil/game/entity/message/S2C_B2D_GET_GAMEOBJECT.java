@@ -37,9 +37,9 @@ public class S2C_B2D_GET_GAMEOBJECT extends Message {
 	public static byte[] getBytes(B2DGameObject obj){
 		
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+Message.TYPE_BYTE_LENGTH];
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+Message.TYPE_LENGTH];
 		byte[] src=DataUtil.intToBytes(GameMessageType.S2C_B2D_GET_GAMEOBJECT.ordinal());
-		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
+		System.arraycopy(src, 0, dest, offset, Message.TYPE_LENGTH);offset+=Message.TYPE_LENGTH;
 		src=B2dBoxBaseInformation.getBytesFromB2dGameObject(obj);
 		System.arraycopy(src, 0, dest, offset, B2dBoxBaseInformation.informationLength);
 		return dest;

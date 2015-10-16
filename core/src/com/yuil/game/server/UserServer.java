@@ -47,14 +47,14 @@ public class UserServer implements UdpMessageListener{
 	@Override
 	public void disposeUdpMessage(Session session, byte[] data) {
 		// TODO Auto-generated method stub
-		if (data.length<Message.TYPE_BYTE_LENGTH) {
+		if (data.length<Message.TYPE_LENGTH) {
 			return;
 		}
 		System.out.println("disposing");
 		// disposing=true;
-		int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
+		int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_LENGTH, 0));
 		System.out.println("type:" + GameMessageType.values()[typeOrdinal]);
-		byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
+		byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_LENGTH, Message.TYPE_LENGTH);
 		switch (GameMessageType.values()[typeOrdinal]) {
 		case C2S_LOGIN:
 			System.out.println("login");

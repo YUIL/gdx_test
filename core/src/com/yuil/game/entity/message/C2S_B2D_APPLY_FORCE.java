@@ -19,9 +19,9 @@ public class C2S_B2D_APPLY_FORCE extends Message{
 	@Override
 	public byte[] toBytes() {
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+Message.TYPE_BYTE_LENGTH];
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+Message.TYPE_LENGTH];
 		byte[] src=DataUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
+		System.arraycopy(src, 0, dest, offset, Message.TYPE_LENGTH);offset+=Message.TYPE_LENGTH;
 		src=DataUtil.longToBytes(this.gameObjectId);
 		System.arraycopy(src, 0, dest, offset, 8);offset+=8;
 		src=DataUtil.floatToBytes(forceX);
@@ -40,5 +40,10 @@ public class C2S_B2D_APPLY_FORCE extends Message{
 		this.forceX=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));offset+=4;
 		this.forceY=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));
 	}
+	@Override
+	public String toString() {
+		return "C2S_B2D_APPLY_FORCE [gameObjectId=" + gameObjectId + ", forceX=" + forceX + ", forceY=" + forceY + "]";
+	}
 
+	
 }

@@ -40,9 +40,9 @@ public class C2S_LOGIN extends Message{
 	public byte[] toBytes() {
 		// TODO Auto-generated method stub
 		int offset=0;
-		byte[] dest=new byte[openIdLength+Message.TYPE_BYTE_LENGTH];
+		byte[] dest=new byte[openIdLength+Message.TYPE_LENGTH];
 		byte[] src=DataUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
+		System.arraycopy(src, 0, dest, offset, Message.TYPE_LENGTH);offset+=Message.TYPE_LENGTH;
 		src=openId.getBytes();
 		System.arraycopy(src, 0, dest, offset, src.length);	
 		return dest;

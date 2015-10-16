@@ -26,9 +26,9 @@ public class S2C_B2D_GET_ALL_GAMEOBJECT extends Message {
 	
 	public byte[] toBytes(){
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*b2dBoxBaseInformationArray.size+Message.TYPE_BYTE_LENGTH];
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*b2dBoxBaseInformationArray.size+Message.TYPE_LENGTH];
 		byte[] src=DataUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
+		System.arraycopy(src, 0, dest, offset, Message.TYPE_LENGTH);offset+=Message.TYPE_LENGTH;
 		
 		for (int i = 0; i < b2dBoxBaseInformationArray.size; i++) {
 			src=b2dBoxBaseInformationArray.get(i).toBytes();
@@ -45,9 +45,9 @@ public class S2C_B2D_GET_ALL_GAMEOBJECT extends Message {
 	
 	public static byte[] getBytes(Array<B2DGameObject> array){
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*array.size+Message.TYPE_BYTE_LENGTH];
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength*array.size+Message.TYPE_LENGTH];
 		byte[] src=DataUtil.intToBytes(GameMessageType.S2C_B2D_GET_ALL_GAMEOBJECT.ordinal());
-		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
+		System.arraycopy(src, 0, dest, offset, Message.TYPE_LENGTH);offset+=Message.TYPE_LENGTH;
 		
 		for (int i = 0; i < array.size; i++) {
 			src=B2dBoxBaseInformation.getBytesFromB2dGameObject(array.get(i));

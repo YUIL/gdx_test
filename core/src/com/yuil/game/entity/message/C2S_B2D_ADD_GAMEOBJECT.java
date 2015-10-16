@@ -22,9 +22,9 @@ public class C2S_B2D_ADD_GAMEOBJECT extends Message {
 	public byte[] toBytes() {
 		// TODO Auto-generated method stub
 		int offset=0;
-		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+Message.TYPE_BYTE_LENGTH];
+		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+Message.TYPE_LENGTH];
 		byte[] src=DataUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
+		System.arraycopy(src, 0, dest, offset, Message.TYPE_LENGTH);offset+=Message.TYPE_LENGTH;
 		src=b2dBoxBaseInformation.toBytes();
 		System.arraycopy(src, 0, dest, offset, B2dBoxBaseInformation.informationLength);
 		return dest;

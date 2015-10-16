@@ -86,7 +86,7 @@ public class ClientSocket implements UdpMessageListener {
 	@Override
 	public void disposeUdpMessage(Session session, byte[] data) {
 		// TODO Auto-generated method stub
-		if (data.length > Message.TYPE_BYTE_LENGTH) {
+		if (data.length > Message.TYPE_LENGTH) {
 			listenner.disposeUdpMessage(session, data);
 		}
 	}

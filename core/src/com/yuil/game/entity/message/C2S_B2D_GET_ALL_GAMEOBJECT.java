@@ -18,9 +18,9 @@ public class C2S_B2D_GET_ALL_GAMEOBJECT extends Message{
 	public byte[] toBytes() {
 		// TODO Auto-generated method stub
 		int offset=0;
-		byte[] dest=new byte[Message.TYPE_BYTE_LENGTH];
+		byte[] dest=new byte[Message.TYPE_LENGTH];
 		byte[] src=DataUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);
+		System.arraycopy(src, 0, dest, offset, Message.TYPE_LENGTH);
 		return dest;
 	}
 

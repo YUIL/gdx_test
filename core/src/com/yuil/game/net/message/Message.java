@@ -1,8 +1,10 @@
 package com.yuil.game.net.message;
 
-public abstract class Message{
 
-	public static final int TYPE_BYTE_LENGTH=1;
+
+public abstract class Message implements java.io.Serializable{
+
+	public static final int TYPE_LENGTH=1;
 	public int type;
 	
 

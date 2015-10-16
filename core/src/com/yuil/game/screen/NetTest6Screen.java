@@ -583,13 +583,13 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 
 	@Override
 	public void disposeUdpMessage(Session session, byte[] data) {
-		if (data.length>Message.TYPE_BYTE_LENGTH) {
+		if (data.length>Message.TYPE_LENGTH) {
 			System.out.println("disposing");
 			//disposing=true;
 			if(session==null)this.session=session;
-			int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
+			int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_LENGTH, 0));
 			System.out.println("type:"+typeOrdinal);
-			byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
+			byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_LENGTH, Message.TYPE_LENGTH);
 			long id;
 			B2DGameObject gameObject;
 			switch (GameMessageType.values()[typeOrdinal]) {

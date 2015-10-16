@@ -142,10 +142,10 @@ public class NetTest6LogicServer implements UdpMessageListener {
 		messageProcessor=new MessageProcessor() {
 			@Override
 			public void run() {
-				if (data.length>Message.TYPE_BYTE_LENGTH) {	
-					int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
+				if (data.length>Message.TYPE_LENGTH) {	
+					int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_LENGTH, 0));
 					//System.out.println("type:"+type);
-					byte[] src = DataUtil.subByte(data, data.length -Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
+					byte[] src = DataUtil.subByte(data, data.length -Message.TYPE_LENGTH, Message.TYPE_LENGTH);
 					long id;
 					B2DGameObject gameObject;
 					switch (GameMessageType.values()[typeOrdinal]) {

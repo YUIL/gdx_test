@@ -1,14 +1,20 @@
 package com.yuil.game.test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.yuil.game.entity.message.C2S_B2D_APPLY_FORCE;
+import com.yuil.game.entity.message.C2S_TEST;
+import com.yuil.game.net.message.GAME_MESSAGE_ARRAY;
 import com.yuil.game.net.message.Message;
 import com.yuil.game.util.DataUtil;
 import com.yuil.game.util.Log;
@@ -95,9 +101,12 @@ public class Test {
 			 *//*
 			 * System.out.println(json.toJson(person));
 			 */
-/*
-		GameMessage m = new GameMessage();
-		System.out.println();
+
+		/*GAME_MESSAGE_ARRAY m = new GAME_MESSAGE_ARRAY();
+		m.gameMessages=new byte[10][];
+		for (int i = 0; i < 10; i++) {
+			m.gameMessages[i]=new byte[128];
+		}
 
 		ByteArrayOutputStream bao=new ByteArrayOutputStream();
 		try {
@@ -111,7 +120,7 @@ public class Test {
 			e.printStackTrace();
 		}
 		System.out.println(bao.toByteArray().length);
-		fan(new ByteArrayInputStream(bao.toByteArray()));// 调用下面的 反序列化 代码
+		System.out.println(((GAME_MESSAGE_ARRAY)fan(new ByteArrayInputStream(bao.toByteArray()))).toString());// 调用下面的 反序列化 代码
 */	
 		/*Class1 c1=new Class1();
 		testfun(c1);
@@ -119,9 +128,27 @@ public class Test {
 
 	/*	Object[] arr=new String[10];
 		arr[0]=new Integer(1);*/
-		
+/*		
 		short b=(short)222;
-		System.out.println(DataUtil.getUnsignedNum(b));
+		System.out.println(DataUtil.getUnsignedNum(b));*/
+		
+		
+		C2S_B2D_APPLY_FORCE m1=new C2S_B2D_APPLY_FORCE();
+		m1.forceX=1;m1.forceY=1;
+		C2S_B2D_APPLY_FORCE m2=new C2S_B2D_APPLY_FORCE();
+		m2.forceX=2;m2.forceY=2;
+		Message[] messages=new Message[2];
+		messages[0]=m1;messages[1]=m2;
+		//System.out.println(m1.toBytes().length);
+		GAME_MESSAGE_ARRAY game_MESSAGE_ARRAY=new GAME_MESSAGE_ARRAY();
+		game_MESSAGE_ARRAY.init(messages);
+		
+		byte[] src=DataUtil.subByte(game_MESSAGE_ARRAY.toBytes(), game_MESSAGE_ARRAY.toBytes().length-1, 1);
+		GAME_MESSAGE_ARRAY game_MESSAGE_ARRAY2=new GAME_MESSAGE_ARRAY(src);
+		
+		src=DataUtil.subByte(game_MESSAGE_ARRAY2.gameMessages[0], game_MESSAGE_ARRAY2.gameMessages[0].length-1, 1);
+		C2S_B2D_APPLY_FORCE m3=new C2S_B2D_APPLY_FORCE(src);
+		System.out.println(m3.toString());
 	
 	}
 	public static void testfun(Object c1){
@@ -131,7 +158,7 @@ public class Test {
 	public static class Class1{
 		public String s;
 	}
-	public static void fan(InputStream in)// 反序列的过程
+	public static Message fan(InputStream in)// 反序列的过程
 	{
 		ObjectInputStream oin = null;// 局部变量必须要初始化
 		try {
@@ -147,8 +174,8 @@ public class Test {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("type=" + m.toString());
-
+		System.out.println( m.toString());
+		return m;
 	}
 
 	public static class Person {

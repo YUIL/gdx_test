@@ -36,6 +36,7 @@ import com.yuil.game.input.ActorInputListenner;
 import com.yuil.game.input.KeyboardStatus;
 import com.yuil.game.net.ClientSocket;
 import com.yuil.game.net.message.GAME_MESSAGE;
+import com.yuil.game.net.message.GAME_MESSAGE_ARRAY;
 import com.yuil.game.net.message.Message;
 import com.yuil.game.net.message.MessageType;
 import com.yuil.game.net.message.USER_MESSAGE;
@@ -581,9 +582,9 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 		//Log.println("disposing");
 		// disposing=true;
 		// if(session==null)this.session=session;
-		int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
+		int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_LENGTH, 0));
 		//Log.println("type:" + MessageType.values()[typeOrdinal]);
-		byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
+		byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_LENGTH, Message.TYPE_LENGTH);
 		
 		switch (MessageType.values()[typeOrdinal]) {
 		case GAME_MESSAGE:
@@ -591,6 +592,12 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 			break;
 		case USER_MESSAGE:
 			disposeUserMessage(session, src);
+			break;
+		case GAME_MESSAGE_ARRAY:
+			GAME_MESSAGE_ARRAY game_MESSAGE_ARRAY=new GAME_MESSAGE_ARRAY(src);
+			for (int i = 0; i < game_MESSAGE_ARRAY.messageNum; i++) {
+				disposeGameMessage(session, game_MESSAGE_ARRAY.gameMessages[i]);
+			}
 			break;
 		default:
 			break;
@@ -601,9 +608,9 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 
 	public void disposeGameMessage(Session session, byte[] data){
 		Log.println("network delay:"+(System.currentTimeMillis()-sendTime));
-		int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
+		int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_LENGTH, 0));
 		Log.println("type:" + GameMessageType.values()[typeOrdinal]);
-		byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
+		byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_LENGTH, Message.TYPE_LENGTH);
 		B2DGameObject gameObject;
 		Message responseMessage;
 		switch (GameMessageType.values()[typeOrdinal]) {
@@ -654,9 +661,9 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 		}
 	}
 	public void disposeUserMessage(Session session, byte[] data){
-		int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_BYTE_LENGTH, 0));
+		int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_LENGTH, 0));
 		Log.println("type:" + GameMessageType.values()[typeOrdinal]);
-		byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_BYTE_LENGTH, Message.TYPE_BYTE_LENGTH);
+		byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_LENGTH, Message.TYPE_LENGTH);
 		
 		switch (GameMessageType.values()[typeOrdinal]) {
 		case S2C_LOGIN_SUCCESS:

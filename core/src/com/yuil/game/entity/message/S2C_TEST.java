@@ -24,9 +24,9 @@ public class S2C_TEST extends Message {
 	@Override
 	public byte[] toBytes() {
 		int offset=0;
-		byte[] dest=new byte[Message.TYPE_BYTE_LENGTH];
+		byte[] dest=new byte[Message.TYPE_LENGTH];
 		byte[] src=DataUtil.intToBytes(this.type);
-		System.arraycopy(src, 0, dest, offset, Message.TYPE_BYTE_LENGTH);offset+=Message.TYPE_BYTE_LENGTH;
+		System.arraycopy(src, 0, dest, offset, Message.TYPE_LENGTH);offset+=Message.TYPE_LENGTH;
 		return dest;
 	}
 
