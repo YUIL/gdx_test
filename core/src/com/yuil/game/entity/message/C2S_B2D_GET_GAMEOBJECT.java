@@ -1,6 +1,6 @@
 package com.yuil.game.entity.message;
 
-import com.yuil.game.entity.B2DGameObject;
+import com.yuil.game.entity.B2dGameObject;
 import com.yuil.game.entity.info.B2dBoxBaseInformation;
 import com.yuil.game.net.message.Message;
 import com.yuil.game.util.DataUtil;

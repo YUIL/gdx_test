@@ -5,8 +5,8 @@ import java.util.concurrent.Executors;
 
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.utils.JsonReader;
-import com.yuil.game.entity.B2DGameObject;
-import com.yuil.game.entity.GameWorldB2D;
+import com.yuil.game.entity.B2dGameObject;
+import com.yuil.game.entity.GameWorldB2d;
 import com.yuil.game.entity.message.C2S_B2D_ADD_GAMEOBJECT;
 import com.yuil.game.entity.message.C2S_B2D_APPLY_FORCE;
 import com.yuil.game.entity.message.C2S_B2D_CHANGE_APPLY_FORCE_STATE;
@@ -32,7 +32,7 @@ public class NetTest7LogicServer implements UdpMessageListener {
 	volatile UdpServer udpServer;
 	JsonReader jsonReader = new JsonReader();
 	volatile boolean stoped = false;
-	volatile GameWorldB2D gameWorld;
+	volatile GameWorldB2d gameWorld;
 	int autoBoardCastInterval = 100;
 	long nextAutoBoardCastTime = 0;
 	volatile int syncCount = 0;
@@ -74,7 +74,7 @@ public class NetTest7LogicServer implements UdpMessageListener {
 					 */
 
 					for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
-						B2DGameObject gameObject = gameWorld.getGameObjectArray().get(i);
+						B2dGameObject gameObject = gameWorld.getGameObjectArray().get(i);
 						if (gameObject.getBody().getPosition().y < -50) {
 							gameWorld.getGameObjectRemoveQueue().add(gameObject);
 							needBoard = true;
@@ -92,7 +92,7 @@ public class NetTest7LogicServer implements UdpMessageListener {
 					 * boardCast("{gago:"+str+"}"); }
 					 */
 					if (syncNum > syncCount) {
-						boardCast(S2C_B2D_GET_ALL_GAMEOBJECT.getBytes(gameWorld.getGameObjectArray()), false);
+						boardCast_GAME_MESSAGE(S2C_B2D_GET_ALL_GAMEOBJECT.getBytes(gameWorld.getGameObjectArray()), false);
 						syncCount++;
 					}
 
@@ -113,7 +113,7 @@ public class NetTest7LogicServer implements UdpMessageListener {
 
 	public NetTest7LogicServer() {
 		Box2D.init();
-		gameWorld = new GameWorldB2D();
+		gameWorld = new GameWorldB2d();
 		messageProcessor = new MessageProcessor() {
 			@Override
 			public void run() {
@@ -124,7 +124,7 @@ public class NetTest7LogicServer implements UdpMessageListener {
 				// System.out.println("type:"+type);
 				byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_LENGTH, Message.TYPE_LENGTH);
 				long id;
-				B2DGameObject gameObject;
+				B2dGameObject gameObject;
 				Message responseMessage;
 				switch (GameMessageType.values()[typeOrdinal]) {
 				case C2S_B2D_APPLY_FORCE:
@@ -165,6 +165,7 @@ public class NetTest7LogicServer implements UdpMessageListener {
 					} else {
 						// System.out.println("create Box,
 						// id:"+gameMessage_c2s_ago.b2dBoxBaseInformation.gameObjectId);
+						System.out.println("add");
 						gameWorld.getGameObjectCreationQueue().add(gameMessage_c2s_ago.b2dBoxBaseInformation);
 						syncNum++;
 						/*
@@ -189,7 +190,7 @@ public class NetTest7LogicServer implements UdpMessageListener {
 						gameWorld.getGameObjectRemoveQueue().add(gameObject);
 						S2C_B2D_REMOVE_GAMEOBJECT gameMessage_s2c_rgo = new S2C_B2D_REMOVE_GAMEOBJECT();
 						gameMessage_s2c_rgo.gameObjectId = gameObject.getId();
-						boardCast(gameMessage_s2c_rgo.toBytes(), false);
+						boardCast_GAME_MESSAGE(gameMessage_s2c_rgo.toBytes(), false);
 					}
 					break;
 				case C2S_B2D_GET_GAMEOBJECT:
@@ -214,7 +215,7 @@ public class NetTest7LogicServer implements UdpMessageListener {
 						gameObject.changeApplyForceState(gameMessage_c2s_change_apply_force_state.applyForceState);
 
 						responseMessage = new S2C_B2D_CHANGE_APPLY_FORCE_STATE(src);
-						boardCast(responseMessage.toBytes(),false);
+						boardCast_GAME_MESSAGE(responseMessage.toBytes(),false);
 						syncNum++;
 					}
 
@@ -227,7 +228,7 @@ public class NetTest7LogicServer implements UdpMessageListener {
 					messages[0]=responseMessage;
 					messages[1]=responseMessage;
 					messages[2]=responseMessage;
-					boardCast(messages, false);
+					boardCast_GAME_MESSAGE_ARRAY(messages, false);
 					break;
 				default:
 					break;
@@ -237,11 +238,15 @@ public class NetTest7LogicServer implements UdpMessageListener {
 		};
 	}
 
-	public synchronized void boardCast(Message message, boolean isImmediately) {
+	public synchronized void boardCast_GAME_MESSAGE(Message message, boolean isImmediately) {
 		boardCast(GAME_MESSAGE.getBytes(message.toBytes()), isImmediately);
 	}
+	
+	public synchronized void boardCast_GAME_MESSAGE(byte[] data, boolean isImmediately) {
+		boardCast(GAME_MESSAGE.getBytes(data), isImmediately);
+	}
 
-	public synchronized void boardCast(Message[] messages, boolean isImmediately) {
+	public synchronized void boardCast_GAME_MESSAGE_ARRAY(Message[] messages, boolean isImmediately) {
 		boardCast(new GAME_MESSAGE_ARRAY(messages).toBytes(), isImmediately);
 	}
 	

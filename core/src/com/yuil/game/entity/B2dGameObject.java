@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.yuil.game.entity.info.B2dBoxBaseInformation;
 
-public class B2DGameObject {
+public class B2dGameObject {
 	// String name;
 	long id;
 	Body body;
@@ -52,13 +52,14 @@ public class B2DGameObject {
 
 	}
 
-	public B2DGameObject(long id) {
+	public B2dGameObject(long id) {
 		this.id = id;
 	}
 
-	public B2DGameObject(long id, Body body) {
+	public B2dGameObject(long id, Body body) {
 		this.id = id;
 		this.body = body;
+		body.setUserData(this);
 	}
 
 	/*

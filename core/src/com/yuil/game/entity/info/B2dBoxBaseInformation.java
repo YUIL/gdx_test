@@ -1,6 +1,6 @@
 package com.yuil.game.entity.info;
 
-import com.yuil.game.entity.B2DGameObject;
+import com.yuil.game.entity.B2dGameObject;
 import com.yuil.game.util.DataUtil;
 
 public class B2dBoxBaseInformation {
@@ -53,7 +53,7 @@ public class B2dBoxBaseInformation {
 		lx=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));offset+=4;
 		ly=DataUtil.bytesToFloat(DataUtil.subByte(src, 4, offset));offset+=4;
 	}
-	public void initFromObj(B2DGameObject obj){
+	public void initFromObj(B2dGameObject obj){
 		gameObjectId=obj.getId();
 		x=obj.getPosition().x;
 		y=obj.getPosition().y;
@@ -91,7 +91,7 @@ public class B2dBoxBaseInformation {
 		System.arraycopy(src, 0, dest, offset, 4);offset+=4;
 		return dest;
 	}
-	public static byte[] getBytesFromB2dGameObject(B2DGameObject obj){
+	public static byte[] getBytesFromB2dGameObject(B2dGameObject obj){
 		int offset=0;
 		byte[] dest=new byte[B2dBoxBaseInformation.informationLength];
 		byte[] src=DataUtil.longToBytes(obj.getId());

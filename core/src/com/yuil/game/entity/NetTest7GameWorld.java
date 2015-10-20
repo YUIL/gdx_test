@@ -9,7 +9,7 @@ import com.yuil.game.server.NetTest7LogicServer;
 
 public class NetTest7GameWorld {
 	Array<NetTest7GameObject> gameObjectArray=new Array<NetTest7GameObject>();
-	GameWorldB2D gameWorld=new GameWorldB2D();
+	GameWorldB2d gameWorld=new GameWorldB2d();
 	NetTest7LogicServer logicServer;
 	
 	public NetTest7GameWorld(NetTest7LogicServer logicServer){
@@ -28,7 +28,7 @@ public class NetTest7GameWorld {
 	
 	public boolean addGameObject(C2S_B2D_ADD_GAMEOBJECT gameMessage){
 		long id = gameMessage.b2dBoxBaseInformation.gameObjectId;
-		B2DGameObject gameObject = gameWorld.findGameObject(id);
+		B2dGameObject gameObject = gameWorld.findGameObject(id);
 		if (gameObject != null) {
 			return false;
 		}else{
@@ -47,7 +47,7 @@ public class NetTest7GameWorld {
 	
 	public boolean applyForce(C2S_B2D_APPLY_FORCE gameMessage){
 		long id = gameMessage.gameObjectId;
-		B2DGameObject gameObject = gameWorld.findGameObject(id);
+		B2dGameObject gameObject = gameWorld.findGameObject(id);
 		if (gameObject != null) {
 			float forceX = gameMessage.forceX;
 			float forceY = gameMessage.forceY;

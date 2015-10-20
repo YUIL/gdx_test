@@ -1,6 +1,6 @@
 package com.yuil.game.entity.message;
 
-import com.yuil.game.entity.B2DGameObject;
+import com.yuil.game.entity.B2dGameObject;
 import com.yuil.game.entity.info.B2dBoxBaseInformation;
 import com.yuil.game.net.message.Message;
 import com.yuil.game.util.DataUtil;
@@ -34,7 +34,7 @@ public class S2C_B2D_GET_GAMEOBJECT extends Message {
 		this.b2dBoxBaseInformation.initFromBytes(src);
 
 	}
-	public static byte[] getBytes(B2DGameObject obj){
+	public static byte[] getBytes(B2dGameObject obj){
 		
 		int offset=0;
 		byte[] dest=new byte[B2dBoxBaseInformation.informationLength+Message.TYPE_LENGTH];

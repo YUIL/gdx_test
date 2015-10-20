@@ -17,8 +17,8 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.utils.JsonReader;
-import com.yuil.game.entity.B2DGameObject;
-import com.yuil.game.entity.GameWorldB2D;
+import com.yuil.game.entity.B2dGameObject;
+import com.yuil.game.entity.GameWorldB2d;
 import com.yuil.game.entity.info.B2dBoxBaseInformation;
 import com.yuil.game.entity.message.C2S_B2D_ADD_GAMEOBJECT;
 import com.yuil.game.entity.message.C2S_B2D_APPLY_FORCE;
@@ -49,7 +49,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	volatile UdpServer udpServer;
 	volatile Session session;
 	String recvString = null;
-	volatile GameWorldB2D gameWorld = new GameWorldB2D();
+	volatile GameWorldB2d gameWorld = new GameWorldB2d();
 	private Box2DDebugRenderer debugRenderer;
 	JsonReader jsonReader = new JsonReader();
 	KeyboardStatus keyboardStatus = new KeyboardStatus();
@@ -105,7 +105,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 		//debugRenderer.render(gameWorld.getBox2dWorld(), camera.combined);
 		batch.begin();
 		for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
-			B2DGameObject gameObject = gameWorld.getGameObjectArray().get(i);
+			B2dGameObject gameObject = gameWorld.getGameObjectArray().get(i);
 			// gameObject.setPosition(new
 			// Vector3(gameObject.getPosition().x+gameObject.getInertiaForce().x*delta,
 			// gameObject.getPosition().y+gameObject.getInertiaForce().y*delta,
@@ -165,7 +165,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 			lPressAction();
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.T)){
-			B2DGameObject gameObject=gameWorld.findGameObject(gameObjectId);
+			B2dGameObject gameObject=gameWorld.findGameObject(gameObjectId);
 			camera.position.x=gameObject.getPosition().x;
 			camera.position.y=gameObject.getPosition().y;
 		}
@@ -298,13 +298,13 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 						//if (!disposing) {
 						gameWorld.update(updateInterval / 1000f);
 						//}
-						B2DGameObject gameObject=gameWorld.findGameObject(gameObjectId);
+						B2dGameObject gameObject=gameWorld.findGameObject(gameObjectId);
 						if(gameObject!=null){
 							camera.position.x=gameObject.getPosition().x;
 							camera.position.y=gameObject.getPosition().y;
 						}
 						for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
-							B2DGameObject gameObject2=gameWorld.getGameObjectArray().get(i);
+							B2dGameObject gameObject2=gameWorld.getGameObjectArray().get(i);
 							if(gameObject2.getPosition().y<-50){
 								C2S_B2D_GET_GAMEOBJECT gameMessage_c2s_ggo=new C2S_B2D_GET_GAMEOBJECT();
 								gameMessage_c2s_ggo.gameObjectId=gameObject2.getId();
@@ -404,7 +404,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	}
 
 	private void aJustPressAction() {
-		B2DGameObject gameObject = gameWorld.findGameObject(gameObjectId);
+		B2dGameObject gameObject = gameWorld.findGameObject(gameObjectId);
 		if (gameObject != null) {
 			C2S_B2D_APPLY_FORCE gameMessage_c2s_rpc=new C2S_B2D_APPLY_FORCE();
 			gameMessage_c2s_rpc.gameObjectId=gameObjectId;
@@ -425,7 +425,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	}
 
 	private void dJustPressAction() {
-		B2DGameObject gameObject = gameWorld.findGameObject(gameObjectId);
+		B2dGameObject gameObject = gameWorld.findGameObject(gameObjectId);
 		if (gameObject != null) {
 			C2S_B2D_APPLY_FORCE gameMessage_c2s_rpc=new C2S_B2D_APPLY_FORCE();
 			gameMessage_c2s_rpc.gameObjectId=gameObjectId;
@@ -445,7 +445,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	}
 
 	private void wJustPressAction() {
-		B2DGameObject gameObject = gameWorld.findGameObject(gameObjectId);
+		B2dGameObject gameObject = gameWorld.findGameObject(gameObjectId);
 		if (gameObject != null) {
 			C2S_B2D_APPLY_FORCE gameMessage_c2s_rpc=new C2S_B2D_APPLY_FORCE();
 			gameMessage_c2s_rpc.gameObjectId=gameObjectId;
@@ -466,7 +466,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 	public void sendMoveMessage(C2S_B2D_APPLY_FORCE gameMessage_c2s_rpc){
 		
 		 
-				 B2DGameObject gameObject=gameWorld.findGameObject(gameMessage_c2s_rpc.gameObjectId);
+				 B2dGameObject gameObject=gameWorld.findGameObject(gameMessage_c2s_rpc.gameObjectId);
 				 if (gameObject!=null){
 					 float forceX=gameMessage_c2s_rpc.forceX;
 					 if(gameObject.getSpeed()<gameObject.getMaxSpeed()){
@@ -591,7 +591,7 @@ public class NetTest6Screen extends TestScreen2D implements UdpMessageListener{
 			System.out.println("type:"+typeOrdinal);
 			byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_LENGTH, Message.TYPE_LENGTH);
 			long id;
-			B2DGameObject gameObject;
+			B2dGameObject gameObject;
 			switch (GameMessageType.values()[typeOrdinal]) {
 			case S2C_B2D_GET_ALL_GAMEOBJECT:
 				S2C_B2D_GET_ALL_GAMEOBJECT gameMessage_s2c_gago=new S2C_B2D_GET_ALL_GAMEOBJECT(src);

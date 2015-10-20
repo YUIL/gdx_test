@@ -1,7 +1,7 @@
 package com.yuil.game.entity;
 
 public class GameObjectUpdate {
-	public volatile B2DGameObject gameObject;
+	public volatile B2dGameObject gameObject;
 	public float x;
 	public float y;
 	public float angle;

@@ -6,8 +6,8 @@ import java.util.concurrent.Executors;
 
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.utils.JsonReader;
-import com.yuil.game.entity.B2DGameObject;
-import com.yuil.game.entity.GameWorldB2D;
+import com.yuil.game.entity.B2dGameObject;
+import com.yuil.game.entity.GameWorldB2d;
 import com.yuil.game.entity.message.C2S_B2D_ADD_GAMEOBJECT;
 import com.yuil.game.entity.message.C2S_B2D_APPLY_FORCE;
 import com.yuil.game.entity.message.C2S_B2D_GET_GAMEOBJECT;
@@ -32,7 +32,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 	// String responseString;
 	JsonReader jsonReader = new JsonReader();
 	volatile boolean stoped = false;
-	volatile GameWorldB2D gameWorld;
+	volatile GameWorldB2d gameWorld;
 	int autoBoardCastInterval = 100;
 	long nextAutoBoardCastTime = 0;
 	volatile int boardCastCound = 0;
@@ -75,7 +75,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 					}*/
 
 					for (int i = 0; i < gameWorld.getGameObjectArray().size; i++) {
-						B2DGameObject gameObject = gameWorld.getGameObjectArray().get(i);
+						B2dGameObject gameObject = gameWorld.getGameObjectArray().get(i);
 						if (gameObject.getBody().getPosition().y < -50) {
 							gameWorld.getGameObjectRemoveQueue().add(gameObject);
 							needBoard = true;
@@ -137,7 +137,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 			e.printStackTrace();
 		}
 		Box2D.init();
-		gameWorld = new GameWorldB2D();
+		gameWorld = new GameWorldB2d();
 		
 		messageProcessor=new MessageProcessor() {
 			@Override
@@ -147,7 +147,7 @@ public class NetTest6LogicServer implements UdpMessageListener {
 					//System.out.println("type:"+type);
 					byte[] src = DataUtil.subByte(data, data.length -Message.TYPE_LENGTH, Message.TYPE_LENGTH);
 					long id;
-					B2DGameObject gameObject;
+					B2dGameObject gameObject;
 					switch (GameMessageType.values()[typeOrdinal]) {
 					case C2S_B2D_APPLY_FORCE:
 						C2S_B2D_APPLY_FORCE gameMessage_c2s_rpc = new C2S_B2D_APPLY_FORCE(src);

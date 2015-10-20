@@ -49,7 +49,7 @@ public class ClientSocket implements UdpMessageListener {
 
 	}
 
-	public boolean sendMessage(String str,boolean isImmediately) {
+/*	public boolean sendMessage(String str,boolean isImmediately) {
 		if (str == null) {
 			System.err.println("message==null");
 		} else {
@@ -58,9 +58,9 @@ public class ClientSocket implements UdpMessageListener {
 		return false;
 
 	}
+*/
 
-
-	public synchronized boolean sendMessage(byte[] bytes,boolean isImmediately) {
+	public synchronized boolean send(byte[] bytes,boolean isImmediately) {
 		if (udpServer == null) {
 			System.err.println("updServer==null");
 			return false;

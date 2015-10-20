@@ -12,6 +12,8 @@ public class UdpMessage {
 	public int length;
 	public byte[] data;
 
+	
+	public static final int HEADER_LENGTH=8+4+1+4;
 	public UdpMessage() {
 
 	}

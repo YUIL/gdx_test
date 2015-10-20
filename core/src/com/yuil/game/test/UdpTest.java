@@ -12,7 +12,15 @@ import com.yuil.game.util.DataUtil;
 public class UdpTest {
 
 	public static void main(String[] args) throws BindException {
-		// TODO Auto-generated method stub
+	
+		
+		
+		
+		
+
+	}
+	
+	public static void sendMessages() throws BindException{
 		UdpServer server=new UdpServer(9092);
 		server.start();
 		UdpServer client=new UdpServer(9091);
@@ -24,10 +32,6 @@ public class UdpTest {
 		client.send(data, session, false);
 		client.send(data, session, false);
 		client.send(data, session, false);
-		
-		
-		
-
 	}
 
 }
