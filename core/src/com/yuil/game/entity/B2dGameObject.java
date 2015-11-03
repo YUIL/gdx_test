@@ -1,7 +1,7 @@
 package com.yuil.game.entity;
 
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -14,7 +14,7 @@ public class B2dGameObject {
 	int maxSpeed = 10;
 	int strength = 100;
 	float width, height;
-	Queue<B2dBoxBaseInformation> gameObjectUpdateQueue = new LinkedList<B2dBoxBaseInformation>();
+	Queue<B2dBoxBaseInformation> gameObjectUpdateQueue = new ConcurrentLinkedQueue<B2dBoxBaseInformation>();
 	MotionState motionState = new MotionState();
 	
 	public void changeApplyForceState(byte state){

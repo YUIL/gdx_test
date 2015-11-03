@@ -69,6 +69,9 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 	int updateInterval = 10;
 
 	volatile long sendTime;
+	volatile long time;
+	
+	long pressWTime=0;
 	
 	public NetTest7Screen(Game game) {
 		super(game);
@@ -94,6 +97,11 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 	public void render(float delta) {
 		// TODO Auto-generated method stub
 		// Log.println(gameWorld.getGameObjectArray().size);
+/*		if(System.currentTimeMillis()-pressWTime>5000){
+			pressWTime=System.currentTimeMillis();
+			wJustPressAction();
+			System.out.println(Runtime.getRuntime().totalMemory());
+		}*/
 		
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.f);
@@ -325,6 +333,7 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 	private void lPressAction() {
 		// sendMessage("{gago:}");
 		Message message=new C2S_TEST();
+		time=System.nanoTime();
 		sendGameMessage(message, true);
 		//login();
 	}
@@ -609,12 +618,11 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 	}
 
 	public void disposeGameMessage(Session session, byte[] data){
-		Log.println("network delay:"+(System.currentTimeMillis()-sendTime));
+		//Log.println("network delay:"+(System.currentTimeMillis()-sendTime));
 		int typeOrdinal = DataUtil.bytesToInt(DataUtil.subByte(data, Message.TYPE_LENGTH, 0));
 		Log.println("type:" + GameMessageType.values()[typeOrdinal]);
 		byte[] src = DataUtil.subByte(data, data.length - Message.TYPE_LENGTH, Message.TYPE_LENGTH);
 		B2dGameObject gameObject;
-		Message responseMessage;
 		switch (GameMessageType.values()[typeOrdinal]) {
 		case S2C_B2D_GET_ALL_GAMEOBJECT:
 			S2C_B2D_GET_ALL_GAMEOBJECT gameMessage_s2c_gago = new S2C_B2D_GET_ALL_GAMEOBJECT(src);
@@ -656,7 +664,9 @@ public class NetTest7Screen extends TestScreen2D implements UdpMessageListener {
 			}
 			break;
 		case S2C_TEST:
+			time=System.nanoTime()-time;
 			Log.println("test--------------------------------------------------test message");
+			System.out.println("time:"+time);
 			break;
 		default:
 			break;

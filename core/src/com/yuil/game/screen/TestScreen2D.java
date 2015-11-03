@@ -2,16 +2,12 @@ package com.yuil.game.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.viewport.FillViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.yuil.game.stage.StageManager;
@@ -32,8 +28,8 @@ public class TestScreen2D extends TestScreen {
 		batch = new SpriteBatch();
 		skin = StageManager.defaultSkin;
 		stage = new Stage();
-		backgroundX=800/-2;
-		backgroundY=480/-2;
+		backgroundX=Gdx.graphics.getWidth()/-2;
+		backgroundY=Gdx.graphics.getHeight()/-2;
 		//cam = new OrthographicCamera();
 		// viewport=new FillViewport(800, 480, cam);
 		viewport = new StretchViewport(800, 480, stage.getCamera());
@@ -63,6 +59,7 @@ public class TestScreen2D extends TestScreen {
 				1,1,
 				0);
 		batch.end();*/
+		
 		stage.act(delta);
 		stage.draw();
 	}
@@ -72,6 +69,7 @@ public class TestScreen2D extends TestScreen {
 		// TODO Auto-generated method stub
 		super.resize(width, height);
 		stage.getViewport().update(width, height, true);
+		stage.getCamera().update();
 	}
 
 

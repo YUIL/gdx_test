@@ -1,9 +1,9 @@
 package com.yuil.game.net.udp;
 
 import java.net.InetSocketAddress;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.yuil.game.net.udp.UdpServer.SendServicer;
 
@@ -12,17 +12,19 @@ public class Session {
 	
 	volatile boolean isSending=false;
 	long id;
-	int timeOut=10;
+	int timeOut=10;//millisecond
+	int maxUnusedTime=30000;//millisecond
 	int maxResendTimes=20;
 	SendServicer sendThread;
 	volatile short resendTimes=0;
-	long lastSendTime;
+	volatile long lastSendTime;
+	volatile long lastReceiveTime;
 	InetSocketAddress contactorAddress;
 	volatile UdpMessage currentSendMessage;
 	public  int lastSendSequenceId;
 	public  int lastRecvSequenceId;
-	volatile Queue<UdpMessage> sendMessageBuffer = new LinkedList<UdpMessage>();
-	public volatile int sendMessageBufferMaxSize=5;
+	volatile Queue<UdpMessage> sendMessageBuffer = new LinkedBlockingQueue<UdpMessage>();
+	public volatile int sendMessageBufferMaxSize=100;
 	
 	public Session(){
 		init(new Random().nextLong());
@@ -32,7 +34,7 @@ public class Session {
 		init(id);
 	}
 	private void init(long id){
-		System.out.println("new session,id:"+id);
+		//System.out.println("new session,id:"+id);
 		this.id=id;
 		lastSendSequenceId=-1;
 		lastRecvSequenceId=-1;
@@ -95,6 +97,15 @@ public class Session {
 	}
 	public void setLastSendTime(long lastSendTime) {
 		this.lastSendTime = lastSendTime;
+	}
+
+	
+	public long getLastReceiveTime() {
+		return lastReceiveTime;
+	}
+
+	public void setLastReceiveTime(long lastReceiveTime) {
+		this.lastReceiveTime = lastReceiveTime;
 	}
 
 	@Override

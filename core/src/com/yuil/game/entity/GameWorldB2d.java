@@ -2,8 +2,8 @@ package com.yuil.game.entity;
 
 
 
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -24,8 +24,8 @@ public class GameWorldB2d {
 	private World box2dWorld;
 //	public boolean lock=false;
 	//private ArrayList<Body> boxes = new ArrayList<Body>();
-	Queue<B2dBoxBaseInformation> gameObjectCreationQueue=new LinkedList<B2dBoxBaseInformation>();
-	Queue<B2dGameObject> gameObjectRemoveQueue=new LinkedList<B2dGameObject>();
+	Queue<B2dBoxBaseInformation> gameObjectCreationQueue=new ConcurrentLinkedQueue<B2dBoxBaseInformation>();
+	Queue<B2dGameObject> gameObjectRemoveQueue=new ConcurrentLinkedQueue<B2dGameObject>();
 	Array<B2dGameObject> gameObjectArray=new Array<B2dGameObject>();
 	B2dGameObject ground=new B2dGameObject(0);
 	
@@ -146,22 +146,24 @@ public class GameWorldB2d {
 		gameObject.width=width;
 		gameObject.height=height;
 		boxBody.setLinearVelocity(lx, ly);
-		//boxBody.setFixedRotation(true);
+		boxBody.setFixedRotation(true);
 		
 		boxBody.setAngularVelocity(angularVelocity);
 		return gameObject;
 		
 		// add the box to our list of boxes
 	}
+
+	
+	public B2dGameObject createGameObject(long id,Body body){
+		return new B2dGameObject(id, body);
+	}
+	
 	public Array<B2dGameObject> getGameObjectArray() {
 		return gameObjectArray;
 	}
 	public void setGameObjectArray(Array<B2dGameObject> gameObjectArray) {
 		this.gameObjectArray = gameObjectArray;
-	}
-	
-	public B2dGameObject createGameObject(long id,Body body){
-		return new B2dGameObject(id, body);
 	}
 /*	public B2DGameObject createGameObject(String name,Body body){
 		return new B2DGameObject(name, body);
@@ -173,7 +175,7 @@ public class GameWorldB2d {
 
 
 		BodyDef groundBodyDef = new BodyDef();
-		groundBodyDef.type = BodyType.StaticBody;
+		groundBodyDef.type = BodyType.KinematicBody;
 		groundBodyDef.position.x = 0;
 		groundBodyDef.position.y = 0;
 		if(!box2dWorld.isLocked()){
@@ -226,11 +228,13 @@ public class GameWorldB2d {
 			void b2dGameObjectProccess(B2dGameObject b2dGameObject){
 				//System.out.println(b2dGameObject.id);
 			} 
-			@Override
-			public void beginContact (Contact contact) {
+			void checkContact(Contact contact){
 				B2dGameObject b2dGameObjectA=(B2dGameObject)contact.getFixtureA().getBody().getUserData();
 				B2dGameObject b2dGameObjectB=(B2dGameObject)contact.getFixtureB().getBody().getUserData();
 
+				if(b2dGameObjectA!=null&&b2dGameObjectB!=null){
+					contact.setEnabled(false);
+				}
 				if(b2dGameObjectA!=null){
 					b2dGameObjectProccess(b2dGameObjectA);
 				}
@@ -239,18 +243,27 @@ public class GameWorldB2d {
 					b2dGameObjectProccess(b2dGameObjectB);
 				}
 			}
+			@Override
+			public void beginContact (Contact contact) {
+				//checkContact(contact);
+				
+				//System.out.println("beginContact");
+			}
 
 			@Override
 			public void endContact (Contact contact) {
+				//System.out.println("endContact");
 			}
 
 			@Override
 			public void preSolve (Contact contact, Manifold oldManifold) {
+				//System.out.println("preSolve");
+				checkContact(contact);
 			}
 
 			@Override
 			public void postSolve (Contact contact, ContactImpulse impulse) {
-				System.out.println( impulse.getNormalImpulses()[0]);
+				//System.out.println( impulse.getNormalImpulses()[0]);
 			}
 		});
 	}

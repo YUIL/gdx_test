@@ -33,7 +33,7 @@ public class B2dUpdateInformation {
 	
 	public byte[] toBytes(){
 		int offset=0;
-		byte[] dest=new byte[this.informationLength];
+		byte[] dest=new byte[B2dUpdateInformation.informationLength];
 		byte[] src=DataUtil.longToBytes(this.gameObjectId);
 		System.arraycopy(src, 0, dest, offset, 8);offset+=8;
 		src = DataUtil.floatToBytes(this.x);

@@ -24,6 +24,7 @@ public class USER_MESSAGE extends Message {
 
 	@Override
 	public void init(byte[] src) {
+		
 		// TODO Auto-generated method stub
 		this.data=src;
 	}

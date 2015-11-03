@@ -3,10 +3,7 @@ package com.yuil.game.screen;
 
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.yuil.game.input.InputProcessor;
 import com.yuil.game.stage.StageManager;
 
@@ -16,19 +13,17 @@ public abstract class  TestScreen implements Screen {
 		volatile boolean isStoped=false;
 		//long lastRunTime=0;
 		public ScreenLogic(){
-
+			this(1);
 		}
 		public ScreenLogic(int delay){
 			this.delay=delay;
 		}
-		public synchronized void stop(){
+		public  void stop(){
 			isStoped=true;
 		}
 		@Override
 		public void run() {
 			while(!isStoped){
-
-				System.out.println("runing");
 				try {
 					Thread.sleep(delay);
 				} catch (InterruptedException e) {
@@ -51,15 +46,13 @@ public abstract class  TestScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		InputProcessor.handleInput(game, delta);
-		//StageManager.showSuperStage(delta);
+		StageManager.showSuperStage(delta);
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
-		Actor mainMenu=(StageManager.superStage.getRoot().findActor("MainMenu"));
-	//	mainMenu.setX(Gdx.graphics.getWidth()-100);
-	//	mainMenu.setY(Gdx.graphics.getHeight()-30);
+		
 	}
 
 	@Override

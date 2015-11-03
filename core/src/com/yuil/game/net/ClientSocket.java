@@ -31,7 +31,7 @@ public class ClientSocket implements UdpMessageListener {
 	}
 
 	private boolean initUdpServer(int port) {
-		if (port < 10000) {
+		if (port < 30000) {
 			try {
 				System.out.println("try start at port:" + port);
 				udpServer = new UdpServer(port);
@@ -86,8 +86,9 @@ public class ClientSocket implements UdpMessageListener {
 	@Override
 	public void disposeUdpMessage(Session session, byte[] data) {
 		// TODO Auto-generated method stub
-		if (data.length > Message.TYPE_LENGTH) {
-			listenner.disposeUdpMessage(session, data);
-		}
+		if(listenner!=null)
+			if (data.length > Message.TYPE_LENGTH) {
+				listenner.disposeUdpMessage(session, data);
+			}
 	}
 }

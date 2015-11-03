@@ -3,21 +3,104 @@ package com.yuil.game.test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
+import java.util.function.BiConsumer;
 
 import com.yuil.game.net.message.Message;
+import com.yuil.game.net.udp.Session;
 
 public class Test {
 	static long time = 0;
-
-	public static void main(String[] args) {
-		testfun();
-		testfun();
-		testfun();
+	long preFreeMemory=0;
+	int num=100;
+	
+	public static void main(String[] args) throws Exception {
+		
+		Test test=new Test();
+		test.encryptTest();
+	}
+	public void encryptTest() throws NoSuchAlgorithmException, NoSuchProviderException{
+	
 	}
 	
+	public void hashTest(){
+		HashMap< String, String > map=new HashMap();
+		map.put("a", "a");
+		String a,b;
+		MyConsumer myConsumer=new MyConsumer();
+		map.forEach(myConsumer);
+		
+	}
+	
+	public class MyConsumer implements BiConsumer<String , String>{
+
+		@Override
+		public void accept(String t, String u) {
+			// TODO Auto-generated method stub
+			System.out.println(t+u);
+		}
+		
+	}
+	public void binaryTest(){
+		Random random=new Random(1);
+		for (int i = 0; i < 10; i++) {
+			System.out.println(random.nextLong());
+			
+		}
+		
+	}
+	
+	public  boolean isPrime(long n) {
+	    if (n <= 3) {
+	        return n > 1;
+	    }
+	    if (n % 2 == 0 || n % 3 == 0) {
+	        return false;
+	    }
+	 
+	    for (int i = 5; i * i <= n; i += 6) {
+	        if (n % i == 0 || n % (i + 2) == 0) {
+	            return false;
+	        }
+	    }
+	    return true;
+	}
+	
+	public void newArrayTest(){
+		for (int i = 0; i < 50; i++) {
+			time=System.nanoTime();
+			byte[]b =new byte[1000];
+			time=System.nanoTime()-time;
+			System.out.println(time);
+		}
+		
+	}
+	public void arrayCopyTest(){
+		byte[]b1=new byte[1];
+		
+		for (int i = 0; i < 50; i++) {
+			byte[]b2=new byte[1];
+			for (int j = 0; j < b2.length; j++) {
+				b2[j]=1;
+			}
+			time=System.nanoTime();
+			System.arraycopy(b1, 0, b2, 0, b1.length);
+			time=System.nanoTime()-time;
+			System.out.println(time);
+		}
+		
+	}
+	public  void classUsedMemoryTest(){
+		System.out.println(Runtime.getRuntime().maxMemory());
+		Session [] ss=new Session[(int) (new Random().nextFloat()*100)];
+		System.out.println(Runtime.getRuntime().maxMemory());
+	}
 	
 	public static void testfun(){
 		time=System.nanoTime();

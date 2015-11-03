@@ -1,7 +1,9 @@
 package com.yuil.game.desktop;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.files.FileHandle;
 import com.yuil.game.MyGdxGame;
 
 public class DesktopLauncher {

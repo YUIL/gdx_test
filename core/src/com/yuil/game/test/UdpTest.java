@@ -13,7 +13,7 @@ public class UdpTest {
 
 	public static void main(String[] args) throws BindException {
 	
-		
+		sendMessages();
 		
 		
 		
